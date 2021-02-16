@@ -19,7 +19,7 @@ This repository contains:
 - UI and serve file to run the App
 - References and literature related to the Project
 
-**This Repository does not contain any clinical data associated with the AIBL. This app is to Data used in this app is to demostrate app features, and does not represent true features or characteristics of the AIBL biomarkers in the ATN framework**
+**This Repository does not contain any clinical data associated with the AIBL. Data used in this app is to demostrate app features, and does not represent true features or characteristics of the AIBL biomarkers in the ATN framework**
 
 ## Research Problem and Project Aim
 
