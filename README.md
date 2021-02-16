@@ -17,6 +17,7 @@ This repository contains:
 - snytheticProcess to process the data and form tables 
 - Functions for creating all 3D visualisation through plotly 
 - UI and serve file to run the App
+- www file and any additional png
 - References and literature related to the Project
 
 **This Repository does not contain any clinical data associated with the AIBL. Data used in this app is to demostrate app features, and does not represent true features or characteristics of the AIBL biomarkers in the ATN framework**
