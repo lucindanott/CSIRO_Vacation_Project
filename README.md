@@ -10,6 +10,17 @@ This App was created during a CSIRO vacation internship. Supervised by Dr Marcel
 
 Special thanks to Marcela for her guidance, help and supportive attitude for the whole vacation period. My first R shiny app would not be up or running without her (fingers crossed it still runs!). Additional gratitude to CSIRO for funding under the Biostatistics team. 
 
+## What this Repository Contains
+
+This repository contains: 
+- R code to simulate synthetic data 
+- snytheticProcess to process the data and form tables 
+- Functions for creating all 3D visualisation through plotly 
+- UI and serve file to run the App
+- References and literature related to the Project
+
+**This Repository does not contain any clinical data associated with the AIBL. This app is to Data used in this app is to demostrate app features, and does not represent true features or characteristics of the AIBL biomarkers in the ATN framework**
+
 ### Research Problem and Project Aim
 
 Previously, the biomarkers for AD (AB-Amyloid, Tau and Neurodegeneration) have been used to descibe the different stages of AD by Clifford and colleagues. In this, an individual is described as being positive or negative for AB-Amyloid, Tau and Neurodegeneration, forming 8 different groups. This approach considers the binary form of these biomarkers in the terms of an individual surpassing a certain threshold and does not provide information on the interplay of the AD biomarkers in their continuous biomarker form.
