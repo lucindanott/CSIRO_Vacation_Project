@@ -34,5 +34,33 @@ In this project, we analysed data from the Australian Imaging, Biomarkers and Li
 
 ## References 
 
+Bourgeat, P., Dore, V., Fripp, J., Villemagne, V.L., Rowe, C.C. and Salvado, O., 2015, March. Computational analysis of PET by AIBL (CapAIBL): a cloud-based processing pipeline for the quantification of PET images. In Medical Imaging 2015: Image Processing (Vol. 9413, p. 94132V). International Society for Optics and Photonics.
+
+
+Burnham, S.C., Coloma, P.M., Li, Q.X., Collins, S., Savage, G., Laws, S., Doecke, J., Maruff, P., Martins, R.N., Ames, D. and Rowe, C.C., 2019. Application of the NIA-AA research framework: towards a biological definition of Alzheimer's disease using cerebrospinal fluid biomarkers in the AIBL study. The journal of prevention of Alzheimer's disease, 6(4), pp.248-255.
+
+
+Jack, C.R., Bennett, D.A., Blennow, K., Carrillo, M.C., Feldman, H.H., Frisoni, G.B.,Hampel, H., Jagust, W.J., Johnson, K.A., Knopman, D.S. and Petersen, R.C., 2016. A/T/N: an unbiased descriptive classification scheme for Alzheimer disease biomarkers. Neurology, 87(5), pp.539-547.
+
+ Jack Jr, C.R., Knopman, D.S., Jagust, W.J., Petersen, R.C., Weiner, M.W., Aisen, P.S., Shaw, L.M., Vemuri, P., Wiste, H.J., Weigand, S.D. and Lesnick, T.G., 2013. Update on hypothetical model of Alzheimer's disease biomarkers. Lancet neurology, 12(2), p.207.
+ 
+ 
+De Loof, A. and Schoofs, L., 2019. Alzheimer's disease: Is a dysfunctional mevalonate biosynthetic pathway the master-inducer of deleterious changes in cell physiology?.OBM Neurobiology, 3(4).
+
+
+Doecke, J.D., Ward, L., Burnham, S.C., Villemagne, V.L., Li, Q.X., Collins, S., Fowler, C.J., Manuilova, E., Widmann, M., Rainey-Smith, S.R. and Martins, R.N., 2020. Elecsys CSF biomarker immunoassays demonstrate concordance with amyloid-PET imaging. Alzheimer's research & therapy, 12, pp.1-10.
+
+
+Dore, V., Bourgeat, P., Cummins, T.L., Raniga, P., Williams, S., Amadoru, S., MacLean, C., Hinton, F., Shepherd, C., Halliday, G.M. and Leyton, C.E., 2018. P1-405: VISUAL ASSESSMENT OF BETA-AMYLOID PET SCAN IS IMPROVED BY CAPAIBL. Alzheimer's & Dementia, 14(7S_Part_8), pp.P459-P459.
+
+
+Ellis, K., Bush, A., Darby, D., De Fazio, D., Foster, J., Hudson, P., Lautenschlager, N., Lenzo, N., Martins, R.,Maruff, P. and Masters, C., 2009. The Australian Imaging, Biomarkers and Lifestyle (AIBL) study of aging: methodology and baseline characteristics of 1112 individuals recruited for a longitudinal study of Alzheimer's disease.
+
+
+Li, Q.X., Villemagne, V.L., Doecke, J.D., Rembach, A., Sarros, S., Varghese, S., McGlade, A., Laughton, K.M., Pertile, K.K., Fowler, C.J.and Rumble, R.L., 2015. Alzheimer's disease normative cerebrospinal fluid biomarkers validated in PET amyloid-Betacharacterized subjects from the Australian Imaging, Biomarkers and Lifestyle (AIBL) study. Journal of Alzheimer's Disease, 48(1), pp.175-187.
+
+
+Jack Jr, C.R., Knopman, D.S., Jagust, W.J., Petersen, R.C., Weiner, M.W., Aisen, P.S., Shaw, L.M., Vemuri, P., Wiste, H.J., Weigand, S.D. and Lesnick, T.G., 2013. Tracking pathophysiological processes in Alzheimer's disease: an updated hypothetical model of dynamic biomarkers. The Lancet Neurology, 12(2), pp.207-216.
+
 
 
