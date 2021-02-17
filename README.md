@@ -31,3 +31,8 @@ This project aims to investigate the joint associations of Amyloid, Tau and Neur
 ## Data Analysed in the App 
 In this project, we analysed data from the Australian Imaging, Biomarkers and Lifestyle flagship (AIBL) study of ageing. The AIBL study is the largest longitudinal study of ageing in Australia. With over 2,000 participants, the focus of AIBL is to better the nature of AD research to enable early detection and lifestyle interventions. As the data used is derived from a clinical study, the initial findings and App will not be accessible to the public. Instead, this publically available App consists of synthetic simulated data. 
 
+
+## References 
+
+
+
