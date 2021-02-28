@@ -29,6 +29,8 @@ server <- function(input, output){
   
   load("simulated_data.RData")
   source("syntheticProcess.R")
+  load("ExampleCSV.RData")
+  
   # new.dat <- simulated.data
   
   # x <- syntheticProccess()
@@ -354,8 +356,7 @@ server <- function(input, output){
     )
   
   ###################### DOWNLOAD EXAMPLE DATA SET ###########################
-  Example_csv <- read.csv("Example_csv.csv", header = T)
-  
+  # Example_csv <- read.csv("Example_csv.csv", header = T)
   output$DOWNLOADEXAMPLE <- downloadHandler(
     # new.dat <- req(data_internal$raw)
     filename = function() {
