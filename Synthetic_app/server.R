@@ -28,7 +28,7 @@ server <- function(input, output){
   })
   
   load("simulated_data.RData")
-  source("syntheticProcess.R")
+  # source("syntheticProcess.R")
   load("ExampleCSV.RData")
   
   # new.dat <- simulated.data
