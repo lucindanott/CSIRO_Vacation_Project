@@ -36,6 +36,7 @@ library(shinyBS)
 library(htmlTable)
 library(htmlwidgets)
 library(shinymanager)
+library(shinydisconnect)
 
 inactivity <- "function idleTimer() {
 var t = setTimeout(logout, 120000);
@@ -57,11 +58,12 @@ t = setTimeout(logout, 120000);  // time is in milliseconds (1000 is 1 second)
 idleTimer();"
 
 
-
 # User Interface
 ui<- 
   #secure_app(head_auth = tags$script(inactivity),
   fluidPage(
+    useShinyjs(),
+    shinydisconnect::disconnectMessage2(),
   tags$style(HTML("
     .tabbable > .nav > li > a {display:flex;
     justify-content:center;
@@ -69,35 +71,6 @@ ui<-
     font-size:18PX;height = 40PX;display:inline-block;
     margin-left:auto; margin-right}
   ")),
-  # tags$style(HTML("
-  #   .tabbable > .nav > li > a {
-  #   background-image: linear-gradient(#FEFEFE, #F1F1F1);
-  #   position: relative;
-  #   margin: auto;
-  #   overflow: hidden;
-  #   border-radius: 6px;
-  #   border-color: #DEDEDE;
-  #   display: table;
-  #   width: 100%;
-  #   display:flex;
-  # align-items: center;
-  # flex-direction:column;
-  # margin:auto;
-  #   
-  #   }")),
-  
-  # tags$head(
-  #   tags$style(HTML("
-  # 
-  #     .selectize-input {
-  #       height: 40px;
-  #       width: 400px;
-  #       font-size: 17pt;
-  #       padding-top: 5px;
-  #     }
-  # 
-  #   "))
-  # ),
   br(),
   br(),
   titlePanel(
@@ -125,9 +98,6 @@ ui<-
   ), 
   br(),
   br(),
-  # h3(strong("The synthetic data in this app was randomly generated and bears no clinical relevance. 
-  #                                 Data used in this app is to demostrate app features, and does not represent true features or characteristics of the AIBL biomarkers
-  #                                 in the ATN framework."), align = "center", style = "color:red"),
   br(),
   tabsetPanel(type = "tabs", # create Tabs
               
@@ -437,71 +407,534 @@ ui<-
                                             ), 
                                             mainPanel(
                                               br(),
-                                              # p("A header of the data will be shown here!")
-                                              conditionalPanel(
-                                                condition = "input.sample_or_real == 'user'", 
-                                                p(strong("You have selected upload your own data. Please follow the instructions below to upload the data correctly.",
-                                                  style = "width:80%;font-size:17px;color:red")), 
-                                                p("The focus of this project was using the AIBL data with INNOTEST assay. Therefore, all thresholds 
-                                                  and analysed data are based off this assay type. Uploaded data must be of INNOTEST assay to have a meaningful comparison with 
-                                                  age dependent cut-off thresholds.", style = "width:100%;font-size:16px"), 
-                                                p("The CSV file must include the following headers in the first row. Order is not important, however, please ensure the spelling is the same.", style = "width:100%;font-size:16px"), 
-                                                tags$div(
-                                                  tags$ul(
-                                                    tags$li("ID - numerical input", style = "width:100%;font-size:16px"),
-                                                    tags$li("Age - numerical input", style = "width:100%;font-size:16px"), 
-                                                    tags$li("apoe4 - categorical input where 1 is a carrier, 0 is non-carrier", style = "width:100%;font-size:16px"), 
-                                                    tags$li("Sex - categorial input including Male or Female.", style = "width:100%;font-size:16px"), 
-                                                    tags$li("Education_binary - binary input where 1 is over 12 years education and 0 under 12 years.", style = "width:100%;font-size:16px"),
-                                                    tags$li("Diagnosis - categorial input for clinical diagnosis consisting of AD, MCI and HC", style = "width:100%;font-size:16px"),
-                                                    tags$li("CSF.AB42.INNO - numerical input", style = "width:100%;font-size:16px"),
-                                                    tags$li("CSF.pTau.INNO - numerical input", style = "width:100%;font-size:16px"), 
-                                                    tags$li("CSF.tTau.INNO - numerical input", style = "width:100%;font-size:16px"), 
-                                                    tags$li("Sum.hippo - numerical input", style = "width:100%;font-size:16px"), 
-                                                    tags$li("Centiloid - numerical input", style = "width:100%;font-size:16px"), 
-                                                    tags$li("AB.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px"), 
-                                                    tags$li("pTau.status - categorial input consisting of negative or positive ", style = "width:100%;font-size:16px"), 
-                                                    tags$li("tTau.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px")
-                                                  )
-                                                ),
-                                                p("The following data points must be numerical unless specificed above for categorical inputs. \n
-                                                  No additional characters, such as $,#,&,*,(,!, are permitted. \n 
-                                                  Please ensure that capitalising of inputs and row headers are followed as above.", style = "width:100%;font-size:16px"), 
-                                                p("You can also downloand (through the button below) an example CSV file to check the inputs required.", style = "width:100%;font-size:16px"),
-                                                downloadButton("DOWNLOADEXAMPLE", "Download Example CSV File", 
-                                                               class = "CN"), 
-                                                tags$head(tags$style(".CN{background-color:#5bc0de;} .CN{color: white;} .CN{width:250px}")), # background color and font color
-                                                br(), 
-                                                br(),
-                                                p("Once uploaded, the first 5 rows of data will be displayed. Double check the inputs and press the submit button when ready.", style = "width:100%;font-size:16px"),
-                                                p(strong("If the file does not adhere to the instructions above, the website will disconnect due to an error in the file", style = "width:100%;font-size:16px;color:red")),
-                                                fileInput("file1", "Choose CSV File",
-                                                          multiple = F,
-                                                          accept = c("text/csv",
-                                                                     "text/comma-separated-values, text/plain",
-                                                                     ".csv"
-                                                          )
-                                                          
-                                                ), 
-                                                tableOutput("contents"), 
-                                                actionGroupButtons("newDataSUBMIT", "SUBMIT", status = "info", size = "lg"), 
-                                                br(),
-                                                br(),
-                                                p("Note that the page will not refresh and all the following tabs will autogenerate. To undo the uploading and view the supplied
-                                                  synthetic data please press the radio button on the left.", style = "width:100%;font-size:16px"),
-                                                br(),
-                                              ),
                                               conditionalPanel(
                                                 condition = "input.sample_or_real == 'sample'", 
-                                                p(strong("You have selected to use the Synthetic Simulated Data Supplied. No further action is needed.", 
+                                                p(strong("You have selected to use the Synthetic Data Supplied. No further action is needed.", 
+                                                         style = "width:100%;font-size:17px;color:red")), 
+                                                p("Note that in the synthetic data all CSF ATN biomarkers for Group 1 were analysed with INNOTEST and the cut-offs are dependent on age. Group 2 pertains to 
+          a combined modality of Centiloid PET Scan, CSF pTau and hippocampus volume with the cut-offs evident in the corresponding tab.",
+                                                  style = "width:80%;font-size:17px")
+                                              ), 
+                                              conditionalPanel(
+                                                condition = "input.sample_or_real == 'user'", 
+                                                p(strong("You have selected upload your own data. Please follow the instructions 
+                                                         and questions below to upload the data correctly.",
                                                          style = "width:80%;font-size:17px;color:red")), 
-                                                # actionButton("USESUPDATA", "Use Supplied Data")
-                                                # actionGroupButtons("SUPDATA", "Use Supplied Data", status = "info", size = "lg")
+                                                br(), 
+                                                p("In this app, INNOTEST assay was used for all CSF data. This makes the thresholds dependent on
+                                                  and individual being under or over the age of 70.", style = "width:100%;font-size:17px"), 
+                                                p(strong("Do you wish to use the INNOTEST assay cut offs for CSF data?", 
+                                                  style = "width:80%;font-size:17px;color:red")), 
+                                                radioButtons(
+                                                  "INNOTEST", "Do you wish to use the INNOTEST assay cut-offs for CSF data?", 
+                                                  choices = list(
+                                                    "Yes" = "yes_innotest", 
+                                                    "No" = "no_innotest"
+                                                  ), 
+                                                  selected = character(0)
+                                                ), 
+                                                conditionalPanel(
+                                                  condition = "input.INNOTEST == 'yes_innotest'", 
+                                                  p(strong("You have selected to use the same measurements of data analysed for group 1 and 2 with the same thresholds. Please following careful the instructions below for uploading
+                                                  your CSV file.", style = "width:80%;font-size:17px;color:red")), 
+                                                  p("The CSV file must include the following headers in the first row. Order is not important, however, please ensure the spelling is the same.", style = "width:100%;font-size:16px"), 
+                                                  tags$div(
+                                                    tags$ul(
+                                                      tags$li("Age - numerical input", style = "width:100%;font-size:16px"), 
+                                                      tags$li("apoe4 - categorical input where 1 is a carrier, 0 is non-carrier", style = "width:100%;font-size:16px"), 
+                                                      tags$li("Sex - categorial input including Male or Female.", style = "width:100%;font-size:16px"), 
+                                                      tags$li("Education_binary - binary input where 1 is over 12 years education and 0 under 12 years.", style = "width:100%;font-size:16px"),
+                                                      tags$li("Diagnosis - categorial input for clinical diagnosis consisting of AD, MCI and HC", style = "width:100%;font-size:16px"),
+                                                      tags$li("CSF.AB42 - numerical input", style = "width:100%;font-size:16px"),
+                                                      tags$li("CSF.pTau - numerical input", style = "width:100%;font-size:16px"), 
+                                                      tags$li("CSF.tTau - numerical input", style = "width:100%;font-size:16px"), 
+                                                      tags$li("Sum.hippo - numerical input", style = "width:100%;font-size:16px"), 
+                                                      tags$li("Centiloid - numerical input", style = "width:100%;font-size:16px"), 
+                                                      tags$li("AB.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px"), 
+                                                      tags$li("pTau.status - categorial input consisting of negative or positive ", style = "width:100%;font-size:16px"), 
+                                                      tags$li("tTau.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px")
+                                                    )
+                                                  ),
+                                                  p("The following data points must be numerical unless specificed above for categorical inputs. \n
+                                                  No additional characters, such as $,#,&,*,(,!, are permitted. \n 
+                                                  Please ensure that capitalising of inputs and row headers are followed as above.", style = "width:100%;font-size:16px"), 
+                                                  p("You can also downloand (through the button below) an example CSV file to check the inputs required.", 
+                                                    style = "width:100%;font-size:16px"),
+                                                  downloadButton("DOWNLOADEXAMPLE", "Download Example CSV File",
+                                                                 class = "LN"),
+                                                  tags$head(tags$style(".LN{background-color:#5bc0de;} .LN{color: white;} .LN{width:250px}")), # background color and font color
+                                                  br(),
+                                                  br(),
+                                                  p("Once uploaded, the first 5 rows of data will be displayed. Double check the inputs and press the submit button when ready.", 
+                                                    style = "width:100%;font-size:16px"),
+                                                  p(strong("If the file does not adhere to the instructions above, the website will disconnect due to an error in the file", 
+                                                           style = "width:100%;font-size:16px;color:red")),
+                                                  fileInput("file1", "Choose CSV File",
+                                                            multiple = F,
+                                                            accept = c("text/csv",
+                                                                       "text/comma-separated-values, text/plain",
+                                                                       ".csv"
+                                                            )
+                                                            
+                                                  ), 
+                                                  tableOutput("contents"), 
+                                                  
+                                                  # useShinyjs(), 
+                                                  # extendShinyjs(text = "shinyjs.button = function() {window.scrollTo(0, 0)}"),
+                                                  actionGroupButtons("newDataSUBMIT", "SUBMIT", status = "info", size = "lg"), 
+                                               
+                                                ), 
+                                                # FOR DIFFERENT CUT OFF VALUES
+                                                conditionalPanel(
+                                                  condition = "input.INNOTEST == 'no_innotest'", 
+                                                  p(strong("You have selected to use the same measurements of data and groups but with different assay and/or thresholds. 
+                     Please follow carefully the instructions below.",
+                                                           style = "width:80%;font-size:17px;color:red")), 
+                                                  textInput("AssayLabel", 
+                                                            label = "Please Input the name of the assay used:", 
+                                                            value = ""), 
+                                                  radioButtons(
+                                                    "new_AGE", "Is this Assay age dependent?", 
+                                                    choices = list(
+                                                      "Yes" = 'Age_yes', 
+                                                      "No" = "age_no"
+                                                    ), 
+                                                    selected = character(0)
+                                                  ), 
+                                                  conditionalPanel(
+                                                    condition = "input.new_AGE == 'Age_yes'", 
+                                                    p("This assay is age dependent. Please select the number of bins (different age
+                                                      brackets) for each CSF biomarkers (for example if CSF AB1-42 pg/mL was dependent
+                                                      on an individual being 60-70 or 70+, there would be 2 age brackets.)", 
+                                                      style ="width:100%;font-size:17px"), 
+                                                    # radioButtons("AB_bins", "How many bins for CSF AB 1-42 pg/mL",
+                                                    #              choices = c("1","2","3","4+"),
+                                                    #              selected = character(0))
+                                                    fluidRow(
+                                                      column(4, radioButtons("AB_bins", "How many bins for CSF AB1-42 pg/mL",
+                                                                             choices = c("2","3","4"),
+                                                                             selected = "2")
+                                                      ), 
+                                                      column(4, radioButtons("pTau_bins", "How many bins for CSF pTau pg/mL",
+                                                                             choices = c("2","3","4"),
+                                                                             selected = "2")
+                                                      ), 
+                                                      column(4, radioButtons("tTau_bins", "How many bins for CSF tTau pg/mL",
+                                                                             choices = c("2","3","4"),
+                                                                             selected = "2")
+                                                      ),
+                                                    ), 
+                                                    conditionalPanel(
+                                                      condition = "input.AB_bins == '2'", 
+                                                      p(strong("For CSF AB 1-42 pg/mL, please enter the following", 
+                                                               style ="width:100%;font-size:17px;color:#7FB3D5")),
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AB_input_age", "Please input the 1st cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                               ), 
+                                                        column(4, 
+                                                               textInput(
+                                                                 "AB_text", "Please specify the 1st age bracket", value = ""
+                                                               )
+                                                               )
+                                                      ), 
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AB_input_age_second", "Please input the 2nd cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               textInput(
+                                                                 "AB_text_second", "Please specify the 2nd age bracket", value = ""
+                                                               )
+                                                        )
+                                                      ),
+                                                      
+                                                    ),
+                                                    conditionalPanel(
+                                                      condition = "input.pTau_bins == '2'", 
+                                                      p(strong("For CSF pTau pg/mL, please enter the following", 
+                                                               style ="width:100%;font-size:17px;color:#1ABC9C")),
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ptau_input_age", "Please input the 1st cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               textInput(
+                                                                 "ptau_text", "Please specify the 1st age bracket", value = ""
+                                                               )
+                                                        )
+                                                      ), 
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ptau_input_age_second", "Please input the 2nd cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               textInput(
+                                                                 "ptau_text_second", "Please specify the 2nd age bracket", value = ""
+                                                               )
+                                                        )
+                                                      ),
+                                                      
+                                                    ),
+                                                    conditionalPanel(
+                                                      condition = "input.tTau_bins == '2'", 
+                                                      p(strong("For CSF tTau pg/mL, please enter the following", 
+                                                               style ="width:100%;font-size:17px;color:#6C3483")),
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ttau_input_age", "Please input the 1st cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               textInput(
+                                                                 "ttau_text", "Please specify the 1st age bracket", value = ""
+                                                               )
+                                                        )
+                                                      ), 
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ttau_input_age_second", "Please input the 2nd cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               textInput(
+                                                                 "ttau_text_second", "Please specify the 2nd age bracket", value = ""
+                                                               )
+                                                        )
+                                                      ),
+                                                      p("Please double check the cut-offs are correct and submit when ready.", 
+                                                        style = "width:100%;font-size:16px"),
+                                                      actionGroupButtons("Age_dependent_threshold_2", "Submit Cut-offs", 
+                                                                         status = "info", size = "lg"),
+                                                      br(),
+                                                      br(),
+                                                      p("Once you have submitted the cut-offs, please follow the instructions for 
+                                                      uploading the data file.", style = "width:100%;font-size:16px"),
+                                                      p("The CSV file must include the following headers in the first row. 
+                                                      Order is not important, however, please ensure the spelling is the same.",
+                                                        style = "width:100%;font-size:16px"), 
+                                                      tags$div(
+                                                        tags$ul(
+                                                          tags$li("Age - numerical input", style = "width:100%;font-size:16px"), 
+                                                          tags$li("apoe4 - categorical input where 1 is a carrier, 0 is non-carrier", style = "width:100%;font-size:16px"), 
+                                                          tags$li("Sex - categorial input including Male or Female.", style = "width:100%;font-size:16px"), 
+                                                          tags$li("Education_binary - binary input where 1 is over 12 years education and 0 under 12 years.", style = "width:100%;font-size:16px"),
+                                                          tags$li("Diagnosis - categorial input for clinical diagnosis consisting of AD, MCI and HC", style = "width:100%;font-size:16px"),
+                                                          tags$li("CSF.AB42 - numerical input", style = "width:100%;font-size:16px"),
+                                                          tags$li("CSF.pTau - numerical input", style = "width:100%;font-size:16px"), 
+                                                          tags$li("CSF.tTau - numerical input", style = "width:100%;font-size:16px"), 
+                                                          tags$li("Sum.hippo - numerical input", style = "width:100%;font-size:16px"), 
+                                                          tags$li("Centiloid - numerical input", style = "width:100%;font-size:16px"), 
+                                                          tags$li("AB.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px"), 
+                                                          tags$li("pTau.status - categorial input consisting of negative or positive ", style = "width:100%;font-size:16px"), 
+                                                          tags$li("tTau.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px")
+                                                        )
+                                                      ),
+                                                      p("The following data points must be numerical unless specificed above for categorical inputs. \n
+                                                  No additional characters, such as $,#,&,*,(,!, are permitted. \n 
+                                                  Please ensure that capitalising of inputs and row headers are followed as above.", style = "width:100%;font-size:16px"), 
+                                                      p("You can also downloand (through the button below) an example CSV file to check the inputs required.", 
+                                                        style = "width:100%;font-size:16px"),
+                                                      downloadButton("final_download_example", "Download Example CSV File",
+                                                                     class = "LN"),
+                                                      tags$head(tags$style(".LN{background-color:#5bc0de;} .LN{color: white;} .LN{width:250px}")), # background color and font color
+                                                      br(),
+                                                      br(),
+                                                      p("Once uploaded, the first 5 rows of data will be displayed. Double check the inputs and press the submit button when ready.", 
+                                                        style = "width:100%;font-size:16px"),
+                                                      p(strong("If the file does not adhere to the instructions above, the website will disconnect due to an error in the file", 
+                                                               style = "width:100%;font-size:16px;color:red")),
+                                                      fileInput("file_new_2_brackets", "Choose CSV File",
+                                                                multiple = F,
+                                                                accept = c("text/csv",
+                                                                           "text/comma-separated-values, text/plain",
+                                                                           ".csv"
+                                                                )
+                                                                
+                                                      ), 
+                                                      # tableOutput("contents"), 
+
+                                                      actionGroupButtons("final_data_SUBMIT", "SUBMIT", status = "info", size = "lg")
+                                                      
+                                                      
+                                                      
+                                                    ),
+                                                    conditionalPanel(
+                                                    condition = "input.AB_bins == '3'", 
+                                                    p(strong("For CSF AB 1-42 pg/mL, please enter the following", 
+                                                             style ="width:100%;font-size:17px;color:#7FB3D5")),
+                                                    fluidRow(
+                                                      column(4, 
+                                                             numericInput(
+                                                               "AB_AGE", "Please input the 1st cut-off point", 
+                                                               value = 1, min = 1, max = NA
+                                                             )
+                                                      ), 
+                                                      column(4, 
+                                                             textInput(
+                                                               "Text_for_AB", "Please specify the 1st age bracket", value = ""
+                                                             )
+                                                      )
+                                                    ), 
+                                                    fluidRow(
+                                                      column(4, 
+                                                             numericInput(
+                                                               "AB_AGE_2", "Please input the 2nd cut-off point", 
+                                                               value = 1, min = 1, max = NA
+                                                             )
+                                                      ), 
+                                                      column(4, 
+                                                             textInput(
+                                                               "TEXT_FOR_AB_2", "Please specify the 2nd age bracket", value = ""
+                                                             )
+                                                      )
+                                                    ),
+                                                    fluidRow(
+                                                      column(4, 
+                                                             numericInput(
+                                                               "AB_input_age_third", "Please input the 3rd cut-off point", 
+                                                               value = 1, min = 1, max = NA
+                                                             )
+                                                      ), 
+                                                      column(4, 
+                                                             textInput(
+                                                               "AB_text_third", "Please specify the 3rd age bracket", value = ""
+                                                             )
+                                                      )
+                                                    ),
+                                                    
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.pTau_bins == '3'", 
+                                                    p(strong("For CSF pTau pg/mL, please enter the following", 
+                                                             style ="width:100%;font-size:17px;color:#1ABC9C")),
+                                                    fluidRow(
+                                                      column(4, 
+                                                             numericInput(
+                                                               "AGE_Ptau", "Please input the 1st cut-off point", 
+                                                               value = 1, min = 1, max = NA
+                                                             )
+                                                      ), 
+                                                      column(4, 
+                                                             textInput(
+                                                               "TEXT_PTAU_2", "Please specify the 1st age bracket", value = ""
+                                                             )
+                                                      )
+                                                    ), 
+                                                    fluidRow(
+                                                      column(4, 
+                                                             numericInput(
+                                                               "AGE_PTAU_2", "Please input the 2nd cut-off point", 
+                                                               value = 1, min = 1, max = NA
+                                                             )
+                                                      ), 
+                                                      column(4, 
+                                                             textInput(
+                                                               "TEXT_PTAU_2", "Please specify the 2nd age bracket", value = ""
+                                                             )
+                                                      )
+                                                    ),
+                                                    fluidRow(
+                                                      column(4, 
+                                                             numericInput(
+                                                               "AGE_PTAU_3", "Please input the 3rd cut-off point", 
+                                                               value = 1, min = 1, max = NA
+                                                             )
+                                                      ), 
+                                                      column(4, 
+                                                             textInput(
+                                                               "TEXT_PTAU_3", "Please specify the 3rd age bracket", value = ""
+                                                             )
+                                                      )
+                                                    ),
+                                                    
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.tTau_bins == '3'", 
+                                                    p(strong("For CSF tTau pg/mL, please enter the following", 
+                                                             style ="width:100%;font-size:17px;color:#6C3483")),
+                                                    fluidRow(
+                                                      column(4, 
+                                                             numericInput(
+                                                               "AGE_TTAU", "Please input the 1st cut-off point", 
+                                                               value = 1, min = 1, max = NA
+                                                             )
+                                                      ), 
+                                                      column(4, 
+                                                             textInput(
+                                                               "TEXT_Ttau", "Please specify the 1st age bracket", value = ""
+                                                             )
+                                                      )
+                                                    ), 
+                                                    fluidRow(
+                                                      column(4, 
+                                                             numericInput(
+                                                               "AGE_TTAU_2", "Please input the 2nd cut-off point", 
+                                                               value = 1, min = 1, max = NA
+                                                             )
+                                                      ), 
+                                                      column(4, 
+                                                             textInput(
+                                                               "TEXT_TTAU_2", "Please specify the 2nd age bracket", value = ""
+                                                             )
+                                                      )
+                                                    ),
+                                                    fluidRow(
+                                                      column(4, 
+                                                             numericInput(
+                                                               "AGE_TTAU_2", "Please input the 3rd cut-off point", 
+                                                               value = 1, min = 1, max = NA
+                                                             )
+                                                      ), 
+                                                      column(4, 
+                                                             textInput(
+                                                               "TEXT_TTAU_3", "Please specify the 3rd age bracket", value = ""
+                                                             )
+                                                      )
+                                                    ),
+                                                    p("Please double check the cut-offs are correct and submit when ready.", 
+                                                      style = "width:100%;font-size:16px"),
+                                                    actionGroupButtons("Age_dependent_threshold_3", "Submit Cut-offs", 
+                                                                       status = "info", size = "lg"),
+                                                    br(),
+                                                    br(),
+                                                    p("Once you have submitted the cut-offs, please follow the instructions for 
+                                                      uploading the data file.", style = "width:100%;font-size:16px"),
+                                                    p("The CSV file must include the following headers in the first row. 
+                                                      Order is not important, however, please ensure the spelling is the same.",
+                                                      style = "width:100%;font-size:16px"), 
+                                                    tags$div(
+                                                      tags$ul(
+                                                        tags$li("Age - numerical input", style = "width:100%;font-size:16px"), 
+                                                        tags$li("apoe4 - categorical input where 1 is a carrier, 0 is non-carrier", style = "width:100%;font-size:16px"), 
+                                                        tags$li("Sex - categorial input including Male or Female.", style = "width:100%;font-size:16px"), 
+                                                        tags$li("Education_binary - binary input where 1 is over 12 years education and 0 under 12 years.", style = "width:100%;font-size:16px"),
+                                                        tags$li("Diagnosis - categorial input for clinical diagnosis consisting of AD, MCI and HC", style = "width:100%;font-size:16px"),
+                                                        tags$li("CSF.AB42 - numerical input", style = "width:100%;font-size:16px"),
+                                                        tags$li("CSF.pTau - numerical input", style = "width:100%;font-size:16px"), 
+                                                        tags$li("CSF.tTau - numerical input", style = "width:100%;font-size:16px"), 
+                                                        tags$li("Sum.hippo - numerical input", style = "width:100%;font-size:16px"), 
+                                                        tags$li("Centiloid - numerical input", style = "width:100%;font-size:16px"), 
+                                                        tags$li("AB.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px"), 
+                                                        tags$li("pTau.status - categorial input consisting of negative or positive ", style = "width:100%;font-size:16px"), 
+                                                        tags$li("tTau.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px")
+                                                      )
+                                                    ),
+                                                    p("The following data points must be numerical unless specificed above for categorical inputs. \n
+                                                  No additional characters, such as $,#,&,*,(,!, are permitted. \n 
+                                                  Please ensure that capitalising of inputs and row headers are followed as above.", style = "width:100%;font-size:16px"), 
+                                                    p("You can also downloand (through the button below) an example CSV file to check the inputs required.", 
+                                                      style = "width:100%;font-size:16px"),
+                                                    downloadButton("Download_example_again", "Download Example CSV File",
+                                                                   class = "LN"),
+                                                    tags$head(tags$style(".LN{background-color:#5bc0de;} .LN{color: white;} .LN{width:250px}")), # background color and font color
+                                                    br(),
+                                                    br(),
+                                                    p("Once uploaded, the first 5 rows of data will be displayed. Double check the inputs and press the submit button when ready.", 
+                                                      style = "width:100%;font-size:16px"),
+                                                    p(strong("If the file does not adhere to the instructions above, the website will disconnect due to an error in the file", 
+                                                             style = "width:100%;font-size:16px;color:red")),
+                                                    fileInput("file_new_2", "Choose CSV File",
+                                                              multiple = F,
+                                                              accept = c("text/csv",
+                                                                         "text/comma-separated-values, text/plain",
+                                                                         ".csv"
+                                                              )
+                                                              
+                                                    ), 
+                                                    # tableOutput("contents"), 
+                                                    
+                                                    # useShinyjs(), 
+                                                    # extendShinyjs(text = "shinyjs.button = function() {window.scrollTo(0, 0)}"),
+                                                    actionGroupButtons("final_data_SUBMIT", "SUBMIT", status = "info", size = "lg")
+                                                    
+                                                    
+                                                  ),
+                                                  ), 
+                                                  conditionalPanel(
+                                                    condition = "input.new_AGE == 'age_no'", 
+                                                    p("This assay is not age dependent, please
+                                                      input the numeric value for each CSF data point.", style = "width:100%;font-size:17px"), 
+                                                    numericInput(
+                                                      "ABthreshold", "Enter your CSF AB1-42 pg/mL cut-off value here:", 
+                                                      value = 1, min = 1, max = NA
+                                                    ), 
+                                                    numericInput(
+                                                      "pTauThreshold", "Enter your CSF pTau pg/mL cut-off value here:", 
+                                                      value = 1, min = 1, max = NA
+                                                    ), 
+                                                    numericInput(
+                                                      "tTautheshold", "Enter your CSF tTau pg/mL cut-off value here:", 
+                                                      value = 1, min = 1, max = NA
+                                                    ), 
+                                                    p("Please press the submit button when you are happy with the cut-offs inputted and follow
+                                                      the instructions below.", style = "width:100%;font-size:16px"),
+                                                    actionGroupButtons("THRESHOLDSUB", "SUBMIT CUT-OFFS", status = "info", size = "lg"),
+                                                    br(),
+                                                    p(strong("After inputting the cut-offs, please upload your CSV file through the following instructions:", style = "width:100%;font-size:16px;color:red")), 
+                                                    p("The CSV file must include the following headers in the first row. Order is not important, however, please ensure the spelling is the same.", style = "width:100%;font-size:16px"),
+                                                    tags$div(
+                                                      tags$ul(
+                                                        tags$li("Age - numerical input", style = "width:100%;font-size:16px"),
+                                                        tags$li("apoe4 - categorical input where 1 is a carrier, 0 is non-carrier", style = "width:100%;font-size:16px"),
+                                                        tags$li("Sex - categorial input including Male or Female.", style = "width:100%;font-size:16px"),
+                                                        tags$li("Education_binary - binary input where 1 is over 12 years education and 0 under 12 years.", style = "width:100%;font-size:16px"),
+                                                        tags$li("Diagnosis - categorial input for clinical diagnosis consisting of AD, MCI and HC", style = "width:100%;font-size:16px"),
+                                                        tags$li("CSF.AB42 - numerical input", style = "width:100%;font-size:16px"),
+                                                        tags$li("CSF.pTau - numerical input", style = "width:100%;font-size:16px"),
+                                                        tags$li("CSF.tTau - numerical input", style = "width:100%;font-size:16px"),
+                                                        tags$li("Sum.hippo - numerical input", style = "width:100%;font-size:16px"),
+                                                        tags$li("Centiloid - numerical input", style = "width:100%;font-size:16px"),
+                                                        tags$li("AB.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px"),
+                                                        tags$li("pTau.status - categorial input consisting of negative or positive ", style = "width:100%;font-size:16px"),
+                                                        tags$li("tTau.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px")
+                                                      )
+                                                    ),
+                                                    p("The following data points must be numerical unless specificed above for categorical inputs. \n
+                                                  No additional characters, such as $,#,&,*,(,!, are permitted. \n
+                                                  Please ensure that capitalising of inputs and row headers are followed as above.", 
+                                                      style = "width:100%;font-size:16px"),
+                                                    p("You can also downloand (through the button below) an example CSV file to check the inputs required.", style = "width:100%;font-size:16px"),
+                                                    downloadButton("DOWNLOADEXAMPLE2", "Download Example CSV File",
+                                                                   class = "NEW"),
+                                                    tags$head(tags$style(".NEW{background-color:#5bc0de;} .NEW{color: white;} .NEW{width:250px}")), # background color and font color
+                                                    br(),
+                                                    br(),
+                                                    p("Once uploaded, the first 5 rows of data will be displayed. Double check the inputs and press the submit button when ready.", style = "width:100%;font-size:16px"),
+                                                    p(strong("If the file does not adhere to the instructions above, the website will disconnect due to an error in the file", style = "width:100%;font-size:16px;color:red")),
+                                                    fileInput("INPUTfile", "Choose CSV File",
+                                                              multiple = F,
+                                                              accept = c("text/csv",
+                                                                         "text/comma-separated-values, text/plain",
+                                                                         ".csv"
+                                                              )
+                                                              
+                                                    ),
+                                                    tableOutput("contents2"),
+                                                    actionGroupButtons("SUMBITNEW", "SUBMIT", status = "info", size = "lg"),
+                                                    br()
+                                                  )
+                                                )
                                               )
                                             )
                                             )
-                                            
-                                      
+                                              
                                    ),
                                    
                                    tabPanel("Demographic Summary", 
@@ -540,16 +973,9 @@ ui<-
                                                 selectInput(
                                                   "plotType", "Plot Type",
                                                   c("Normal 3D Scatter Plot" = "Normal",
-                                                    "3D Scatter Plot with Cut-offs"= "planes")),
-                                                # actionButton("animG1P1", "Click here for animated roatation", icon=icon("fas fa-sync-alt")),
+                                                    "3D Scatter Plot with Cut-offs"= "planes"
+                                                    )),
                                                 
-                                                conditionalPanel(
-                                                  condition = "input.plotType == 'planes'",
-                                                  selectInput(
-                                                    "AGEgroup", "Select the specific Age Group",
-                                                    c("60-70",
-                                                      "70+")),
-                                                ),
                                                 conditionalPanel(
                                                   condition = "input.plotType == 'Normal'", 
                                                   p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load
@@ -561,44 +987,77 @@ ui<-
                                                     size = 'lg',
                                                     fullwidth = T)
                                                   
-                                                  # actionButton("ANIMATIONg1P1", "Click here for animated version", icon = icon("fas fa-sync-alt"))
-                                                ), 
+                                                ),
                                                 
                                                 conditionalPanel(
-                                                  condition = "input.plotType == 'planes'",
+                                                  condition = "input.sample_or_real == 'sample' || input.newDataSUBMIT", 
+                                                  conditionalPanel(
+                                                    condition = "input.plotType == 'planes'",
+                                                    selectInput(
+                                                      "AGEgroup", "Select the specific Age Group",
+                                                      c("60-70",
+                                                        "70+")),
+                                                  ),
                                                   
                                                   conditionalPanel(
-                                                    condition = "input.AGEgroup == '60-70'",
-                                                    p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update from the previous plot
+                                                    condition = "input.plotType == 'planes'",
+                                                    
+                                                    conditionalPanel(
+                                                      condition = "input.AGEgroup == '60-70'",
+                                                      p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update from the previous plot
                                                     until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
-                                                    actionGroupButtons(
-                                                      inputIds = c("staticP2", "rotateP2"), 
-                                                      labels = list("Interactive Static", "Rotating Animation"),
-                                                      status = "info",
-                                                      size = 'lg',
-                                                      fullwidth = T
+                                                      actionGroupButtons(
+                                                        inputIds = c("staticP2", "rotateP2"), 
+                                                        labels = list("Interactive Static", "Rotating Animation"),
+                                                        status = "info",
+                                                        size = 'lg',
+                                                        fullwidth = T
+                                                      ), 
+                                                      br(),
+                                                      p("The thresholds are as above. The user can remove the cut-offs to the right side of the plot at their discretion",style ="text-align: justify;width:100%;font-size:16px"),
+                                                      # actionButton("animG1P2", "Click here for animated version", icon=icon("fas fa-sync-alt"))
                                                     ), 
-                                                    br(),
-                                                    p("The thresholds are as above. The user can remove the cut-offs to the right side of the plot at their discretion",style ="text-align: justify;width:100%;font-size:16px"),
-                                                    # actionButton("animG1P2", "Click here for animated version", icon=icon("fas fa-sync-alt"))
-                                                  ), 
-                                                  
+                                                    
+                                                    conditionalPanel(
+                                                      condition = "input.AGEgroup == '70+'", 
+                                                      p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update from the previous plot
+                                                    until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
+                                                      actionGroupButtons(
+                                                        inputIds = c("staticP3", "rotateP3"), 
+                                                        labels = list("Interactive Static", "Rotating Animation"), 
+                                                        status = "info",
+                                                        size = 'lg',
+                                                        fullwidth = T
+                                                      ),
+                                                      br(),
+                                                      p("The thresholds are as above. The user can remove the cut-offs to the right side of the plot at their discretion",style ="text-align: justify;width:100%;font-size:16px")
+                                                      # actionButton("animG1P3", "Click here for animated version", icon=icon("fas fa-sync-alt"))
+                                                    )
+                                                  )
+                                                
+                                                ),
+                                                conditionalPanel(
+                                                  condition = "input.SUMBITNEW",
                                                   conditionalPanel(
-                                                    condition = "input.AGEgroup == '70+'", 
+                                                    condition = "input.plotType == 'planes'", 
+                                                    p(strong("The assay inputted by the user is not age dependent.",
+                                                             style ="text-align: justify;width:100%;font-size:16px")), 
                                                     p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update from the previous plot
                                                     until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
                                                     actionGroupButtons(
-                                                      inputIds = c("staticP3", "rotateP3"), 
+                                                      inputIds = c("age_no_dependence_static", "age_no_dependence_rotating"), 
                                                       labels = list("Interactive Static", "Rotating Animation"), 
                                                       status = "info",
                                                       size = 'lg',
                                                       fullwidth = T
                                                     ),
                                                     br(),
-                                                    p("The thresholds are as above. The user can remove the cut-offs to the right side of the plot at their discretion",style ="text-align: justify;width:100%;font-size:16px")
-                                                    # actionButton("animG1P3", "Click here for animated version", icon=icon("fas fa-sync-alt"))
+                                                    p("The thresholds are as above. The user can remove the cut-offs to the 
+                                                      right side of the plot at their discretion",style ="text-align: justify;width:100%;font-size:16px")
+                                                    
                                                   )
                                                 )
+                                                
                                               ),
                                               
                                               mainPanel(br(), br(),shinycssloaders:: withSpinner(
@@ -672,27 +1131,6 @@ ui<-
                                             ) # 15 blue, 26 pink ish for 70+
                                    ),
                                    
-                                   # tabPanel("3D Plot with Regressions",
-                                   #          sidebarLayout(
-                                   #            sidebarPanel(
-                                   #              p("Select which Regression to be computed"), 
-                                   #              pickerInput("RegressionPicker", "Regression Variables:", 
-                                   #                          choices = c("APOE4", "Sex", "Education", "Age"), 
-                                   #                          selected = "APOE4", 
-                                   #                          multiple = F), 
-                                   #              p("These regressions help visualise the affects a demographic attribute has on 
-                                   #                the CSF data. Sex, age, years of education and APOE4 are explored. APOE4 is a protein involved 
-                                   #                with the fats in the body and can have an implication in Alzheimer's disease. A person is either 
-                                   #                a carrier or a non-carrier. The regression results and modelling are further developed in the last tab."), 
-                                   #              p("Please be patient as the plot loads")
-                                   #            ), 
-                                   #            mainPanel(br(), br(), shinycssloaders:: withSpinner(
-                                   #                      
-                                   #                      plotlyOutput("plot4.P3", height = 600)
-                                   #            )
-                                   #            )
-                                   #          )
-                                   # ),
                                    
                                    tabPanel("Add in your own data point!",
                                             sidebarLayout(
@@ -844,21 +1282,7 @@ ui<-
                                                          
                                                          
                                                        )
-                                                       # conditionalPanel(
-                                                       #   conditional = "input.ModelregG1 == 'LOGG1'",
-                                                       #   selectInput("LOGISTICREG", "Select the dependent biomarker:", 
-                                                       #               c("CSF AB1-42 pg/mL" = "CSFAB1", 
-                                                       #                 "CSF pTau pg/mL" = "CSFpTau1", 
-                                                       #                 "CSF tTau pg/mL" = "CSFtTau1"))
-                                                       # ),
-                                                       # conditionalPanel(
-                                                       #   conditional = "input.ModelregG1 == 'ATI1'",
-                                                       #   p("put a paragraph here"),
-                                                       #   selectInput("ATNREG", "Select the dependent biomarker:", 
-                                                       #               c("CSF tooeAB1-42 pg/mL" = "CSFAB2", 
-                                                       #                 "CSF pTau pg/mL" = "CSFpTau2", 
-                                                       #                 "CSF tTau pg/mL" = "CSFtTau2"))
-                                                       # )
+
                                               ),
                                               
                                               # ),
@@ -866,81 +1290,12 @@ ui<-
                                               tabPanel("Discussion", 
                                                        p(strong("Please note that no discussion on statistical modelling in this App will be given as this data is randomly generated and does 
                                                          not hold any clinicial meaning.", style = "width:100%; font-size:18px;color:red"))
-                                                #        h3(strong("Demographic Characteristics Discussion",style ="text-align: justify;width:100%;font-size:18px")),
-                                                #        hr(),
-                                                #        p("This disucssion pertains only to linear outputs. Logistic model discussion are not included. 
-                                                #        In regression analysis, the p-values test the null hypothesis (the null hyopthesis 
-                                                #        is that all coefficients are equal to 0, thus there is no effect of the independent variables). In this analysis, 
-                                                #        a p-value of 0.05 is used. In other words, if a p-value is less than 0.05 there is sufficient evidence to reject the null hypothesis and the predictor is likely to have 
-                                                #        a meaningful addition in the model as changes in the predictor's values are related to changes in the response variable. Conversely, a large p-value suggests that there is no 
-                                                #        meaningful addition and the predictor is not associated with changes in the response. For more information on the interpretation of p-values and model summaries, please 
-                                                #          see ",a(href = "https://statisticsbyjim.com/regression/interpret-coefficients-p-values-regression/",
-                                                #                  'here', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end"),style ="text-align: justify;width:100%;font-size:18px"),
-                                                #        p("The R-squared value is a goodness of fit test for linear regression models. Known as the coefficient of determination, we can express as a percentage where:",style ="width:100%;font-size:18px"),
-                                                #        tags$div(
-                                                #          tags$ul(
-                                                #            tags$li("0% demonstrates that the model explains none of the variability of the response data",style ="width:100%;font-size:18px"), 
-                                                #            tags$li("100% demonstrates that the model explains all of the variability of the response data",style ="width:100%;font-size:18px") 
-                                                #          )
-                                                #        ),
-                                                #        
-                                                #        
-                                                #        p("Through the results on the previous side panel, model Summaries, a detailed interpretation 
-                                                #          can be conducted.",style ="text-align: justify;width:100%;font-size:18px"),
-                                                #        # HTML('<center><img src="pvalues.JPG" height = "250px"></center>'),    
-                                                #        shinycssloaders:: withSpinner(tableOutput("filetable")), 
-                                                #        p("Using the significance level, the smaller the p-value, it suggests a stronger effect than a borderline p-value. 
-                                                #        APOE-e4 allele carrier status is found to be significant across all CSF biomarkers, with all p-values less than 0.0016. Age was found to be significant for CSF ptau and CSF tTau, 
-                                                #        with marginal effect on CSF AB1-42. 
-                                                #        Education had an effect on CSF tTau. Sex has a high p-value across all CSF biomarkers and we fail to reject the null hypothesis, meaning it is not a meaningful addition to the model.
-                                                #          These results are supported by the trajectories of the regression surfaces in the visualisation tab. 
-                                                #          It is seen that the surfaces are very similar, often overlaying upon each other.",style ="text-align: justify;width:100%;font-size:18px"), 
-                                                #        p("The low R-squared values for all biomarkers suggests that the model is poor at making accurate predictions as there is a great deal of unexplained variance. The high level of 
-                                                #          variability in these models affects the precision of the predictions.",style ="text-align: justify;width:100%;font-size:18px"),
-                                                #        h3(strong("Biomarker Interplay Discussion",style ="text-align: justify;width:100%;font-size:18px")),
-                                                #        hr(),
-                                                #        p("Using the same significance level of 0.05 as above, we can analysed the results from the biomarker interplay models.",
-                                                #          style ="text-align: justify;width:100%;font-size:18px"), 
-                                                #        shinycssloaders::withSpinner(tableOutput("group1pvalue")), 
-                                                #        p("THe p-values for all CSF biomarkers are extremely small. There is significant evidence to reject the null hypothesis, suggesting there is a 
-                                                # strong effect of the biomarkers in each model. There is a low R-squared value for CSF AB1-42 pg/mL, suggesting that the model is poor at making accurate predictions due 
-                                                # to a great deal of unexplained variance. The R-squared values for CSF pTau pg/mL and CSF tTau pg/mL are greater, revealing 
-                                                # that 86% of the data fit the regression models (respectively for CSF pTau pg/mL and CSF tTau pg/mL)
-                                                # ",style ="text-align: justify;width:100%;font-size:18px")
                                               )
                                             )
                                             
                                             
                                             
                                    )
-                                   # tabPanel("Interpolation", 
-                                   #          br(),
-                                   #          p("Often, molecular data, such as protein expression, gene expressions and even CSF data, are all 
-                                   #            represented by continuous or at least ordinal variables. In order to translate these variables into a 
-                                   #            clinical diagnosis, it is necessary to determine a cut-off and to stratify patients into two groups, 
-                                   #            each requiring different treatments (or no treatment) for that case. In the case of Alzheimer's 
-                                   #            Disease Research, there are established thresholds that determine if a patient is positive or negative for a specific biomarker. 
-                                   #            However, AD is not as simple as these binary classifications. In the previous 2D and 3D plots, 
-                                   #            it can be seen that there is overlaps between many of data points of different classifications, emphaising 
-                                   #            that AD is not described by a specific cut-off, but a pathway that is unique to each individual."), 
-                                   #          p("Although the established cut-offs do give insight into a generalised measure for AD brains, interpolation 
-                                   #            of current clinical data can be beneficial for the interplay of the 3 biomarkers."), 
-                                   #          p("Interpolation is a form of estimation that constructs new data points within the range of a discrete 
-                                   #            set of known data points. In particular, the Akima Interpolation can be used for a continuous differentiable sub-spline 
-                                   #            interpolation. Akima interpolation uses only data from the next neighbouring point to determine the coefficients of the 
-                                   #            interpolation polynomial. To see more on the mathematical formulation, please refer ", a(href = "https://www.iue.tuwien.ac.at/phd/rottinger/node60.html",
-                                   #                                                                                                     'here', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end")), 
-                                   #          p("Through the use of Akima Interpolation, a surface can be constructed that describes the predicted points through the interpolation. 
-                                   #          This helps gain knowledge into the area where AD patients will exist based on previous clinical data."), 
-                                   #          br(), 
-                                   #          br(), 
-                                   #          shinycssloaders:: withSpinner(plotlyOutput("INTERP1", height = 600))
-                                   # )
-                                   
-                                   
-                                   
-                                   
-                                   
                        )
                        
               ),
@@ -1066,15 +1421,6 @@ ui<-
                                               sidebarPanel(
                                                 p("Select 2 Biomarkers for 2D plot"), 
                                                 br(), 
-                                                # radioButtons("X_2_Input", "X Value:", 
-                                                #              # c("Centiloid" = "Centiloid", 
-                                                #              #   "CSF p-Tau pg/mL" = "pTau", 
-                                                #              #   "\\(\\Hippocampus volume mL^3\\)" = "Sum.Hippo"),
-                                                #              choices = list(class = "radioselect", 
-                                                #                             "Centiloid" = "Centiloid", 
-                                                #                             "CSF pTau pg/mL" = 'ptau', 
-                                                #                             )
-                                                #              selected = "Centiloid"), 
                                                 tags$div(
                                                   id="X_2_Input", class="form-group shiny-input-radiogroup shiny-input-container",
                                                   tags$label(class="control-label", `for`="X_2_Input", "X Value:"),
@@ -1101,11 +1447,7 @@ ui<-
                                                 ),
                                                 
                                                 br(), 
-                                                # radioButtons("Y_2_input", "Y Value:", 
-                                                #              c("Centiloid" = "Centiloid", 
-                                                #                "CSF p-Tau pg/mL" = "pTau", 
-                                                #                "Hippocampus volume mL^3" = "Sum.Hippo"),
-                                                #              selected = "pTau")
+
                                                 tags$div(
                                                   id="Y_2_input", class="form-group shiny-input-radiogroup shiny-input-container",
                                                   tags$label(class="control-label", `for`="Y_2_input", "Y Value:"),
@@ -1153,7 +1495,6 @@ ui<-
                                                     "AGEgroup2", "Select the specific Age Group",
                                                     c("60-70",
                                                       "70+"))
-                                                  # p("The thresholds are followed above.The user can remove the cut-offs to the right side of the plot at their discretion.",style ="text-align: justify;width:100%;font-size:18px")
                                                 ),
                                                 
                                                 conditionalPanel(
@@ -1377,12 +1718,6 @@ ui<-
                                                          
                                                          
                                                        ), 
-                                                       # br(),
-                                                       # shinycssloaders:: withSpinner(plotlyOutput("G2REG", width = 1000, height = 700))
-                                                       
-                                                       
-                                                       
-                                                       
                                               ), 
                                               tabPanel("Model Summaries", 
                                                        p("Please select which of the two models to view:"), 
@@ -1406,112 +1741,20 @@ ui<-
                                                          shinycssloaders:: withSpinner(tableOutput("INTERPLAY2"))
                                                          
                                                        )
-                                                       # p("Please Select the biomarker that you want to be the dependent variable."), 
-                                                       # selectInput("SUMG2", "Select the Dependent Biomarker:", 
-                                                       #             c("Centiloid" = "Centiloid", 
-                                                       #               "CSF pTau pg/mL" = "pTau10",
-                                                       #               "Hippocampus" = "Hippo"
-                                                       #             )), 
-                                                       # conditionalPanel(
-                                                       #   condition = "input.SUMG2 == 'Centiloid'", 
-                                                       #   p("Now please select whether you want to view the full regression model or a summarised stepwise."), 
-                                                       #   selectInput("CENTMODEL", "Select the full or summarised model:", 
-                                                       #               c("Full Model", "Stepwise"))
-                                                       # ), 
-                                                       # conditionalPanel(
-                                                       #   condition = "input.SUMG2 == 'pTau2'", 
-                                                       #   p("Now please select whether you want to view the full regression model or a summarised stepwise."), 
-                                                       #   selectInput("pTAUMODEL", "Select the full or summarised model:", 
-                                                       #               c("Full Model", "Stepwise"))
-                                                       # ), 
-                                                       # conditionalPanel(
-                                                       #   condition = "input.SUMG2 == 'Hippo'", 
-                                                       #   p("Now please select whether you want to view the full regression model or a summarised stepwise."), 
-                                                       #   selectInput("HIPPOMODEL", "Select the full or summarised model:", 
-                                                       #               c("Full Model", "Stepwise"))
-                                                       # ), 
-                                                       # verbatimTextOutput("G2REGTEXT")
-                                                       # shinycssloaders:: withSpinner(tableOutput("G2Reg"))
+                                                       
                                                        
                                               ),
-                                              # tabPanel("Biomarker Interplay", 
-                                              #          p("A regression analysis can be computed to evaluate the interplay of the biomarkers. Here, only linear regression models are computed."), 
-                                              #          selectInput("BIOM2", 'Select the Dependent Biomarker:', 
-                                              #                      c("Centiloid" = "Centiloid", 
-                                              #                        "CSF pTau pg/mL" = "ptau7", 
-                                              #                        "Hippocampus" = "hippo")), 
-                                              #          shinycssloaders:: withSpinner(tableOutput("G2Biomarkk"))
-                                              #          ), 
+                                              
                                               tabPanel("Discussion",
                                                        p(strong("Please note that no discussion on statistical modelling in this App will be given as this data is randomly generated and does 
                                                          not hold any clinicial meaning.", style = "width:100%; font-size:18px;color:red"))
-                                                       # h3(strong("Demographic Characteristics Discussion",style ="text-align: justify;width:100%;font-size:18px")),
-                                                       # hr(),
-                                                       # p("In regression analysis, the p-values test the null hypothesis (the null hyopthesis 
-                                                       # is that all coefficients are equal to 0, thus there is no effect of the independent variables). In this analysis, 
-                                                       # a p-value of 0.05 is used. In other words, if a p-value is less than 0.05 there is sufficient evidence to reject the null hypothesis and the predictor is likely to have 
-                                                       # a meaningful addition in the model as changes in the predictor's values are related to changes in the response variable. Conversely, a large p-value suggests that there is no 
-                                                       # meaningful addition and the predictor is not associated with changes in the response. For more information on the interpretation of p-values and model summaries, please 
-                                                       #   see ",a(href = "https://statisticsbyjim.com/regression/interpret-coefficients-p-values-regression/",
-                                                       #           'here', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end"),style ="text-align: justify;width:100%;font-size:18px"),
-                                                       # p("The R-squared value tells us how close the data is to the fitted regression line. Known as the coefficient of determination, we can express as a percentage where:",style ="width:100%;font-size:18px"),
-                                                       # tags$div(
-                                                       #   tags$ul(
-                                                       #     tags$li("0% demonstrates that the model explains none of the variability of the response data",style ="width:100%;font-size:18px"), 
-                                                       #     tags$li("100% demonstrates that the model explains all of the variability of the response data",style ="width:100%;font-size:18px") 
-                                                       #   )
-                                                       # ),
-                                                       # p("Through the results on the previous side panel, model Summaries, a detailed interpretation 
-                                                       #   can be conducted.",style ="text-align: justify;width:100%;font-size:18px"),
-                                                       # shinycssloaders:: withSpinner(tableOutput("group2table")), 
-                                                       # p("The p-values for APOE-e4 allele are less than 0.05 for all biomarkers, indicating that APOE-e4 allele has a significant affect in the model. 
-                                                       #   This is further reinforced by the profound different trajectories highlighted in the 3D predicted planes (Visualisation tab). 
-                                                       #   Following from Group 1, age is significant for CSF pTau biomarker. The high p-values for sex demonstrates that it is not a meaningful addition in the model. 
-                                                       #   The predictive planes for Sex illustrates us, with the planes being nearly identical and overlaying each other.",style ="text-align: justify;width:100%;font-size:18px"),
-                                                       # p("The low R-squared values for all biomarkers suggests that the model is poor at making accurate predictions as there is a great deal of unexplained variance. The high level of 
-                                                       #   variability in these models affects the precision of the predictions.",style ="text-align: justify;width:100%;font-size:18px"),
-                                                       # h3(strong("Biomarker Interplay Discussion",style ="text-align: justify;width:100%;font-size:18px")),
-                                                       # hr(),
-                                                       # p("Using the same significance level of 0.05 as above, we can analysed the results from the biomarker interplay models.",
-                                                       #   style ="text-align: justify;width:100%;font-size:18px"), 
-                                                       # shinycssloaders::withSpinner(tableOutput("group2pvalue")), 
-                                                       # p("For Centiloid model (regressed against CSF pTau pg/mL and hippocampus) both CSF pTau and hippocampus are significant. 
-                                                       #   For CSF pTau pg/mL only Centiloid is significant. Similarly for hippocampus, only Centiloid is significant. As the highlighted 
-                                                       #   p-values are small, it gives sufficient evidence to reject the null hypothesis and these biomarkers have a meaningful addition in the model. 
-                                                       #   However, there are low R squared values across all models, suggesting that the models are poor at making accurate predictions.",
-                                                       #   style ="text-align: justify;width:100%;font-size:18px")
-                                                       # 
+                                                       
                                               )
                                               
                                               
                                               
                                             )
                                    )
-                                   
-                                   # tabPanel("Interpolation", 
-                                   #          br(), 
-                                   #          br(),
-                                   #          p("Often, molecular data, such as protein expression, gene expressions and even CSF data, are all 
-                                   #            represented by continuous or at least ordinal variables. In order to translate these variables into a 
-                                   #            clinical diagnosis, it is necessary to determine a cut-offs and to stratify patients into two groups, 
-                                   #            eachrequiring different treatments (or no treatment) for that case. In the case of Alzheimer's 
-                                   #            Disease Research, there are established thresholds that determine if a patient is positive or negative for a specific biomarker. 
-                                   #            However, AD is not as simple as these binary classifications. In the previous 2D and 3D plots, 
-                                   #            it can be seen that there is overlaps between many of data points of different classifications, emphaising 
-                                   #            that AD is not described by a specific cut-off, but a pathway that is unique to each individual."), 
-                                   #          p("Although the established cut-offs do give insight into a generalised measure for AD brains, interpolation 
-                                   #            of current clinical data can be beneficial for the interplay of the 3 biomarkers."), 
-                                   #          p("Interpolation is a form of estimation that constructs new data points within the range of a discrete 
-                                   #            set of known data points. In particular, the Akima Interpolation can be used for a continuous differentiable sub-spline 
-                                   #            interpolation. Akima interpolation uses only data from the next neighbouring point to determine the coefficients of the 
-                                   #            interpolation polynomial. To see more on the mathematical formulation, please refer ", a(href = "https://www.iue.tuwien.ac.at/phd/rottinger/node60.html",
-                                   #                                                                                                     'here', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end")), 
-                                   #          p("Through the use of Akima Interpolation, a surface can be constructed that describes the predicted points through the interpolation. 
-                                   #          This helps gain knowledge into the area where AD patients will exist based on previous clinical data."), 
-                                   #          br(), 
-                                   #          br(),
-                                   #          shinycssloaders:: withSpinner(plotlyOutput("INTERP", height = 600))
-                                   #          )
                        )
               ) 
   )

@@ -31,11 +31,43 @@ server <- function(input, output){
   # source("syntheticProcess.R")
   load("ExampleCSV.RData")
   
-  # new.dat <- simulated.data
   
-  # x <- syntheticProccess()
-  # group_1_table <- x$group_1_table
-  # group_2_table <- x$group_2_table
+  ########################## DOWNLOAD DATA SET ####################################
+  
+  #### Our dataset 
+  output$downloadData <- downloadHandler(
+    # new.dat <- req(data_internal$raw)
+    filename = function() {
+      paste("Synthetic ATN Data - ",Sys.Date(), ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(simulated.data, file)
+    }
+  )
+  
+  ###################### DOWNLOAD EXAMPLE DATA SET ###########################
+  # Example_csv <- read.csv("Example_csv.csv", header = T)
+  output$DOWNLOADEXAMPLE <- downloadHandler(
+    # new.dat <- req(data_internal$raw)
+    filename = function() {
+      paste("Example CSV File - ",Sys.Date(), ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(Example_csv, file)
+    }
+  )
+  
+  output$DOWNLOADEXAMPLE2 <- downloadHandler(
+    # new.dat <- req(data_internal$raw)
+    filename = function() {
+      paste("Example CSV File - ",Sys.Date(), ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(Example_csv, file)
+    }
+  )
+  
+  
   ############################# ADD IN DATA OPTION ##############################
   
   #### THis is for the first tab data selection and gives a header of the tabel
@@ -51,6 +83,21 @@ server <- function(input, output){
     head(new_data_in)
     
   })
+  
+  output$contents2 <- renderTable({
+    # Input INPUTfile will be NULL initiailly after the user selects 
+    # and uploads a file, head of that fata file will be shown 
+    
+    req(input$INPUTfile)
+    
+    new_data_in2 <- read.csv(input$INPUTfile$datapath, 
+                            header = T)
+    head(new_data_in2)
+    
+    
+  })
+  
+  
   data_internal <- reactiveValues(raw = NULL)
   observeEvent(input$newDataSUBMIT, {
     file1_input<- read.csv(
@@ -110,6 +157,67 @@ server <- function(input, output){
 
     file1_input <- mutate(file1_input, Age_binary = ifelse(Age < 72.5,1,0))
     data_internal$raw <- file1_input
+    shinyjs::runjs("window.scrollTo(0, 100)")
+
+  })
+  observeEvent(input$SUMBITNEW, {
+    file1_input<- read.csv(
+      file = input$INPUTfile$datapath, 
+      header = T, 
+      stringsAsFactors = F
+    )
+    
+    file1_input$Diagnosis <- factor(file1_input$Diagnosis, levels = c("AD", "MCI", "HC"))
+    
+    # # See above for alternative way to use mutate - feed it multiple variables to make in the one go
+    file1_input <- mutate(file1_input,
+                          A_status = ifelse(AB.status == "positive", "A+", "A-"),
+                          T_status = ifelse(pTau.status == "positive", "T+", "T-"),
+                          N_status = ifelse(tTau.status == "positive", "N+", "N-")
+    )
+    file1_input <- tidyr::unite(file1_input, Overall_status, A_status:N_status, sep = '/')
+    
+    file1_input$Overall_status <- factor(file1_input$Overall_status, levels = c("A+/T+/N+", "A+/T+/N-", "A+/T-/N+",
+                                                                                "A-/T+/N+", "A+/T-/N-","A-/T-/N+",
+                                                                                "A-/T+/N-", "A-/T-/N-"))
+    
+    
+    file1_input <- mutate(
+      file1_input, Burnham_class = ifelse(Overall_status == "A-/T-/N-", "Normal AD Biomarkers",
+                                          ifelse(Overall_status == "A-/T+/N-", "Non-AD pathological Change",
+                                                 ifelse(Overall_status == "A-/T+/N+", "Non-AD pathological Change",
+                                                        ifelse(Overall_status == "A-/T-/N+", "Non-AD pathological Change",
+                                                               ifelse(Overall_status == "A+/T-/N-", "Pathological Change",
+                                                                      ifelse(Overall_status == "A+/T-/N+", "Pathological Change",
+                                                                             ifelse(Overall_status == "A+/T+/N+", "AD",
+                                                                                    ifelse(Overall_status == "A+/T+/N-", "AD", NA)))))))))
+    file1_input <- mutate(file1_input, Clifford_class = ifelse(Burnham_class == "Normal AD Biomarkers", "MCI unlikely due to AD",
+                                                               ifelse(Burnham_class == "AD", "Stage 2, clinically asymptomatic",
+                                                                      ifelse(Burnham_class == "Pathological Change", "Stage 1, preclinical AD stage",
+                                                                             ifelse(Burnham_class == "Non-AD pathological Change", "SNAP", NA)))))
+    
+    
+    
+    
+    # # Surface for APOE4
+    # 
+    # file1_input$Apoe4 <- factor(simulated.data$apoe4, levels = c("1","0"))
+    # 
+    file1_input$Clifford_class <- factor(file1_input$Clifford_class, levels = c("Stage 2, clinically asymptomatic",
+                                                                                "Stage 1, preclinical AD stage",
+                                                                                "SNAP",
+                                                                                "MCI unlikely due to AD"))
+    
+    
+    
+    
+    file1_input$Burnham_class <- factor(file1_input$Burnham_class, levels = c("AD",
+                                                                              "Pathological Change",
+                                                                              "Non-AD pathological Change",
+                                                                              "Normal AD Biomarkers"))
+    
+    file1_input <- mutate(file1_input, Age_binary = ifelse(Age < 72.5,1,0))
+    data_internal$raw <- file1_input
     
     
   })
@@ -120,23 +228,49 @@ server <- function(input, output){
       data_internal$raw <- NULL
   })
   
+  # do reactives for CSF cut offs 
+  
+  AB_cutoff <- reactiveValues(raw = NULL)
+  ptau_cutoff_lower <- reactiveValues(raw = NULL)
+  ptau_cutoff_upper <- reactiveValues(raw = NULL)
+  ttau_cutoff_lower <- reactiveValues(raw = NULL)
+  ttau_cutoff_upper <- reactiveValues(raw = NULL)
+  AB_cutoff_singular <- reactiveValues(raw = NULL)
+  ptau_cutoff_singular <- reactiveValues(raw = NULL)
+  ttau_cutoff_singular <- reactiveValues(raw = NULL)
+  
+  # For sample Data 
+  observeEvent(input$sample_or_real, {
+    if(input$sample_or_real == "sample"){
+      AB_cutoff$raw <- 656 
+      ptau_cutoff_lower$raw <- 59.23 
+      ptau_cutoff_upper$raw <- 73.83 
+      ttau_cutoff_lower$raw <- 303.54 
+      ttau_cutoff_upper$raw <- 378.65 
+    }
+    
+  })
+  
+  
+  observeEvent(input$newDataSUBMIT, {
+    AB_cutoff$raw <- 656
+    ptau_cutoff_lower$raw <- 59.23 
+    ptau_cutoff_upper$raw <- 73.83 
+    ttau_cutoff_lower$raw <- 303.54 
+    ttau_cutoff_upper$raw <- 378.65
+  })
+  
+  # For SINGULAR INPUT 
+  
+  observeEvent(input$THRESHOLDSUB, {
+    AB_cutoff_singular$raw <- input$ABthreshold
+    ptau_cutoff_singular$raw <- input$pTauThreshold
+    ttau_cutoff_singular$raw <- input$tTautheshold
+  })
   
   ################# CHANGE THE DATA FILE USED IF SERVE IS CLICKED ##############
   
-  # my_data <- reactiveVal()
-  # observeEvent(input$USESUPDATA, {
-  #   tmp <- simulated.data
-  #   my_data(tmp)
-  # })
-  # observeEvent(input$newDataSUBMIT, {
-  #   new_load <- read.csv(input$file1$datapath)
-  #   my_data(new_load)
-  # })
-  
-  # new.dat <- req(my_data)
-  
 
-  
   LEGEND_1 <- list(
     title = list(text = "<b>ATN Burnham Classification</b>"),
     font = list(
@@ -339,35 +473,7 @@ server <- function(input, output){
     
     paste0("The cut-off is ",round(Hippo_intersect[2],3),".")
   })
-  
-  
-  
-  ########################## DOWNLOAD DATA SET ####################################
-  
-  #### Our dataset 
-    output$downloadData <- downloadHandler(
-      # new.dat <- req(data_internal$raw)
-      filename = function() {
-        paste("Synthetic ATN Data - ",Sys.Date(), ".csv", sep="")
-      },
-      content = function(file) {
-        write.csv(simulated.data, file)
-      }
-    )
-  
-  ###################### DOWNLOAD EXAMPLE DATA SET ###########################
-  # Example_csv <- read.csv("Example_csv.csv", header = T)
-  output$DOWNLOADEXAMPLE <- downloadHandler(
-    # new.dat <- req(data_internal$raw)
-    filename = function() {
-      paste("Example CSV File - ",Sys.Date(), ".csv", sep="")
-    },
-    content = function(file) {
-      write.csv(Example_csv, file)
-    }
-  )
-  
-  
+
 
   #
   ##
@@ -538,6 +644,9 @@ server <- function(input, output){
 
  observeEvent(input$staticP2, {
    new.dat <- req(data_internal$raw)
+   AB_threshold <- req(AB_cutoff$raw)
+   ptau_threshold <- req(ptau_cutoff_lower$raw)
+   ttau_treshold <- req(ttau_cutoff_lower$raw)
    df_young <- filter(new.dat, Age < 70)
    v$plot <- plot_ly(df_young) %>%
      add_markers(x = ~CSF.AB42.INNO, y = ~CSF.pTau.INNO, z = ~CSF.tTau.INNO,
@@ -545,7 +654,7 @@ server <- function(input, output){
      add_trace(type = 'mesh3d',
                x = c(min(new.dat$CSF.AB42.INNO),min(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO)),
                y = c(max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO),max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO)),
-               z = c(303.54, 303.54, 303.54, 303.54),
+               z = c(ttau_treshold, ttau_treshold, ttau_treshold, ttau_treshold),
                i = c(0,3),
                j = c(1,2),
                k = c(3,0),
@@ -553,7 +662,7 @@ server <- function(input, output){
                showlegend = T,
                opacity = 0.2)%>%
      add_trace(type = 'mesh3d',
-               x = c(656, 656, 656, 656),
+               x = c(AB_threshold, AB_threshold, AB_threshold, AB_threshold),
                y = c(max(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
                z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
 
@@ -570,7 +679,7 @@ server <- function(input, output){
      add_trace(type = "mesh3d",
                # this is the cut off for ptau - changing it to 59.23
                x = c(min(new.dat$CSF.AB42.INNO),   min(new.dat$CSF.AB42.INNO),   max(new.dat$CSF.AB42.INNO),   max(new.dat$CSF.AB42.INNO)),
-               y = c(59.23,  59.23,  59.23 , 59.23),
+               y = c(ptau_threshold,  ptau_threshold,  ptau_threshold , ptau_threshold),
                z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
                i = c(0,3),
                j = c(1,2),
@@ -585,6 +694,9 @@ server <- function(input, output){
 
  observeEvent(input$rotateP2, {
    new.dat <- req(data_internal$raw)
+   AB_threshold <- req(AB_cutoff$raw)
+   ptau_threshold <- req(ptau_cutoff_lower$raw)
+   ttau_treshold <- req(ttau_cutoff_lower$raw)
    df_young <- filter(new.dat, Age < 70)
    v$plot <- plot_ly(df_young) %>%
      add_markers(x = ~CSF.AB42.INNO, y = ~CSF.pTau.INNO, z = ~CSF.tTau.INNO,
@@ -592,7 +704,7 @@ server <- function(input, output){
      add_trace(type = 'mesh3d',
                x = c(min(new.dat$CSF.AB42.INNO),min(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO)),
                y = c(max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO),max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO)),
-               z = c(303.54, 303.54, 303.54, 303.54),
+               z = c(ttau_treshold, ttau_treshold, ttau_treshold, ttau_treshold),
                i = c(0,3),
                j = c(1,2),
                k = c(3,0),
@@ -600,7 +712,7 @@ server <- function(input, output){
                showlegend = T,
                opacity = 0.2)%>%
      add_trace(type = 'mesh3d',
-               x = c(656, 656, 656, 656),
+               x = c(AB_threshold, AB_threshold, AB_threshold, AB_threshold),
                y = c(max(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
                z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
 
@@ -617,7 +729,7 @@ server <- function(input, output){
      add_trace(type = "mesh3d",
                # this is the cut off for ptau - changing it to 59.23
                x = c(min(new.dat$CSF.AB42.INNO),   min(new.dat$CSF.AB42.INNO),   max(new.dat$CSF.AB42.INNO),   max(new.dat$CSF.AB42.INNO)),
-               y = c(59.23,  59.23,  59.23 , 59.23),
+               y = c(ptau_threshold,  ptau_threshold,  ptau_threshold , ptau_threshold),
                z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
                i = c(0,3),
                j = c(1,2),
