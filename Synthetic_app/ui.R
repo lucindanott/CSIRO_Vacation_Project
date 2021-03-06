@@ -512,18 +512,42 @@ ui<-
                                                     #              selected = character(0))
                                                     fluidRow(
                                                       column(4, radioButtons("AB_bins", "How many bins for CSF AB1-42 pg/mL",
-                                                                             choices = c("2","3","4"),
-                                                                             selected = "2")
+                                                                             choices = c("1","2","3"),
+                                                                             selected = character(0))
                                                       ), 
                                                       column(4, radioButtons("pTau_bins", "How many bins for CSF pTau pg/mL",
-                                                                             choices = c("2","3","4"),
-                                                                             selected = "2")
+                                                                             choices = c("1","2","3"),
+                                                                             selected = character(0))
                                                       ), 
                                                       column(4, radioButtons("tTau_bins", "How many bins for CSF tTau pg/mL",
-                                                                             choices = c("2","3","4"),
-                                                                             selected = "2")
+                                                                             choices = c("1","2","3"),
+                                                                             selected = character(0))
                                                       ),
                                                     ), 
+                                                    conditionalPanel(
+                                                      condition = "input.AB_bins == '1'", 
+                                                      p(strong("For CSF AB 1-42 pg/mL, please enter the following", 
+                                                               style ="width:100%;font-size:17px;color:#7FB3D5")),
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "input_1_AB", "Please input the  cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AB_text_1", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AB_numeric_2", "Please specify the higher age in the bracket", value = "",
+                                                                 min = 1, max = NA
+                                                               ))
+                                                      ), 
+                                                    ),
                                                     conditionalPanel(
                                                       condition = "input.AB_bins == '2'", 
                                                       p(strong("For CSF AB 1-42 pg/mL, please enter the following", 
@@ -536,10 +560,16 @@ ui<-
                                                                )
                                                                ), 
                                                         column(4, 
-                                                               textInput(
-                                                                 "AB_text", "Please specify the 1st age bracket", value = ""
+                                                               numericInput(
+                                                                 "AB_text", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
                                                                )
-                                                               )
+                                                               ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AB_second_bracket_2", "Please specify the higher age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               ))
                                                       ), 
                                                       fluidRow(
                                                         column(4, 
@@ -549,12 +579,103 @@ ui<-
                                                                )
                                                         ), 
                                                         column(4, 
-                                                               textInput(
-                                                                 "AB_text_second", "Please specify the 2nd age bracket", value = ""
+                                                               numericInput(
+                                                                 "AB_text_second", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
                                                                )
-                                                        )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AB_input_age_bracket_2", "Please specify the higher age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               )
+                                                               )
                                                       ),
                                                       
+                                                    ),
+                                                    conditionalPanel(
+                                                      condition = "input.AB_bins == '3'", 
+                                                      p(strong("For CSF AB 1-42 pg/mL, please enter the following", 
+                                                               style ="width:100%;font-size:17px;color:#7FB3D5")),
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AB_AGE", "Please input the 1st cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "Text_for_AB", "Please specify the lower age in the bracket", value = ""
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput("input_AB_higher_bracket_2", "Please specify the higher age in the bracket", value = "", 
+                                                                            min = 1, max = NA))
+                                                      ), 
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AB_AGE_2", "Please input the 2nd cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "TEXT_FOR_AB_2", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "text_input_AB_2_upper", "Please specify the upper age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               ))
+                                                      ),
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AB_input_age_third", "Please input the 3rd cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AB_text_third", "Please specify the lower age in the bracket", value = ""
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AB_text_bracket_input_3", "Please specify the upper age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               ))
+                                                      ),
+                                                      
+                                                    ),
+                                                    
+                                                    conditionalPanel(
+                                                      condition = "input.pTau_bins == '1'", 
+                                                      p(strong("For CSF pTau pg/mL, please enter the following", 
+                                                               style ="width:100%;font-size:17px;color:#1ABC9C")),
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ptau_1_age", "Please input the cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ptau_1_text", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ptau_input_upper_age_1", "Please specify the upper age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               ))
+                                                      ), 
                                                     ),
                                                     conditionalPanel(
                                                       condition = "input.pTau_bins == '2'", 
@@ -568,10 +689,16 @@ ui<-
                                                                )
                                                         ), 
                                                         column(4, 
-                                                               textInput(
-                                                                 "ptau_text", "Please specify the 1st age bracket", value = ""
+                                                               numericInput(
+                                                                 "ptau_text", "Please specify the lower age in the bracket", value = "",
+                                                                 min = 1, max = NA
                                                                )
-                                                        )
+                                                        ), 
+                                                        column(4,
+                                                               numericInput(
+                                                                 "ptau_input_upper_age_2", "Please specify the upper age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               ))
                                                       ), 
                                                       fluidRow(
                                                         column(4, 
@@ -581,11 +708,160 @@ ui<-
                                                                )
                                                         ), 
                                                         column(4, 
-                                                               textInput(
-                                                                 "ptau_text_second", "Please specify the 2nd age bracket", value = ""
+                                                               numericInput(
+                                                                 "ptau_text_second", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
                                                                )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ptau_input_upper_age_3", "Please specify the upper age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               ))
+                                                      ),
+                                                      
+                                                    ),
+                                                    conditionalPanel(
+                                                      condition = "input.pTau_bins == '3'", 
+                                                      p(strong("For CSF pTau pg/mL, please enter the following", 
+                                                               style ="width:100%;font-size:17px;color:#1ABC9C")),
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AGE_Ptau", "Please input the 1st cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "TEXT_PTAU_2", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ptau_input_upper_age_3_1", "Please specify the upper age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               )
+                                                               )
+                                                      ), 
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AGE_PTAU_2", "Please input the 2nd cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "TEXT_PTAU_2", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "input_ptau_upper_age_2", "Please specify the upper age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               ))
+                                                      ),
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "AGE_PTAU_3", "Please input the 3rd cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "TEXT_PTAU_3", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, numericInput(
+                                                               "ptau_input_upper_age_3_3", "Please specify the upper age in the bracket", value = "", 
+                                                               min = 1, max = NA)
+                                                               )
+                                                      ),
+                                                      
+                                                    ),
+                                                    conditionalPanel(
+                                                      condition = "input.tTau_bins == '1'", 
+                                                      p(strong("For CSF tTau pg/mL, please enter the following", 
+                                                               style ="width:100%;font-size:17px;color:#6C3483")),
+                                                      fluidRow(
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "age_ttau_1_1", "Please input the 1st cut-off point", 
+                                                                 value = 1, min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "text_ttau_1_1", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ttau_age_upper_1", "Please specify the uppwer age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               ))
+                                                      ), 
+                                                      p("Please double check the cut-offs are correct and submit when ready.", 
+                                                        style = "width:100%;font-size:16px"),
+                                                      actionGroupButtons("Age_dependent_threshold_1_of_1", "Submit Cut-offs", 
+                                                                         status = "info", size = "lg"),
+                                                      br(),
+                                                      br(),
+                                                      p("Once you have submitted the cut-offs, please follow the instructions for 
+                                                      uploading the data file.", style = "width:100%;font-size:16px"),
+                                                      p("The CSV file must include the following headers in the first row. 
+                                                      Order is not important, however, please ensure the spelling is the same.",
+                                                        style = "width:100%;font-size:16px"), 
+                                                      tags$div(
+                                                        tags$ul(
+                                                          tags$li("Age - numerical input", style = "width:100%;font-size:16px"), 
+                                                          tags$li("apoe4 - categorical input where 1 is a carrier, 0 is non-carrier", style = "width:100%;font-size:16px"), 
+                                                          tags$li("Sex - categorial input including Male or Female.", style = "width:100%;font-size:16px"), 
+                                                          tags$li("Education_binary - binary input where 1 is over 12 years education and 0 under 12 years.", style = "width:100%;font-size:16px"),
+                                                          tags$li("Diagnosis - categorial input for clinical diagnosis consisting of AD, MCI and HC", style = "width:100%;font-size:16px"),
+                                                          tags$li("CSF.AB42 - numerical input", style = "width:100%;font-size:16px"),
+                                                          tags$li("CSF.pTau - numerical input", style = "width:100%;font-size:16px"), 
+                                                          tags$li("CSF.tTau - numerical input", style = "width:100%;font-size:16px"), 
+                                                          tags$li("Sum.hippo - numerical input", style = "width:100%;font-size:16px"), 
+                                                          tags$li("Centiloid - numerical input", style = "width:100%;font-size:16px"), 
+                                                          tags$li("AB.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px"), 
+                                                          tags$li("pTau.status - categorial input consisting of negative or positive ", style = "width:100%;font-size:16px"), 
+                                                          tags$li("tTau.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px")
                                                         )
                                                       ),
+                                                      p("The following data points must be numerical unless specificed above for categorical inputs. \n
+                                                  No additional characters, such as $,#,&,*,(,!, are permitted. \n 
+                                                  Please ensure that capitalising of inputs and row headers are followed as above.", style = "width:100%;font-size:16px"), 
+                                                      p("You can also downloand (through the button below) an example CSV file to check the inputs required.", 
+                                                        style = "width:100%;font-size:16px"),
+                                                      downloadButton("final_download_example_2", "Download Example CSV File",
+                                                                     class = "LN"),
+                                                      tags$head(tags$style(".LN{background-color:#5bc0de;} .LN{color: white;} .LN{width:250px}")), # background color and font color
+                                                      br(),
+                                                      br(),
+                                                      p("Once uploaded, the first 5 rows of data will be displayed. Double check the inputs and press the submit button when ready.", 
+                                                        style = "width:100%;font-size:16px"),
+                                                      p(strong("If the file does not adhere to the instructions above, the website will disconnect due to an error in the file", 
+                                                               style = "width:100%;font-size:16px;color:red")),
+                                                      fileInput("file_1_bracket_ttau", "Choose CSV File",
+                                                                multiple = F,
+                                                                accept = c("text/csv",
+                                                                           "text/comma-separated-values, text/plain",
+                                                                           ".csv"
+                                                                )
+                                                                
+                                                      ), 
+                                                      # tableOutput("contents"), 
+                                                      
+                                                      actionGroupButtons("ttau_1_submit_DATA", "SUBMIT", status = "info", size = "lg")
+                                                      
+                                                      
                                                       
                                                     ),
                                                     conditionalPanel(
@@ -600,10 +876,16 @@ ui<-
                                                                )
                                                         ), 
                                                         column(4, 
-                                                               textInput(
-                                                                 "ttau_text", "Please specify the 1st age bracket", value = ""
+                                                               numericInput(
+                                                                 "ttau_text", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
                                                                )
-                                                        )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ttau_upper_age_input_2_1", "Please specify the upper age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               ))
                                                       ), 
                                                       fluidRow(
                                                         column(4, 
@@ -613,10 +895,16 @@ ui<-
                                                                )
                                                         ), 
                                                         column(4, 
-                                                               textInput(
-                                                                 "ttau_text_second", "Please specify the 2nd age bracket", value = ""
+                                                               numericInput(
+                                                                 "ttau_text_second", "Please specify the lower age in the bracket", value = "", 
+                                                                 min = 1, max = NA
                                                                )
-                                                        )
+                                                        ), 
+                                                        column(4, 
+                                                               numericInput(
+                                                                 "ttau_upper_age_input_2_2", "Please specify the upper age in the bracket", value = "", 
+                                                                 min = 1, max = NA
+                                                               ))
                                                       ),
                                                       p("Please double check the cut-offs are correct and submit when ready.", 
                                                         style = "width:100%;font-size:16px"),
@@ -675,96 +963,6 @@ ui<-
                                                       
                                                       
                                                     ),
-                                                    conditionalPanel(
-                                                    condition = "input.AB_bins == '3'", 
-                                                    p(strong("For CSF AB 1-42 pg/mL, please enter the following", 
-                                                             style ="width:100%;font-size:17px;color:#7FB3D5")),
-                                                    fluidRow(
-                                                      column(4, 
-                                                             numericInput(
-                                                               "AB_AGE", "Please input the 1st cut-off point", 
-                                                               value = 1, min = 1, max = NA
-                                                             )
-                                                      ), 
-                                                      column(4, 
-                                                             textInput(
-                                                               "Text_for_AB", "Please specify the 1st age bracket", value = ""
-                                                             )
-                                                      )
-                                                    ), 
-                                                    fluidRow(
-                                                      column(4, 
-                                                             numericInput(
-                                                               "AB_AGE_2", "Please input the 2nd cut-off point", 
-                                                               value = 1, min = 1, max = NA
-                                                             )
-                                                      ), 
-                                                      column(4, 
-                                                             textInput(
-                                                               "TEXT_FOR_AB_2", "Please specify the 2nd age bracket", value = ""
-                                                             )
-                                                      )
-                                                    ),
-                                                    fluidRow(
-                                                      column(4, 
-                                                             numericInput(
-                                                               "AB_input_age_third", "Please input the 3rd cut-off point", 
-                                                               value = 1, min = 1, max = NA
-                                                             )
-                                                      ), 
-                                                      column(4, 
-                                                             textInput(
-                                                               "AB_text_third", "Please specify the 3rd age bracket", value = ""
-                                                             )
-                                                      )
-                                                    ),
-                                                    
-                                                  ),
-                                                  conditionalPanel(
-                                                    condition = "input.pTau_bins == '3'", 
-                                                    p(strong("For CSF pTau pg/mL, please enter the following", 
-                                                             style ="width:100%;font-size:17px;color:#1ABC9C")),
-                                                    fluidRow(
-                                                      column(4, 
-                                                             numericInput(
-                                                               "AGE_Ptau", "Please input the 1st cut-off point", 
-                                                               value = 1, min = 1, max = NA
-                                                             )
-                                                      ), 
-                                                      column(4, 
-                                                             textInput(
-                                                               "TEXT_PTAU_2", "Please specify the 1st age bracket", value = ""
-                                                             )
-                                                      )
-                                                    ), 
-                                                    fluidRow(
-                                                      column(4, 
-                                                             numericInput(
-                                                               "AGE_PTAU_2", "Please input the 2nd cut-off point", 
-                                                               value = 1, min = 1, max = NA
-                                                             )
-                                                      ), 
-                                                      column(4, 
-                                                             textInput(
-                                                               "TEXT_PTAU_2", "Please specify the 2nd age bracket", value = ""
-                                                             )
-                                                      )
-                                                    ),
-                                                    fluidRow(
-                                                      column(4, 
-                                                             numericInput(
-                                                               "AGE_PTAU_3", "Please input the 3rd cut-off point", 
-                                                               value = 1, min = 1, max = NA
-                                                             )
-                                                      ), 
-                                                      column(4, 
-                                                             textInput(
-                                                               "TEXT_PTAU_3", "Please specify the 3rd age bracket", value = ""
-                                                             )
-                                                      )
-                                                    ),
-                                                    
-                                                  ),
                                                   conditionalPanel(
                                                     condition = "input.tTau_bins == '3'", 
                                                     p(strong("For CSF tTau pg/mL, please enter the following", 
@@ -777,10 +975,16 @@ ui<-
                                                              )
                                                       ), 
                                                       column(4, 
-                                                             textInput(
-                                                               "TEXT_Ttau", "Please specify the 1st age bracket", value = ""
+                                                             numericInput(
+                                                               "TEXT_Ttau", "Please specify the lower age in the bracket", value = "", 
+                                                               min = 1, max = NA
                                                              )
-                                                      )
+                                                      ), 
+                                                      column(4, 
+                                                             numericInput(
+                                                               "ttau_upper_age_3_1", "Please specify the upper age in the bracket", value = "", 
+                                                               min = 1, max = NA
+                                                             ))
                                                     ), 
                                                     fluidRow(
                                                       column(4, 
@@ -790,10 +994,16 @@ ui<-
                                                              )
                                                       ), 
                                                       column(4, 
-                                                             textInput(
-                                                               "TEXT_TTAU_2", "Please specify the 2nd age bracket", value = ""
+                                                             numericInput(
+                                                               "TEXT_TTAU_2", "Please specify the lower age in the bracket", value = "", 
+                                                               min = 1, max = NA
                                                              )
-                                                      )
+                                                      ), 
+                                                      column(4, 
+                                                             numericInput(
+                                                               "ttau_upper_age_3_2", "Please specify the upper age in the bracket", value = "", 
+                                                               min = 1, max = NA
+                                                             ))
                                                     ),
                                                     fluidRow(
                                                       column(4, 
@@ -803,10 +1013,16 @@ ui<-
                                                              )
                                                       ), 
                                                       column(4, 
-                                                             textInput(
-                                                               "TEXT_TTAU_3", "Please specify the 3rd age bracket", value = ""
+                                                             numericInput(
+                                                               "TEXT_TTAU_3", "Please specify the lower age in the bracket", value = "", 
+                                                               min = 1, max = NA
                                                              )
-                                                      )
+                                                      ), 
+                                                      column(4, 
+                                                             numericInput(
+                                                               "ttau_upper_age_3_3", "Please specify the upper age in the bracket", value = "", 
+                                                               min = 1, max = NA
+                                                             ))
                                                     ),
                                                     p("Please double check the cut-offs are correct and submit when ready.", 
                                                       style = "width:100%;font-size:16px"),

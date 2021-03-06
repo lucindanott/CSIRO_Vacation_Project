@@ -263,9 +263,9 @@ server <- function(input, output){
   # For SINGULAR INPUT 
   
   observeEvent(input$THRESHOLDSUB, {
-    AB_cutoff_singular$raw <- input$ABthreshold
-    ptau_cutoff_singular$raw <- input$pTauThreshold
-    ttau_cutoff_singular$raw <- input$tTautheshold
+    AB_cutoff$raw <- input$ABthreshold
+    ptau_cutoff_lower$raw <- input$pTauThreshold
+    ttau_cutoff_lower$raw <- input$tTautheshold
   })
   
   ################# CHANGE THE DATA FILE USED IF SERVE IS CLICKED ##############
