@@ -10,7 +10,7 @@
 ############################################
 # Synthetic ATN data
 # Lucinda Nott
-# Marcela Cespedes 
+# Supervised by Marcela Cespedes 
 
 
 server <- function(input, output){
@@ -27,10 +27,19 @@ server <- function(input, output){
     reactiveValuesToList(result_auth)
   })
   
+  # LOAD ALL FUNCTIONS AND SOURCES 
   load("simulated_data.RData")
-  # source("syntheticProcess.R")
   load("ExampleCSV.RData")
-  
+  source("ScatterPlotFunction.R")
+  source("AnimatedScatterPlotFunction.R")
+  source("PlanesFunction.R")
+  source("AnimatedPlanesFunction.R")
+  source("HippoFunction.R")
+  source("G1CubeVisualisation.R")
+  source("AnimatedG1CubeVisualisation.R")
+  source("G2CubeVisualisation.R")
+  source("AnimatedG2CubeVisualisation.R")
+  source("BoxplotFunction.R")
   
   ########################## DOWNLOAD DATA SET ####################################
   
@@ -70,11 +79,11 @@ server <- function(input, output){
   
   ############################# ADD IN DATA OPTION ##############################
   
-  #### THis is for the first tab data selection and gives a header of the tabel
+  #### THis is for the first tab data selection and gives a header of the table
   output$contents <- renderTable({
     
-    # Input file1 will be NULL initiailly after the user selects 
-    # and uploads a file, head of that fata file will be shown 
+    # Input file1 will be NULL initially after the user selects 
+    # and uploads a file, head of that data file will be shown 
     
     req(input$file1)
     
@@ -86,7 +95,7 @@ server <- function(input, output){
   
   output$contents2 <- renderTable({
     # Input INPUTfile will be NULL initiailly after the user selects 
-    # and uploads a file, head of that fata file will be shown 
+    # and uploads a file, head of that data file will be shown 
     
     req(input$INPUTfile)
     
@@ -218,6 +227,7 @@ server <- function(input, output){
     
     file1_input <- mutate(file1_input, Age_binary = ifelse(Age < 72.5,1,0))
     data_internal$raw <- file1_input
+    shinyjs::runjs("window.scrollTo(0, 100)")
     
     
   })
@@ -238,6 +248,7 @@ server <- function(input, output){
   AB_cutoff_singular <- reactiveValues(raw = NULL)
   ptau_cutoff_singular <- reactiveValues(raw = NULL)
   ttau_cutoff_singular <- reactiveValues(raw = NULL)
+  centiloid_cutoff <- reactiveValues(raw = NULL)
   
   # For sample Data 
   observeEvent(input$sample_or_real, {
@@ -247,6 +258,7 @@ server <- function(input, output){
       ptau_cutoff_upper$raw <- 73.83 
       ttau_cutoff_lower$raw <- 303.54 
       ttau_cutoff_upper$raw <- 378.65 
+      centiloid_cutoff$raw <- 20
     }
     
   })
@@ -258,14 +270,15 @@ server <- function(input, output){
     ptau_cutoff_upper$raw <- 73.83 
     ttau_cutoff_lower$raw <- 303.54 
     ttau_cutoff_upper$raw <- 378.65
+    centiloid_cutoff$raw <- 20
   })
   
   # For SINGULAR INPUT 
   
   observeEvent(input$THRESHOLDSUB, {
-    AB_cutoff$raw <- input$ABthreshold
-    ptau_cutoff_lower$raw <- input$pTauThreshold
-    ttau_cutoff_lower$raw <- input$tTautheshold
+    AB_cutoff_singular$raw <- input$ABthreshold
+    ptau_cutoff_singular$raw <- input$pTauThreshold
+    ttau_cutoff_singular$raw <- input$tTautheshold
   })
   
   ################# CHANGE THE DATA FILE USED IF SERVE IS CLICKED ##############
@@ -297,7 +310,7 @@ server <- function(input, output){
     x = 1, 
     y = 0.5)
   
-  
+  ################# GROUP 1 LABELS ###############
   axx <- list(
     title = "CSF AB1-42 pg/mL"
   )
@@ -310,16 +323,38 @@ server <- function(input, output){
     title = "CSF t-Tau pg/mL"
   )
   
+  ################# GROUP 2 LABELS ###############
   axx2 <- list(
-    title = "CSF p-Tau pg/mL"
-  )
-  axy2 <- list(
     title = "Hippocampus mL<sup>3</sup>"
   )
-  
+  axy2 <- list(
+    title = "CSF p-Tau pg/mL"
+  )
   axz2 <- list(
     title = "Centiloid"
   )
+  
+  ################# GROUP 1 CUTOFF LABELS ###############
+  AB_cutoff_label <- list(
+    title = "CSF AB 1-42 pg/mL Cutoff"
+  )
+  ptau_cutoff_label <- list(
+    title = "CSF pTau pg/mL Cutoff"
+  )
+  ttau_cutoff_label <- list(
+    title = "CSF tTau pg/mL Cutoff"
+  )
+  
+  HIPPO_cutoff_label <- list(
+    title = "Hippocampus mL<sup>3</sup> Cutoff"
+  )
+  Centloid_cutoff_label <- list(
+    title = "Centiloid Cutoff"
+  )
+  hippo.boxplot <- list(
+    title = "Hippocampus"
+  )
+  
   ############### Warning Message ########################
   shinyalert(title = "Important Note", 
              text = "This application was developed by CSIRO student intern. \n
@@ -336,8 +371,12 @@ server <- function(input, output){
   # Create a NETWORK for CSF DATA STUFF 
   output$SankeyDiagram <- renderSankeyNetwork({
     DATALINKS <- data.frame(
-      source = c("AB-Amyloid", "AB-Amyloid", "CSF AB1-42 pg/mL", "Centiloid", "Tau", "Tau","Tau", "PET SCAN", "CSF p-Tau pg/mL", "CSF p-Tau pg/mL", "Neurodegeneration", "Neurodegeneration", "CSF t-Tau pg/mL","Hippocampus"), 
-      target = c("CSF AB1-42 pg/mL",  "Centiloid", "Group 1", "Group 2","PET SCAN","CSF p-Tau pg/mL","CSF p-Tau pg/mL","Expression of Interest Required", "Group 1", "Group 2", "CSF t-Tau pg/mL","Hippocampus","Group 1","Group 2"), 
+      source = c("AB-Amyloid", "AB-Amyloid", "CSF AB1-42 pg/mL", "Centiloid", 
+                 "Tau", "Tau","Tau", "PET SCAN", "CSF p-Tau pg/mL", "CSF p-Tau pg/mL", 
+                 "Neurodegeneration", "Neurodegeneration", "CSF t-Tau pg/mL","Hippocampus"), 
+      target = c("CSF AB1-42 pg/mL",  "Centiloid", "Group 1", "Group 2","PET SCAN",
+                 "CSF p-Tau pg/mL","CSF p-Tau pg/mL","Expression of Interest Required",
+                 "Group 1", "Group 2", "CSF t-Tau pg/mL","Hippocampus","Group 1","Group 2"), 
       value = c(2,2,2,2,2,2,2,2,2,2,2,2,2,2)
     )
     DATALINKS
@@ -348,7 +387,9 @@ server <- function(input, output){
     )
     
     # ADD COLOUR TO IT 
-    DATALINKS$group <- as.factor(c("TYPE_1", "TYPE_2", "TYPE_1", "TYPE_2", "TYPE_3","TYPE_1", "TYPE_2", "TYPE_3", "TYPE_1", "TYPE_2", "TYPE_1", "TYPE_2", "TYPE_1", "TYPE_2"))
+    DATALINKS$group <- as.factor(c("TYPE_1", "TYPE_2", "TYPE_1", 
+                                   "TYPE_2", "TYPE_3","TYPE_1", "TYPE_2", "TYPE_3", 
+                                   "TYPE_1", "TYPE_2", "TYPE_1", "TYPE_2", "TYPE_1", "TYPE_2"))
     nodes$group <- as.factor(c("my_unique_group"))
     
     # Give a color for each group:
@@ -372,109 +413,6 @@ server <- function(input, output){
   })
   
   
-
-
-  
-  
-  
-  #############################################################################
-  ############################### HIPPO CUT OFF ###############################
-  #############################################################################
-
-  output$plot_gg <- renderPlot({
-    new.dat <- req(data_internal$raw)
-    # new.dat <- req(my_data)
-    new.dat$Diagnosis <- factor(new.dat$Diagnosis, levels = c("AD", "MCI", "HC"))
-    p <- ggplot(new.dat, aes(x = Sum.hippo, color = Diagnosis, fill = Diagnosis))+
-      geom_density(alpha = 0.5)+
-      theme_bw()+
-      scale_color_manual(values = c("red", "orange", "green"))+
-      scale_fill_manual(values=c("red", "orange", "green"))+
-      xlab(bquote('Hippocampus'~(mL^3)))+
-      ylab("Density")+
-      ggtitle("Density of Hippocampus by Diagnosis")
-    p
-  })
-  
-  output$intersect_plot <- renderPlot({
-    new.dat <- req(data_internal$raw)
-    # mean_1 <- ddply(data3, "Diagnosis", summarise, grp.mean = mean(Sum.hippo, na.rm = T))
-    # sd <- ddply(data3, "Diagnosis", summarise, grp.sd = sd(Sum.hippo, na.rm = T))
-    AD_data <- filter(new.dat, Diagnosis == "AD")
-    HC_data <- filter(new.dat, Diagnosis == "HC")
-    m1 <- mean(AD_data$Sum.hippo)
-    sd1 <- sd(AD_data$Sum.hippo)
-    m2 <- mean(HC_data$Sum.hippo)
-    sd2 <- sd(HC_data$Sum.hippo)
-    
-    x <- seq(-10, 10, by = 0.1)+1
-    
-    
-    intersect <- function(m1, sd1, m2, sd2){
-      B <- (m1/sd1^2 - m2/sd2^2)
-      A <- 0.5*(1/sd2^2 - 1/sd1^2)
-      C <- 0.5*(m2^2/sd2^2- m1^2/sd1^2) - log((sd1/sd2))
-      if (A != 0){
-        (-B + c(1,-1)*sqrt(B^2 - 4*A*C))/(2*A)
-      } else{-C/B}
-    }
-    
-    y <- dnorm(x,m1,sd1)
-    y2 <- dnorm(x,m2,sd2)
-    hippoframe <- data.frame(x,y,y2)
-    
-    Hippo_intersect <-intersect(m1, sd1, m2, sd2)
-    
-    ggplot(hippoframe, aes(x=x))+
-      theme_bw()+
-      geom_line(aes(y = y, colour = "AD"), lwd = 2)+
-      geom_line(aes(y=y2, colour = "HC"), lwd = 2)+
-      geom_vline(xintercept =  Hippo_intersect[2], colour = "black", lwd = 1.5)+
-      scale_colour_manual("", values = c("AD"="red", 
-                                         "HC" = "green"))+
-      labs(title = "Legend")+
-      xlab(bquote('Hippocampus'~(mL^3)))+
-      ylab("Density")+
-      ggtitle("Density Curve of AD and HC with Intersecting Lines")
-  })
-  
-  
-  
-  ############### RENDER TEXT FOR HIPPOCAMPUS OUTPUT 
-  
-  output$texthippo <- renderText({
-    new.dat <- req(data_internal$raw)
-    # mean_1 <- ddply(data3, "Diagnosis", summarise, grp.mean = mean(Sum.hippo, na.rm = T))
-    # sd <- ddply(data3, "Diagnosis", summarise, grp.sd = sd(Sum.hippo, na.rm = T))
-    AD_data <- filter(new.dat, Diagnosis == "AD")
-    HC_data <- filter(new.dat, Diagnosis == "HC")
-    m1 <- mean(AD_data$Sum.hippo)
-    sd1 <- sd(AD_data$Sum.hippo)
-    m2 <- mean(HC_data$Sum.hippo)
-    sd2 <- sd(HC_data$Sum.hippo)
-    
-    x <- seq(-10, 10, by = 0.1)+1
-    
-    
-    intersect <- function(m1, sd1, m2, sd2){
-      B <- (m1/sd1^2 - m2/sd2^2)
-      A <- 0.5*(1/sd2^2 - 1/sd1^2)
-      C <- 0.5*(m2^2/sd2^2- m1^2/sd1^2) - log((sd1/sd2))
-      if (A != 0){
-        (-B + c(1,-1)*sqrt(B^2 - 4*A*C))/(2*A)
-      } else{-C/B}
-    }
-    
-    y <- dnorm(x,m1,sd1)
-    y2 <- dnorm(x,m2,sd2)
-    hippoframe <- data.frame(x,y,y2)
-    
-    Hippo_intersect <-intersect(m1, sd1, m2, sd2)
-    
-    paste0("The cut-off is ",round(Hippo_intersect[2],3),".")
-  })
-
-
   #
   ##
   ###
@@ -551,96 +489,53 @@ server <- function(input, output){
   ############################# 3D Visualisation ############################## 
   ############################ SCATTER AND PLANES #############################
   
-  
-  ############################ PANEL 3 - 3D visualisation with plotly 
-  
+  ######################### STATIONARY SCATTER PLOT ###########################
+
   v <- reactiveValues(
     plot = NULL
   )
   
   observeEvent(input$Static, {
     new.dat <- req(data_internal$raw)
-    v$plot <- plot_ly(new.dat, x = ~CSF.AB42.INNO, 
-                 y = ~CSF.pTau.INNO, 
-                 z = ~CSF.tTau.INNO, 
-                 type = "scatter3d", 
-                 mode = "markers", 
-                 sizemode = 'Diameter', 
-                 color = ~Burnham_class, 
-                 colors = c("firebrick", "darkorange", "gold", "forestgreen")) %>%
-      layout(legend = LEGEND_1, 
-             scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
+    v$plot <- ScatterPlotFunction(
+      d = new.dat, 
+      xdat = new.dat$CSF.AB42.INNO, 
+      ydat = new.dat$CSF.pTau.INNO, 
+      zdat = new.dat$CSF.tTau.INNO, 
+      cols = new.dat$Burnham_class, 
+      leg = LEGEND_1, 
+      xax = axx, 
+      yax = axy, 
+      zax = axz
+    )
   }
   )
   
   
-  ################# Select Panel Input: 3 Options
+  ########### ANIMATED SCATTER PLOT #############
   
   observeEvent(input$rotating, {
     new.dat <- req(data_internal$raw)
-    v$plot <-  plot_ly(new.dat, x = ~CSF.AB42.INNO, 
-                       y = ~CSF.pTau.INNO, 
-                       z = ~CSF.tTau.INNO, 
-                       type = "scatter3d", 
-                       mode = "markers", 
-                       sizemode = 'Diameter', 
-                       color = ~Burnham_class, 
-                       colors = c("firebrick", "darkorange", "gold", "forestgreen"))  %>%
-      layout(legend = LEGEND_1, 
-             scene = list(xaxis = axx, yaxis = axy, zaxis = axz,
-                          camera = list(
-                            eye = list(
-                              x = 1.25,
-                              y = 1.25,
-                              z = 1.25
-                            ),
-                            center = list(x = 0,
-                                          y = 0,
-                                          z = 0)
-                          ))) %>%
-      onRender("
-      function(el, x){
-  var id = el.getAttribute('id');
-  var gd = document.getElementById(id);
-  Plotly.plot(id).then(attach);
-  function attach() {
-    var cnt = 0;
-    
-    function run() {
-      rotate('scene', Math.PI / 180);
-      requestAnimationFrame(run);
-    } 
-    run();
-    
-    function rotate(id, angle) {
-      var eye0 = gd.layout[id].camera.eye
-      var rtz = xyz2rtz(eye0);
-      rtz.t += angle;
-      
-      var eye1 = rtz2xyz(rtz);
-      Plotly.relayout(gd, id + '.camera.eye', eye1)
-    }
-    
-    function xyz2rtz(xyz) {
-      return {
-        r: Math.sqrt(xyz.x * xyz.x + xyz.y * xyz.y),
-        t: Math.atan2(xyz.y, xyz.x),
-        z: xyz.z
-      };
-    }
-    
-    function rtz2xyz(rtz) {
-      return {
-        x: rtz.r * Math.cos(rtz.t),
-        y: rtz.r * Math.sin(rtz.t),
-        z: rtz.z
-      };
-    }
-  };
-}
-    ")
+    v$plot <-  AnimatedScatterPlotFunction(
+      d = new.dat, 
+      xdat = new.dat$CSF.AB42.INNO, 
+      ydat = new.dat$CSF.pTau.INNO, 
+      zdat = new.dat$CSF.tTau.INNO, 
+      cols = new.dat$Burnham_class, 
+      leg = LEGEND_1, 
+      xax = axx, 
+      yax = axy, 
+      zax = axz
+    )
     
   })
+  
+  
+  ################ CONDITIONAL ################
+  # Conditional that the user uses supplied data 
+  # or data with same cut points!
+  
+  ############## AGE GROUP: 60-70 #############
 
  observeEvent(input$staticP2, {
    new.dat <- req(data_internal$raw)
@@ -648,47 +543,23 @@ server <- function(input, output){
    ptau_threshold <- req(ptau_cutoff_lower$raw)
    ttau_treshold <- req(ttau_cutoff_lower$raw)
    df_young <- filter(new.dat, Age < 70)
-   v$plot <- plot_ly(df_young) %>%
-     add_markers(x = ~CSF.AB42.INNO, y = ~CSF.pTau.INNO, z = ~CSF.tTau.INNO,
-                 color = ~Burnham_class, colors = c("firebrick", "darkorange", "gold", "forestgreen")) %>%
-     add_trace(type = 'mesh3d',
-               x = c(min(new.dat$CSF.AB42.INNO),min(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO)),
-               y = c(max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO),max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO)),
-               z = c(ttau_treshold, ttau_treshold, ttau_treshold, ttau_treshold),
-               i = c(0,3),
-               j = c(1,2),
-               k = c(3,0),
-               name = "CSF tTau pg/mL Cut-off",
-               showlegend = T,
-               opacity = 0.2)%>%
-     add_trace(type = 'mesh3d',
-               x = c(AB_threshold, AB_threshold, AB_threshold, AB_threshold),
-               y = c(max(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
-               z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
-
-               # Next define all triples (i,j,k) of vertices that form a 2-cell face.
-               # 1 face
-               i = c(0,1),
-               j = c(1,2),
-               k = c(2,3),
-               name = "CSF AB1-42 pg/mL Cut-off",
-               showlegend = T,
-
-               # Define the appearance of the 4 faces (2-cells)
-               opacity = 0.2) %>%
-     add_trace(type = "mesh3d",
-               # this is the cut off for ptau - changing it to 59.23
-               x = c(min(new.dat$CSF.AB42.INNO),   min(new.dat$CSF.AB42.INNO),   max(new.dat$CSF.AB42.INNO),   max(new.dat$CSF.AB42.INNO)),
-               y = c(ptau_threshold,  ptau_threshold,  ptau_threshold , ptau_threshold),
-               z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
-               i = c(0,3),
-               j = c(1,2),
-               k = c(3,0),
-               opacity = 0.2,
-               name = "CSF pTau pg/mL Cut-off",
-               showlegend = T) %>%
-     layout(legend = LEGEND_1,
-            scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
+   v$plot <- PlanesFunction(
+     dat = df_young, 
+     xinput = df_young$CSF.AB42.INNO, 
+     yinput = df_young$CSF.pTau.INNO, 
+     zinput = df_young$CSF.tTau.INNO, 
+     cols = df_young$Burnham_class, 
+     leg = LEGEND_1,
+     xax = axx,
+     yax = axy,
+     zax = axz,
+     XCUT = AB_threshold, 
+     YCUT = ptau_threshold, 
+     ZCUT = ttau_treshold, 
+     XNAME = AB_cutoff_label, 
+     YNAME = ptau_cutoff_label, 
+     ZNAME = ttau_cutoff_label
+   )
  })
 
 
@@ -698,581 +569,175 @@ server <- function(input, output){
    ptau_threshold <- req(ptau_cutoff_lower$raw)
    ttau_treshold <- req(ttau_cutoff_lower$raw)
    df_young <- filter(new.dat, Age < 70)
-   v$plot <- plot_ly(df_young) %>%
-     add_markers(x = ~CSF.AB42.INNO, y = ~CSF.pTau.INNO, z = ~CSF.tTau.INNO,
-                 color = ~Burnham_class, colors = c("firebrick", "darkorange", "gold", "forestgreen")) %>%
-     add_trace(type = 'mesh3d',
-               x = c(min(new.dat$CSF.AB42.INNO),min(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO)),
-               y = c(max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO),max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO)),
-               z = c(ttau_treshold, ttau_treshold, ttau_treshold, ttau_treshold),
-               i = c(0,3),
-               j = c(1,2),
-               k = c(3,0),
-               name = "CSF tTau pg/mL Cut-off",
-               showlegend = T,
-               opacity = 0.2)%>%
-     add_trace(type = 'mesh3d',
-               x = c(AB_threshold, AB_threshold, AB_threshold, AB_threshold),
-               y = c(max(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
-               z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
-
-               # Next define all triples (i,j,k) of vertices that form a 2-cell face.
-               # 1 face
-               i = c(0,1),
-               j = c(1,2),
-               k = c(2,3),
-               name = "CSF AB1-42 pg/mL Cut-off",
-               showlegend = T,
-
-               # Define the appearance of the 4 faces (2-cells)
-               opacity = 0.2) %>%
-     add_trace(type = "mesh3d",
-               # this is the cut off for ptau - changing it to 59.23
-               x = c(min(new.dat$CSF.AB42.INNO),   min(new.dat$CSF.AB42.INNO),   max(new.dat$CSF.AB42.INNO),   max(new.dat$CSF.AB42.INNO)),
-               y = c(ptau_threshold,  ptau_threshold,  ptau_threshold , ptau_threshold),
-               z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
-               i = c(0,3),
-               j = c(1,2),
-               k = c(3,0),
-               opacity = 0.2,
-               name = "CSF pTau pg/mL Cut-off",
-               showlegend = T) %>%
-     layout(legend = LEGEND_1,
-            scene = list(xaxis = axx, yaxis = axy, zaxis = axz,
-                         camera = list(
-                           eye = list(
-                             x = 1.25,
-                             y = 1.25,
-                             z = 1.25
-                           ),
-                           center = list(x = 0,
-                                         y = 0,
-                                         z = 0)
-                         ))) %>%
-     onRender("
-      function(el, x){
-  var id = el.getAttribute('id');
-  var gd = document.getElementById(id);
-  Plotly.plot(id).then(attach);
-  function attach() {
-    var cnt = 0;
-
-    function run() {
-      rotate('scene', Math.PI / 180);
-      requestAnimationFrame(run);
-    }
-    run();
-
-    function rotate(id, angle) {
-      var eye0 = gd.layout[id].camera.eye
-      var rtz = xyz2rtz(eye0);
-      rtz.t += angle;
-
-      var eye1 = rtz2xyz(rtz);
-      Plotly.relayout(gd, id + '.camera.eye', eye1)
-    }
-
-    function xyz2rtz(xyz) {
-      return {
-        r: Math.sqrt(xyz.x * xyz.x + xyz.y * xyz.y),
-        t: Math.atan2(xyz.y, xyz.x),
-        z: xyz.z
-      };
-    }
-
-    function rtz2xyz(rtz) {
-      return {
-        x: rtz.r * Math.cos(rtz.t),
-        y: rtz.r * Math.sin(rtz.t),
-        z: rtz.z
-      };
-    }
-  };
-}
-    ")
+   v$plot <- AnimatedPlanesFunction(
+     dat = df_young, 
+     xinput = df_young$CSF.AB42.INNO, 
+     yinput = df_young$CSF.pTau.INNO, 
+     zinput = df_young$CSF.tTau.INNO, 
+     cols = df_young$Burnham_class, 
+     leg = LEGEND_1,
+     xax = axx,
+     yax = axy,
+     zax = axz,
+     XCUT = AB_threshold, 
+     YCUT = ptau_threshold, 
+     ZCUT = ttau_treshold, 
+     XNAME = AB_cutoff_label, 
+     YNAME = ptau_cutoff_label, 
+     ZNAME = ttau_cutoff_label
+   ) 
  })
 
  observeEvent(input$staticP3, {
    new.dat <- req(data_internal$raw)
+   AB_threshold <- req(AB_cutoff$raw)
+   ptau_threshold <- req(ptau_cutoff_upper$raw)
+   ttau_treshold <- req(ttau_cutoff_upper$raw)
    df_old <- filter(new.dat, Age > 70)
-   v$plot <- plot_ly(df_old) %>%
-     add_markers(x = ~CSF.AB42.INNO, y = ~CSF.pTau.INNO, z = ~CSF.tTau.INNO,
-                 color = ~Burnham_class, colors = c("firebrick", "darkorange", "gold", "forestgreen")) %>%
-     add_trace(type = 'mesh3d',
-               x = c(min(new.dat$CSF.AB42.INNO),min(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO)),
-               y = c(160,18,160,18),
-               z = c(378.65, 378.65, 378.65, 378.65),
-               i = c(0,3),
-               j = c(1,2),
-               k = c(3,0),
-               name = "CSF tTau pg/mL Cut-off",
-               showlegend = T,
-               opacity = 0.2)%>%
-     add_trace(type = 'mesh3d',
-               x = c(656, 656, 656, 656),
-               y = c(max(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
-               z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
-
-               # Next define all triples (i,j,k) of vertices that form a 2-cell face.
-               # 1 face
-               i = c(0,1),
-               j = c(1,2),
-               k = c(2,3),
-               name = "CSF AB1-42 pg/mL Cut-off",
-               showlegend = T,
-
-               # Define the appearance of the 4 faces (2-cells)
-               opacity = 0.2) %>%
-     add_trace(type = "mesh3d",
-               # this is the cut off for ptau - changing it to 59.23
-               x = c(min(new.dat$CSF.AB42.INNO),min(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO)),
-               y = c(73.83,  73.83,  73.83, 73.83),
-               z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
-               i = c(0,3),
-               j = c(1,2),
-               k = c(3,0),
-               opacity = 0.2,
-               name = "CSF pTau pg/mL Cut-off",
-               showlegend = T) %>%
-     layout(legend = LEGEND_1,
-            scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
+   v$plot <- PlanesFunction(
+     dat = df_old, 
+     xinput = df_old$CSF.AB42.INNO, 
+     yinput = df_old$CSF.pTau.INNO, 
+     zinput = df_old$CSF.tTau.INNO, 
+     cols = df_old$Burnham_class, 
+     leg = LEGEND_1,
+     xax = axx,
+     yax = axy,
+     zax = axz,
+     XCUT = AB_threshold, 
+     YCUT = ptau_threshold, 
+     ZCUT = ttau_treshold, 
+     XNAME = AB_cutoff_label, 
+     YNAME = ptau_cutoff_label, 
+     ZNAME = ttau_cutoff_label
+   )
 
  })
 
  observeEvent(input$rotateP3, {
    new.dat <- req(data_internal$raw)
+   AB_threshold <- req(AB_cutoff$raw)
+   ptau_threshold <- req(ptau_cutoff_upper$raw)
+   ttau_treshold <- req(ttau_cutoff_upper$raw)
    df_old <- filter(new.dat, Age > 70)
-   v$plot <- plot_ly(df_old) %>%
-     add_markers(x = ~CSF.AB42.INNO, y = ~CSF.pTau.INNO, z = ~CSF.tTau.INNO,
-                 color = ~Burnham_class, colors = c("firebrick", "darkorange", "gold", "forestgreen")) %>%
-     add_trace(type = 'mesh3d',
-               x = c(min(new.dat$CSF.AB42.INNO),min(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO)),
-               y = c(160,18,160,18),
-               z = c(378.65, 378.65, 378.65, 378.65),
-               i = c(0,3),
-               j = c(1,2),
-               k = c(3,0),
-               name = "CSF tTau pg/mL Cut-off",
-               showlegend = T,
-               opacity = 0.2)%>%
-     add_trace(type = 'mesh3d',
-               x = c(656, 656, 656, 656),
-               y = c(max(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
-               z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
-
-               # Next define all triples (i,j,k) of vertices that form a 2-cell face.
-               # 1 face
-               i = c(0,1),
-               j = c(1,2),
-               k = c(2,3),
-               name = "CSF AB1-42 pg/mL Cut-off",
-               showlegend = T,
-
-               # Define the appearance of the 4 faces (2-cells)
-               opacity = 0.2) %>%
-     add_trace(type = "mesh3d",
-               # this is the cut off for ptau - changing it to 59.23
-               x = c(min(new.dat$CSF.AB42.INNO),min(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO),max(new.dat$CSF.AB42.INNO)),
-               y = c(73.83,  73.83,  73.83, 73.83),
-               z = c(max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO), max(new.dat$CSF.tTau.INNO), min(new.dat$CSF.tTau.INNO)),
-               i = c(0,3),
-               j = c(1,2),
-               k = c(3,0),
-               opacity = 0.2,
-               name = "CSF pTau pg/mL Cut-off",
-               showlegend = T) %>%
-     layout(legend = LEGEND_1,
-            scene = list(xaxis = axx, yaxis = axy, zaxis = axz,
-                         camera = list(
-                           eye = list(
-                             x = 1.25,
-                             y = 1.25,
-                             z = 1.25
-                           ),
-                           center = list(x = 0,
-                                         y = 0,
-                                         z = 0)
-                         ))) %>%
-     onRender("
-      function(el, x){
-  var id = el.getAttribute('id');
-  var gd = document.getElementById(id);
-  Plotly.plot(id).then(attach);
-  function attach() {
-    var cnt = 0;
-
-    function run() {
-      rotate('scene', Math.PI / 180);
-      requestAnimationFrame(run);
-    }
-    run();
-
-    function rotate(id, angle) {
-      var eye0 = gd.layout[id].camera.eye
-      var rtz = xyz2rtz(eye0);
-      rtz.t += angle;
-
-      var eye1 = rtz2xyz(rtz);
-      Plotly.relayout(gd, id + '.camera.eye', eye1)
-    }
-
-    function xyz2rtz(xyz) {
-      return {
-        r: Math.sqrt(xyz.x * xyz.x + xyz.y * xyz.y),
-        t: Math.atan2(xyz.y, xyz.x),
-        z: xyz.z
-      };
-    }
-
-    function rtz2xyz(rtz) {
-      return {
-        x: rtz.r * Math.cos(rtz.t),
-        y: rtz.r * Math.sin(rtz.t),
-        z: rtz.z
-      };
-    }
-  };
-}
-    ")
+   v$plot <- AnimatedPlanesFunction(
+     dat = df_old, 
+     xinput = df_old$CSF.AB42.INNO, 
+     yinput = df_old$CSF.pTau.INNO, 
+     zinput = df_old$CSF.tTau.INNO, 
+     cols = df_old$Burnham_class, 
+     leg = LEGEND_1,
+     xax = axx,
+     yax = axy,
+     zax = axz,
+     XCUT = AB_threshold, 
+     YCUT = ptau_threshold, 
+     ZCUT = ttau_treshold, 
+     XNAME = AB_cutoff_label, 
+     YNAME = ptau_cutoff_label, 
+     ZNAME = ttau_cutoff_label
+   )
 
 
  })
 
-output$PLOTLYOUTPUT <- renderPlotly({
-  if (is.null(v$plot)) return()
-  v$plot
-
-})
+  output$PLOTLYOUTPUT <- renderPlotly({
+    if (is.null(v$plot)) return()
+    v$plot
+  
+  })
 
   ########################### A+/T+/N+ Visualisation ##########################
   ################################# ALL CUBES #################################
 
 
-################# OBSERVE SWITCH FOR CUBE
+
 
   cube_animate <- reactiveValues(plot = NULL)
 
-observeEvent(input$ATNStatic, {
-  new.dat <- req(data_internal$raw)
-  df_young <- filter(new.dat, Age < 70)
-  df7 <- mutate(df_young, scat_col = ifelse(CSF.pTau.INNO >59.23 & CSF.tTau.INNO > 303.54 & CSF.AB42.INNO <656 & Burnham_class == "AD",
-                                            "selected - AD",
-                                            ifelse(CSF.pTau.INNO >59.23 & CSF.tTau.INNO >303.54 & CSF.AB42.INNO < 656 & Burnham_class == "Pathological Change",
-                                                   "selected - Pathological Change",
-                                                   ifelse(CSF.pTau.INNO >59.23 & CSF.tTau.INNO > 303.54 & CSF.AB42.INNO < 656 & Burnham_class == "Non-AD pathological Change",
-                                                          "selected - Non-AD pathological Change",
-                                                          ifelse(CSF.pTau.INNO >59.23 & CSF.tTau.INNO > 303.54 & CSF.AB42.INNO < 656 & Burnham_class == "Normal AD Biomarkers",
-                                                                 "selected - Normal AD Biomarker","unselected")))))
-
-
-  df7$scat_col <- factor(df7$scat_col, levels = c("unselected", "selected - AD",
-                                                  "selected - Pathological Change",
-                                                  "selected - Non-AD pathological Change",
-                                                  "selected - Normal AD Biomarker"))
-
-
-  df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42.INNO),    min(df7$CSF.AB42.INNO),    656,   656,   min(df7$CSF.AB42.INNO),   min(df7$CSF.AB42.INNO)),
-                          Y_VAL = c(59.23,max(df7$CSF.pTau.INNO),    59.23,  max(df7$CSF.pTau.INNO),    59.23, max(df7$CSF.pTau.INNO),   59.23, max(df7$CSF.pTau.INNO)),
-                          Z_VAL = c(303.54, 303.54, 303.54, 303.54, max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO)),
-                          MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-
-  # Make apoe4 a factor
-  df7$apoe4 <- factor(df7$apoe4, levels = c(1,0))
-
-  cube_animate$plot <- plot_ly()%>%
-    add_markers(type = "scatter3d",
-                mode = "markers",
-                data = df7,
-                x = ~CSF.AB42.INNO,
-                y = ~CSF.pTau.INNO,
-                z = ~CSF.tTau.INNO,
-                color = ~scat_col,
-                colors = c('gray', "firebrick", "darkorange", "gold", "forestgreen")) %>%
-    add_trace(type = 'mesh3d',
-              data = df_mesh_1,
-              x = ~X_VAL,
-              y = ~Y_VAL,
-              z = ~Z_VAL,
-              i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-              j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-              k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-              facecolor = rep("blue", 12),
-              opacity = 0.1,
-              name = "A+/T+/N+ Positive Area",
-              showlegend = T) %>%
-    layout(legend = LEGEND_1,
-           scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
-})
-
-observeEvent(input$ATNrotating, {
-  new.dat <- req(data_internal$raw)
-  df_young <- filter(new.dat, Age < 70)
-  df7 <- mutate(df_young, scat_col = ifelse(CSF.pTau.INNO >59.23 & CSF.tTau.INNO > 303.54 & CSF.AB42.INNO <656 & Burnham_class == "AD",
-                                            "selected - AD",
-                                            ifelse(CSF.pTau.INNO >59.23 & CSF.tTau.INNO >303.54 & CSF.AB42.INNO < 656 & Burnham_class == "Pathological Change",
-                                                   "selected - Pathological Change",
-                                                   ifelse(CSF.pTau.INNO >59.23 & CSF.tTau.INNO > 303.54 & CSF.AB42.INNO < 656 & Burnham_class == "Non-AD pathological Change",
-                                                          "selected - Non-AD pathological Change",
-                                                          ifelse(CSF.pTau.INNO >59.23 & CSF.tTau.INNO > 303.54 & CSF.AB42.INNO < 656 & Burnham_class == "Normal AD Biomarkers",
-                                                                 "selected - Normal AD Biomarker","unselected")))))
-
-
-  df7$scat_col <- factor(df7$scat_col, levels = c("unselected", "selected - AD",
-                                                  "selected - Pathological Change",
-                                                  "selected - Non-AD pathological Change",
-                                                  "selected - Normal AD Biomarker"))
-
-
-  df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42.INNO),    min(df7$CSF.AB42.INNO),    656,   656,   min(df7$CSF.AB42.INNO),   min(df7$CSF.AB42.INNO)),
-                          Y_VAL = c(59.23,max(df7$CSF.pTau.INNO),    59.23,  max(df7$CSF.pTau.INNO),    59.23, max(df7$CSF.pTau.INNO),   59.23, max(df7$CSF.pTau.INNO)),
-                          Z_VAL = c(303.54, 303.54, 303.54, 303.54, max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO)),
-                          MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-
-  # Make apoe4 a factor
-  df7$apoe4 <- factor(df7$apoe4, levels = c(1,0))
-
-  cube_animate$plot <- plot_ly()%>%
-    add_markers(type = "scatter3d",
-                mode = "markers",
-                data = df7,
-                x = ~CSF.AB42.INNO,
-                y = ~CSF.pTau.INNO,
-                z = ~CSF.tTau.INNO,
-                color = ~scat_col,
-                colors = c('gray', "firebrick", "darkorange", "gold", "forestgreen")) %>%
-    add_trace(type = 'mesh3d',
-              data = df_mesh_1,
-              x = ~X_VAL,
-              y = ~Y_VAL,
-              z = ~Z_VAL,
-              i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-              j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-              k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-              facecolor = rep("blue", 12),
-              opacity = 0.1,
-              name = "A+/T+/N+ Positive Area",
-              showlegend = T) %>%
-    layout(legend = LEGEND_1,
-           scene = list(xaxis = axx, yaxis = axy, zaxis = axz,
-                        camera = list(
-                          eye = list(
-                            x = 1.25,
-                            y = 1.25,
-                            z = 1.25
-                          ),
-                          center = list(x = 0,
-                                        y = 0,
-                                        z = 0)
-                        ))) %>%
-    onRender("
-      function(el, x){
-  var id = el.getAttribute('id');
-  var gd = document.getElementById(id);
-  Plotly.plot(id).then(attach);
-  function attach() {
-    var cnt = 0;
-
-    function run() {
-      rotate('scene', Math.PI / 180);
-      requestAnimationFrame(run);
-    }
-    run();
-
-    function rotate(id, angle) {
-      var eye0 = gd.layout[id].camera.eye
-      var rtz = xyz2rtz(eye0);
-      rtz.t += angle;
-
-      var eye1 = rtz2xyz(rtz);
-      Plotly.relayout(gd, id + '.camera.eye', eye1)
-    }
-
-    function xyz2rtz(xyz) {
-      return {
-        r: Math.sqrt(xyz.x * xyz.x + xyz.y * xyz.y),
-        t: Math.atan2(xyz.y, xyz.x),
-        z: xyz.z
-      };
-    }
-
-    function rtz2xyz(rtz) {
-      return {
-        x: rtz.r * Math.cos(rtz.t),
-        y: rtz.r * Math.sin(rtz.t),
-        z: rtz.z
-      };
-    }
-  };
-}
-    ")
-})
-
-observeEvent(input$ATNStaticP2, {
-  new.dat <- req(data_internal$raw)
-    data_old <- filter(new.dat, Age > 70)
-    df7 <- mutate(data_old, scat_col = ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO > 378.65 & CSF.AB42.INNO <656 & Burnham_class == "AD",
-                                              "selected - AD",
-                                              ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO >378.65 & CSF.AB42.INNO < 656 & Burnham_class == "Pathological Change",
-                                                     "selected - Pathological Change",
-                                                     ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO > 378.65 & CSF.AB42.INNO < 656 & Burnham_class == "Non-AD pathological Change",
-                                                            "selected - Non-AD pathological Change",
-                                                            ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO > 378.65 & CSF.AB42.INNO < 656 & Burnham_class == "Normal AD Biomarkers",
-                                                                   "selected - Normal AD Biomarker","unselected")))))
-
-
-    df7$scat_col <- factor(df7$scat_col, levels = c("unselected", "selected - AD",
-                                                    "selected - Pathological Change patients",
-                                                    "selected - Non-AD pathological Change",
-                                                    "selected - Normal AD Biomarker"))
-
-
-    df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42.INNO),    min(df7$CSF.AB42.INNO),    656,   656,   min(df7$CSF.AB42.INNO),   min(df7$CSF.AB42.INNO)),
-                            Y_VAL = c(73.83 ,max(df7$CSF.pTau.INNO),    73.83 ,  max(df7$CSF.pTau.INNO),    73.83 , max(df7$CSF.pTau.INNO),   73.83 , max(df7$CSF.pTau.INNO)),
-                            Z_VAL = c(378.65 , 378.65 , 378.65 , 378.65 , max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO)),
-                            MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-
-
-    # Make apoe4 a factor
-    df7$apoe4 <- factor(df7$apoe4, levels = c(1,0))
-
-    cube_animate$plot <- plot_ly()%>%
-      add_markers(type = "scatter3d",
-                  mode = "markers",
-                  data = df7,
-                  x = ~CSF.AB42.INNO,
-                  y = ~CSF.pTau.INNO,
-                  z = ~CSF.tTau.INNO,
-                  color = ~scat_col,
-                  colors = c('gray', "firebrick", "darkorange", "gold", "forestgreen")) %>%
-      add_trace(type = 'mesh3d',
-                data = df_mesh_1,
-                x = ~X_VAL,
-                y = ~Y_VAL,
-                z = ~Z_VAL,
-                i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-                j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-                k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-                facecolor = rep("blue", 12),
-                opacity = 0.1,
-                name = "A+/T+/N+ Positive Area",
-                showlegend = T) %>%
-      layout(legend = LEGEND_1,
-             scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
-
-
+  observeEvent(input$ATNStatic, {
+    new.dat <- req(data_internal$raw)
+    AB_threshold <- req(AB_cutoff$raw)
+    ptau_threshold <- req(ptau_cutoff_lower$raw)
+    ttau_treshold <- req(ttau_cutoff_lower$raw)
+    df_young <- filter(new.dat, Age < 70)
+    cube_animate$plot <- G1CubeVisualisation(dat = df_young, 
+                                             xinput = df_young$CSF.AB42.INNO,
+                                             yinput = df_young$CSF.pTau.INNO, 
+                                             zinput = df_young$CSF.tTau.INNO, 
+                                             leg = LEGEND_1,
+                                             xax=axx,
+                                             yax = axy,
+                                             zax = axz, 
+                                             XCUT = AB_threshold, 
+                                             YCUT = ptau_threshold, 
+                                             ZCUT = ttau_treshold)
   })
 
-observeEvent(input$ATNrotatingP2, {
-  new.dat <- req(data_internal$raw)
-  data_old <- filter(new.dat, Age > 70)
-  df7 <- mutate(data_old, scat_col = ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO > 378.65 & CSF.AB42.INNO <656 & Burnham_class == "AD",
-                                            "selected - AD",
-                                            ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO >378.65 & CSF.AB42.INNO < 656 & Burnham_class == "Pathological Change",
-                                                   "selected - Pathological Change",
-                                                   ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO > 378.65 & CSF.AB42.INNO < 656 & Burnham_class == "Non-AD pathological Change",
-                                                          "selected - Non-AD pathological Change",
-                                                          ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO > 378.65 & CSF.AB42.INNO < 656 & Burnham_class == "Normal AD Biomarkers",
-                                                                 "selected - Normal AD Biomarker","unselected")))))
+  observeEvent(input$ATNrotating, {
+    new.dat <- req(data_internal$raw)
+    AB_threshold <- req(AB_cutoff$raw)
+    ptau_threshold <- req(ptau_cutoff_lower$raw)
+    ttau_treshold <- req(ttau_cutoff_lower$raw)
+    df_young <- filter(new.dat, Age < 70)
+    cube_animate$plot <- AnimatedG1CubeVisualisation(dat = df_young, 
+                                             xinput = df_young$CSF.AB42.INNO,
+                                             yinput = df_young$CSF.pTau.INNO, 
+                                             zinput = df_young$CSF.tTau.INNO, 
+                                             leg = LEGEND_1,
+                                             xax=axx,
+                                             yax = axy,
+                                             zax = axz, 
+                                             XCUT = AB_threshold, 
+                                             YCUT = ptau_threshold, 
+                                             ZCUT = ttau_treshold)
+  })
+
+  observeEvent(input$ATNStaticP2, {
+    new.dat <- req(data_internal$raw)
+    AB_threshold <- req(AB_cutoff$raw)
+    ptau_threshold <- req(ptau_cutoff_upper$raw)
+    ttau_treshold <- req(ttau_cutoff_upper$raw)
+    df_old <- filter(new.dat, Age > 70)
+    cube_animate$plot <- G1CubeVisualisation(dat = df_old, 
+                                             xinput = df_old$CSF.AB42.INNO,
+                                             yinput = df_old$CSF.pTau.INNO, 
+                                             zinput = df_old$CSF.tTau.INNO, 
+                                             leg = LEGEND_1,
+                                             xax=axx,
+                                             yax = axy,
+                                             zax = axz, 
+                                             XCUT = AB_threshold, 
+                                             YCUT = ptau_threshold, 
+                                             ZCUT = ttau_treshold)
+  
+    })
+  
+  observeEvent(input$ATNrotatingP2, {
+    new.dat <- req(data_internal$raw)
+    AB_threshold <- req(AB_cutoff$raw)
+    ptau_threshold <- req(ptau_cutoff_upper$raw)
+    ttau_treshold <- req(ttau_cutoff_upper$raw)
+    df_old <- filter(new.dat, Age > 70)
+    cube_animate$plot <- AnimatedG1CubeVisualisation(dat = df_old, 
+                                             xinput = df_old$CSF.AB42.INNO,
+                                             yinput = df_old$CSF.pTau.INNO, 
+                                             zinput = df_old$CSF.tTau.INNO, 
+                                             leg = LEGEND_1,
+                                             xax=axx,
+                                             yax = axy,
+                                             zax = axz, 
+                                             XCUT = AB_threshold, 
+                                             YCUT = ptau_threshold, 
+                                             ZCUT = ttau_treshold)
+  })
+
+  output$plot5.P3 <- renderPlotly({
+    if (is.null(cube_animate$plot)) return()
+    cube_animate$plot
+  })
 
 
-  df7$scat_col <- factor(df7$scat_col, levels = c("unselected", "selected - AD",
-                                                  "selected - Pathological Change patients",
-                                                  "selected - Non-AD pathological Change",
-                                                  "selected - Normal AD Biomarker"))
-
-
-  df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42.INNO),    min(df7$CSF.AB42.INNO),    656,   656,   min(df7$CSF.AB42.INNO),   min(df7$CSF.AB42.INNO)),
-                          Y_VAL = c(73.83 ,max(df7$CSF.pTau.INNO),    73.83 ,  max(df7$CSF.pTau.INNO),    73.83 , max(df7$CSF.pTau.INNO),   73.83 , max(df7$CSF.pTau.INNO)),
-                          Z_VAL = c(378.65 , 378.65 , 378.65 , 378.65 , max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO)),
-                          MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-
-
-  # Make apoe4 a factor
-  df7$apoe4 <- factor(df7$apoe4, levels = c(1,0))
-
-  cube_animate$plot <- plot_ly()%>%
-    add_markers(type = "scatter3d",
-                mode = "markers",
-                data = df7,
-                x = ~CSF.AB42.INNO,
-                y = ~CSF.pTau.INNO,
-                z = ~CSF.tTau.INNO,
-                color = ~scat_col,
-                colors = c('gray', "firebrick", "darkorange", "gold", "forestgreen")) %>%
-    add_trace(type = 'mesh3d',
-              data = df_mesh_1,
-              x = ~X_VAL,
-              y = ~Y_VAL,
-              z = ~Z_VAL,
-              i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-              j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-              k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-              facecolor = rep("blue", 12),
-              opacity = 0.1,
-              name = "A+/T+/N+ Positive Area",
-              showlegend = T) %>%
-    layout(legend = LEGEND_1,
-           scene = list(xaxis = axx, yaxis = axy, zaxis = axz,
-                        camera = list(
-                          eye = list(
-                            x = 1.25,
-                            y = 1.25,
-                            z = 1.25
-                          ),
-                          center = list(x = 0,
-                                        y = 0,
-                                        z = 0)
-                        ))) %>%
-    onRender("
-      function(el, x){
-  var id = el.getAttribute('id');
-  var gd = document.getElementById(id);
-  Plotly.plot(id).then(attach);
-  function attach() {
-    var cnt = 0;
-
-    function run() {
-      rotate('scene', Math.PI / 180);
-      requestAnimationFrame(run);
-    }
-    run();
-
-    function rotate(id, angle) {
-      var eye0 = gd.layout[id].camera.eye
-      var rtz = xyz2rtz(eye0);
-      rtz.t += angle;
-
-      var eye1 = rtz2xyz(rtz);
-      Plotly.relayout(gd, id + '.camera.eye', eye1)
-    }
-
-    function xyz2rtz(xyz) {
-      return {
-        r: Math.sqrt(xyz.x * xyz.x + xyz.y * xyz.y),
-        t: Math.atan2(xyz.y, xyz.x),
-        z: xyz.z
-      };
-    }
-
-    function rtz2xyz(rtz) {
-      return {
-        x: rtz.r * Math.cos(rtz.t),
-        y: rtz.r * Math.sin(rtz.t),
-        z: rtz.z
-      };
-    }
-  };
-}
-    ")
-})
-
-output$plot5.P3 <- renderPlotly({
-  if (is.null(cube_animate$plot)) return()
-  cube_animate$plot
-})
-
-
-  ########################### A+/T+/N+ Visualisation ##########################
   ############################# SCATTER AND CUBE ##############################
 
   output$OWNBIOMARKERS <- renderPlotly({
@@ -1440,145 +905,15 @@ output$plot5.P3 <- renderPlotly({
     new.dat$apoe4 <- factor(new.dat$apoe4, levels = c("0","1"))
     new.dat$Age_binary <- factor(new.dat$Age_binary, levels = c("0","1"))
     if (input$BIOMARKER == "CSF AB1-42 pg/mL"){
-      plot2 <- ggplot(new.dat, aes(x = Sex, y = CSF.AB42.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF AB1-42 pg/mL")+
-        ggtitle("Sex and CSF AB1-42 pg/mL")
-
-
-      plot3 <- ggplot(new.dat, aes(x = apoe4, y = CSF.AB42.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF AB1-42 pg/mL")+
-        xlab("apoe4")+
-        ggtitle("Apoe4 and CSF AB1-42 pg/mL")
-
-
-      setDT(new.dat)[Age < 65.5, AgeGroup := "<65"]
-      new.dat[Age >65.5 & Age < 70.5, AgeGroup := "66-70"]
-      new.dat[Age > 70.5 & Age < 75.5, AgeGroup := "71-75"]
-      new.dat[Age > 75.5 & Age < 80.5, AgeGroup := "76-80"]
-      new.dat[Age > 80.5 & Age < 85.5, AgeGroup := "81-85"]
-      new.dat[Age > 85.5, AgeGroup := "86+"]
-
-      plot5 <- ggplot(new.dat, aes(x = AgeGroup, y = CSF.AB42.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF AB1-42 pg/mL")+
-        xlab("Age Group")+
-        ggtitle("AgeGroup and CSF AB1-42 pg/mL")
-
-      # Education and age binarised
-
-      hhh <- ggplot(new.dat, aes(x = Education_binary, y = CSF.AB42.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF AB1-42 pg/mL")+
-        xlab("Education Binary")+
-        ggtitle("Education_binary and CSF AB1-42 pg/mL")
-
-      ggg <- ggplot(new.dat, aes(x = Age_binary, y = CSF.AB42.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF AB1-42 pg/mL")+
-        xlab("Age Binary")+
-        ggtitle("Age Binary and CSF AB1-42 pg/mL")
-
-      grid.arrange(plot2, plot3, plot5, hhh, ggg, ncol = 3)
+      
+      BoxplotFunction(new.dat, new.dat$CSF.AB42.INNO, input_title = axx)
+      
     }else if (input$BIOMARKER == "CSF pTau pg/mL"){
-      plot2 <- ggplot(new.dat, aes(x = Sex, y = CSF.pTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF pTau pg/mL")+
-        ggtitle("Sex and CSF pTau pg/mL")
-
-      new.dat$apoe4 <- factor(new.dat$apoe4, levels = c("0","1"))
-
-      plot3 <- ggplot(new.dat, aes(x = apoe4, y = CSF.pTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF pTau pg/mL")+
-        ggtitle("Apoe4 and CSF pTau pg/mL")
-
-      setDT(new.dat)[Age < 65.5, AgeGroup := "<65"]
-      new.dat[Age >65.5 & Age < 70.5, AgeGroup := "66-70"]
-      new.dat[Age > 70.5 & Age < 75.5, AgeGroup := "71-75"]
-      new.dat[Age > 75.5 & Age < 80.5, AgeGroup := "76-80"]
-      new.dat[Age > 80.5 & Age < 85.5, AgeGroup := "81-85"]
-      new.dat[Age > 85.5, AgeGroup := "86+"]
-
-      plot5 <- ggplot(new.dat, aes(x = AgeGroup, y = CSF.pTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF pTau pg/mL")+
-        xlab("Age Group")+
-        ggtitle("Age Group and CSF pTau pg/mL")
-
-      # Education and age binarised
-
-      hhh <- ggplot(new.dat, aes(x = Education_binary, y = CSF.tTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF pTau pg/mL")+
-        xlab("Education Binary")+
-        ggtitle("Education_binary and CSF pTau pg/mL")
-
-      ggg <- ggplot(new.dat, aes(x = Age_binary, y = CSF.tTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF pTau pg/mL")+
-        xlab("Age Binary")+
-        ggtitle("Age Binary and CSF pTau pg/mL")
-
-      grid.arrange(plot2, plot3, plot5, hhh, ggg, ncol = 3)
+      BoxplotFunction(new.dat, new.dat$CSF.pTau.INNO, input_title = axy)
 
     }else if (input$BIOMARKER == "CSF tTau pg/mL"){
-      plot2 <- ggplot(new.dat, aes(x = Sex, y = CSF.tTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF tTau pg/mL")+
-        ggtitle("Sex and CSF tTau pg/mL")
-
       
-      plot3 <- ggplot(new.dat, aes(x = apoe4, y = CSF.tTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF tTau pg/mL")+
-        xlab("apoe4")
-      ggtitle("Apoe4 and CSF tTau pg/mL")
-
-      setDT(new.dat)[Age < 65.5, AgeGroup := "<65"]
-      new.dat[Age >65.5 & Age < 70.5, AgeGroup := "66-70"]
-      new.dat[Age > 70.5 & Age < 75.5, AgeGroup := "71-75"]
-      new.dat[Age > 75.5 & Age < 80.5, AgeGroup := "76-80"]
-      new.dat[Age > 80.5 & Age < 85.5, AgeGroup := "81-85"]
-      new.dat[Age > 85.5, AgeGroup := "86+"]
-
-      plot5 <- ggplot(new.dat, aes(x = AgeGroup, y = CSF.tTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF tTau pg/mL")+
-        xlab("Age Group")+
-        ggtitle("Age Group and CSF tTau pg/mL")
-
-      # Education and age binarised
-
-      hhh <- ggplot(new.dat, aes(x = Education_binary, y = CSF.tTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF tTau pg/mL")+
-        xlab("Education Binary")+
-        ggtitle("Education Binary and CSF tTau pg/mL")
-
-      ggg <- ggplot(new.dat, aes(x = Age_binary, y = CSF.tTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF tTau pg/mL")+
-        xlab("Age Binary")+
-        ggtitle("Age Binary and CSF tTau pg/mL")
-
-      grid.arrange(plot2, plot3, plot5, hhh, ggg, ncol = 3)
+      BoxplotFunction(new.dat, new.dat$CSF.pTau.INNO, input_title = axz)
     }
   })
 
@@ -2342,6 +1677,59 @@ output$plot5.P3 <- renderPlotly({
     }
 
   })
+  
+  #############################################################################
+  ############################### HIPPO CUT OFF ###############################
+  #############################################################################
+  
+  # Regular ggplot for HIPPOCAMPUS
+  
+  output$plot_gg <- renderPlot({
+    new.dat <- req(data_internal$raw)
+    # new.dat <- req(my_data)
+    new.dat$Diagnosis <- factor(new.dat$Diagnosis, levels = c("AD", "MCI", "HC"))
+    p <- ggplot(new.dat, aes(x = Sum.hippo, color = Diagnosis, fill = Diagnosis))+
+      geom_density(alpha = 0.5)+
+      theme_bw()+
+      scale_color_manual(values = c("red", "orange", "green"))+
+      scale_fill_manual(values=c("red", "orange", "green"))+
+      xlab(bquote('Hippocampus'~(mL^3)))+
+      ylab("Density")+
+      ggtitle("Density of Hippocampus by Diagnosis")
+    p
+  })
+  
+  output$intersect_plot <- renderPlot({
+    new.dat <- req(data_internal$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippoframe <- x$hippoframe
+    
+    ggplot(hippoframe, aes(x=x))+
+      theme_bw()+
+      geom_line(aes(y = y, colour = "AD"), lwd = 2)+
+      geom_line(aes(y=y2, colour = "HC"), lwd = 2)+
+      geom_vline(xintercept =  hippo_cutoff, colour = "black", lwd = 1.5)+
+      scale_colour_manual("", values = c("AD"="red", 
+                                         "HC" = "green"))+
+      labs(title = "Legend")+
+      xlab(bquote('Hippocampus'~(mL^3)))+
+      ylab("Density")+
+      ggtitle("Density Curve of AD and HC with Intersecting Lines")
+  })
+  
+  
+  
+  ############### RENDER TEXT FOR HIPPOCAMPUS OUTPUT 
+  
+  output$texthippo <- renderText({
+    new.dat <- req(data_internal$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippoframe <- x$hippoframe
+    
+    paste0("The cut-off is ",round(hippo_cutoff,3),".")
+  })
 
   #
   ##
@@ -2425,371 +1813,146 @@ output$plot5.P3 <- renderPlotly({
 
   observeEvent(input$G2staticP1, {
     new.dat <- req(data_internal$raw)
-    group2_animation$plot <- plot_ly(new.dat, y = ~CSF.pTau.INNO,
-                 x = ~Sum.hippo,
-                 z = ~Centiloid,
-                 type = "scatter3d",
-                 mode = "markers",
-                 sizemode = 'Diameter',
-                 color = ~Clifford_class,
-                 colors = c("firebrick", "orange",'gold',"forestgreen")) %>%
-      layout(
-        legend = LEGEND_2,
-        scene = list(
-          xaxis = axx2, yaxis = axy2, zaxis = axz2))
+    group2_animation$plot <- ScatterPlotFunction(
+      d = new.dat, 
+      xdat = new.dat$Sum.hippo, 
+      ydat = new.dat$CSF.pTau.INNO, 
+      zdat = new.dat$Centiloid, 
+      cols = new.dat$Clifford_class, 
+      leg = LEGEND_2, 
+      xax = axx2, 
+      yax = axy2, 
+      zax = axz2
+    )
   })
 
   observeEvent(input$G2RotateP1, {
     new.dat <- req(data_internal$raw)
-    group2_animation$plot <- plot_ly(new.dat, y = ~CSF.pTau.INNO,
-                 x = ~Sum.hippo,
-                 z = ~Centiloid,
-                 type = "scatter3d",
-                 mode = "markers",
-                 sizemode = 'Diameter',
-                 color = ~Clifford_class,
-                 colors = c("firebrick", "orange",'gold',"forestgreen")) %>%
-      layout(
-        legend = LEGEND_2,
-        scene = list(
-          xaxis = axx2, yaxis = axy2, zaxis = axz2,
-          camera = list(
-            eye = list(
-              x = 1.25,
-              y = 1.25,
-              z = 1.25
-            ),
-            center = list(x = 0,
-                          y = 0,
-                          z = 0)
-          ))) %>%
-      onRender("
-      function(el, x){
-  var id = el.getAttribute('id');
-  var gd = document.getElementById(id);
-  Plotly.plot(id).then(attach);
-  function attach() {
-    var cnt = 0;
-
-    function run() {
-      rotate('scene', Math.PI / 180);
-      requestAnimationFrame(run);
-    }
-    run();
-
-    function rotate(id, angle) {
-      var eye0 = gd.layout[id].camera.eye
-      var rtz = xyz2rtz(eye0);
-      rtz.t += angle;
-
-      var eye1 = rtz2xyz(rtz);
-      Plotly.relayout(gd, id + '.camera.eye', eye1)
-    }
-
-    function xyz2rtz(xyz) {
-      return {
-        r: Math.sqrt(xyz.x * xyz.x + xyz.y * xyz.y),
-        t: Math.atan2(xyz.y, xyz.x),
-        z: xyz.z
-      };
-    }
-
-    function rtz2xyz(rtz) {
-      return {
-        x: rtz.r * Math.cos(rtz.t),
-        y: rtz.r * Math.sin(rtz.t),
-        z: rtz.z
-      };
-    }
-  };
-}
-    ")
+    group2_animation$plot <- AnimatedScatterPlotFunction(
+      d = new.dat, 
+      xdat = new.dat$Sum.hippo, 
+      ydat = new.dat$CSF.pTau.INNO, 
+      zdat = new.dat$Centiloid, 
+      cols = new.dat$Clifford_class, 
+      leg = LEGEND_2, 
+      xax = axx2, 
+      yax = axy2, 
+      zax = axz2
+    )
 
   })
 
   observeEvent(input$G2STATICP2, {
     new.dat <- req(data_internal$raw)
+    ptau_threshold <- req(ptau_cutoff_lower$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
     new_data <- filter(new.dat, Age < 70)
-    group2_animation$plot <- plot_ly(new_data) %>%
-      add_markers(x = ~Sum.hippo, y = ~CSF.pTau.INNO, z = ~Centiloid, color = ~Clifford_class,
-                  colors = c("firebrick", "darkorange", "gold", "forestgreen")) %>%
-      add_trace(type = 'mesh3d',
-                name = 'Centiloid Cut-off',
-                x = c(max(new.dat$Sum.hippo),max(new.dat$Sum.hippo),min(new.dat$Sum.hippo),min(new.dat$Sum.hippo)),
-                y = c(max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
-                z = c(20, 20, 20, 20),
-                i = c(0,3),
-                j = c(1,2),
-                k = c(3,0),
-                opacity = 0.2,
-                showlegend = T) %>%
-      add_trace(type = 'mesh3d',
-                name = "Hippocampus mL<sup>3</sup> cut-off",
-                x = c(5.402554, 5.402554, 5.402554, 5.402554),
-                y = c(max(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
-                z = c(max(new.dat$Centiloid),min(new.dat$Centiloid), max(new.dat$Centiloid),min(new.dat$Centiloid)),
-
-                # Next define all triples (i,j,k) of vertices that form a 2-cell face.
-                # 1 face
-                i = c(0,3),
-                j = c(1,2),
-                k = c(3,0),
-
-                # Define the appearance of the 4 faces (2-cells)
-                opacity = 0.2,
-                showlegend = T) %>%
-      add_trace(type = "mesh3d",
-                name = "CSF pTau pg/mL Cut-off",
-                x = c(max(new.dat$Sum.hippo),max(new.dat$Sum.hippo),min(new.dat$Sum.hippo),min(new.dat$Sum.hippo)),
-                y = c(59.23,  59.23,  59.23 , 59.23),
-                z = c(max(new.dat$Centiloid),min(new.dat$Centiloid), max(new.dat$Centiloid),min(new.dat$Centiloid)),
-                i = c(0,1),
-                j = c(1,2),
-                k = c(2,3),
-                opacity = 0.2,
-                showlegend = T) %>%
-      layout(legend = LEGEND_2,
-             scene = list(xaxis = axy2, yaxis = axx2, zaxis = axz2))
+    group2_animation$plot <- PlanesFunction(
+      dat = new_data, 
+      xinput = new_data$Sum.hippo, 
+      yinput = new_data$CSF.pTau.INNO, 
+      zinput = new_data$Centiloid, 
+      cols = new_data$Clifford_class, 
+      leg = LEGEND_2,
+      xax = axx2,
+      yax = axy2,
+      zax = axz2,
+      XCUT = hippo_threshold, 
+      YCUT = ptau_threshold, 
+      ZCUT = centiloid_threshold, 
+      XNAME = HIPPO_cutoff_label, 
+      YNAME = ptau_cutoff_label, 
+      ZNAME = Centloid_cutoff_label
+    )
   })
 
   observeEvent(input$G2ROTATEP2, {
     new.dat <- req(data_internal$raw)
-    new_data <- filter(new.dat, Age < 70)
-    group2_animation$plot <- plot_ly(new_data) %>%
-      add_markers(x = ~Sum.hippo, y = ~CSF.pTau.INNO, z = ~Centiloid, color = ~Clifford_class,
-                  colors = c("firebrick", "darkorange", "gold", "forestgreen")) %>%
-      add_trace(type = 'mesh3d',
-                name = 'Centiloid Cut-off',
-                x = c(max(new.dat$Sum.hippo),max(new.dat$Sum.hippo),min(new.dat$Sum.hippo),min(new.dat$Sum.hippo)),
-                y = c(max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
-                z = c(20, 20, 20, 20),
-                i = c(0,3),
-                j = c(1,2),
-                k = c(3,0),
-                opacity = 0.2,
-                showlegend = T) %>%
-      add_trace(type = 'mesh3d',
-                name = "Hippocampus mL<sup>3</sup> cut-off",
-                x = c(5.402554, 5.402554, 5.402554, 5.402554),
-                y = c(max(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
-                z = c(max(new.dat$Centiloid),min(new.dat$Centiloid), max(new.dat$Centiloid),min(new.dat$Centiloid)),
-
-                # Next define all triples (i,j,k) of vertices that form a 2-cell face.
-                # 1 face
-                i = c(0,3),
-                j = c(1,2),
-                k = c(3,0),
-
-                # Define the appearance of the 4 faces (2-cells)
-                opacity = 0.2,
-                showlegend = T) %>%
-      add_trace(type = "mesh3d",
-                name = "CSF pTau pg/mL Cut-off",
-                x = c(max(new.dat$Sum.hippo),max(new.dat$Sum.hippo),min(new.dat$Sum.hippo),min(new.dat$Sum.hippo)),
-                y = c(59.23,  59.23,  59.23 , 59.23),
-                z = c(max(new.dat$Centiloid),min(new.dat$Centiloid), max(new.dat$Centiloid),min(new.dat$Centiloid)),
-                i = c(0,1),
-                j = c(1,2),
-                k = c(2,3),
-                opacity = 0.2,
-                showlegend = T) %>%
-      layout(legend = LEGEND_2,
-             scene = list(xaxis = axy2, yaxis = axx2, zaxis = axz2,
-                          camera = list(
-                            eye = list(
-                              x = 1.25,
-                              y = 1.25,
-                              z = 1.25
-                            ),
-                            center = list(x = 0,
-                                          y = 0,
-                                          z = 0)
-                          ))) %>%
-      onRender("
-      function(el, x){
-  var id = el.getAttribute('id');
-  var gd = document.getElementById(id);
-  Plotly.plot(id).then(attach);
-  function attach() {
-    var cnt = 0;
-
-    function run() {
-      rotate('scene', Math.PI / 180);
-      requestAnimationFrame(run);
-    }
-    run();
-
-    function rotate(id, angle) {
-      var eye0 = gd.layout[id].camera.eye
-      var rtz = xyz2rtz(eye0);
-      rtz.t += angle;
-
-      var eye1 = rtz2xyz(rtz);
-      Plotly.relayout(gd, id + '.camera.eye', eye1)
-    }
-
-    function xyz2rtz(xyz) {
-      return {
-        r: Math.sqrt(xyz.x * xyz.x + xyz.y * xyz.y),
-        t: Math.atan2(xyz.y, xyz.x),
-        z: xyz.z
-      };
-    }
-
-    function rtz2xyz(rtz) {
-      return {
-        x: rtz.r * Math.cos(rtz.t),
-        y: rtz.r * Math.sin(rtz.t),
-        z: rtz.z
-      };
-    }
-  };
-}
-    ")
+    new_data_young <- filter(new.dat, Age < 70)
+    ptau_threshold <- req(ptau_cutoff_lower$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
+    group2_animation$plot <- AnimatedPlanesFunction(
+      dat = new_data_young, 
+      xinput = new_data_young$Sum.hippo, 
+      yinput = new_data_young$CSF.pTau.INNO, 
+      zinput = new_data_young$Centiloid, 
+      cols = new_data_young$Clifford_class, 
+      leg = LEGEND_2,
+      xax = axx2,
+      yax = axy2,
+      zax = axz2,
+      XCUT = hippo_threshold, 
+      YCUT = ptau_threshold, 
+      ZCUT = centiloid_threshold, 
+      XNAME = HIPPO_cutoff_label, 
+      YNAME = ptau_cutoff_label, 
+      ZNAME = Centloid_cutoff_label
+    )
   })
 
   observeEvent(input$G2STATICP3, {
     new.dat <- req(data_internal$raw)
-    new_data_2 <- filter(new.dat, Age > 70)
-
-    group2_animation$plot <- plot_ly(new_data_2) %>%
-      add_markers(x = ~Sum.hippo, y = ~CSF.pTau.INNO, z = ~Centiloid, color = ~Clifford_class,
-                  colors = c("firebrick", "darkorange", "gold", "forestgreen")) %>%
-      add_trace(type = 'mesh3d',
-                name = 'Centiloid Cut-off',
-                x = c(max(new.dat$Sum.hippo),max(new.dat$Sum.hippo),min(new.dat$Sum.hippo),min(new.dat$Sum.hippo)),
-                y = c(max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO)),
-                z = c(20, 20, 20, 20),
-                i = c(0,3),
-                j = c(1,2),
-                k = c(3,0),
-                opacity = 0.2,
-                showlegend = T) %>%
-      add_trace(type = 'mesh3d',
-                name = "Hippocampus mL<sup>3</sup> cut-off",
-                x = c(5.402554, 5.402554, 5.402554, 5.402554),
-                y = c(max(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
-                z = c(max(new.dat$Centiloid),min(new.dat$Centiloid), max(new.dat$Centiloid),min(new.dat$Centiloid)),
-
-                # Next define all triples (i,j,k) of vertices that form a 2-cell face.
-                # 1 face
-                i = c(0,3),
-                j = c(1,2),
-                k = c(3,0),
-
-                # Define the appearance of the 4 faces (2-cells)
-                opacity = 0.2,
-                showlegend = T) %>%
-      add_trace(type = "mesh3d",
-                name = "CSF pTau pg/mL Cut-off",
-                x = c(max(new.dat$Sum.hippo),max(new.dat$Sum.hippo),min(new.dat$Sum.hippo),min(new.dat$Sum.hippo)),
-                y = c(73.83,  73.83,  73.83, 73.83),
-                z = c(max(new.dat$Centiloid),min(new.dat$Centiloid),max(new.dat$Centiloid),min(new.dat$Centiloid)),
-                i = c(0,1),
-                j = c(1,2),
-                k = c(2,3),
-                opacity = 0.2,
-                showlegend = T) %>%
-      layout(legend = LEGEND_2,
-             scene = list(xaxis = axy2, yaxis = axx2, zaxis = axz2))
+    data_old <- filter(new.dat, Age > 70)
+    
+    ptau_threshold <- req(ptau_cutoff_upper$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
+    
+    group2_animation$plot <- PlanesFunction(
+      dat = data_old, 
+      xinput = data_old$Sum.hippo, 
+      yinput = data_old$CSF.pTau.INNO, 
+      zinput = data_old$Centiloid, 
+      cols = data_old$Clifford_class, 
+      leg = LEGEND_2,
+      xax = axx2,
+      yax = axy2,
+      zax = axz2,
+      XCUT = hippo_threshold, 
+      YCUT = ptau_threshold, 
+      ZCUT = centiloid_threshold, 
+      XNAME = HIPPO_cutoff_label, 
+      YNAME = ptau_cutoff_label, 
+      ZNAME = Centloid_cutoff_label
+    )
 
   })
 
   observeEvent(input$G3ROTATINGP3, {
     new.dat <- req(data_internal$raw)
-    new_data_2 <- filter(new.dat, Age > 70)
+    data_old <- filter(new.dat, Age > 70)
+    
+    ptau_threshold <- req(ptau_cutoff_upper$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
 
-    group2_animation$plot <- plot_ly(new_data_2) %>%
-      add_markers(x = ~Sum.hippo, y = ~CSF.pTau.INNO, z = ~Centiloid, color = ~Clifford_class,
-                  colors = c("firebrick", "darkorange", "gold", "forestgreen")) %>%
-      add_trace(type = 'mesh3d',
-                name = 'Centiloid Cut-off',
-                x = c(max(new.dat$Sum.hippo),max(new.dat$Sum.hippo),min(new.dat$Sum.hippo),min(new.dat$Sum.hippo)),
-                y = c(max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO),min(new.dat$CSF.pTau.INNO)),
-                z = c(20, 20, 20, 20),
-                i = c(0,3),
-                j = c(1,2),
-                k = c(3,0),
-                opacity = 0.2,
-                showlegend = T) %>%
-      add_trace(type = 'mesh3d',
-                name = "Hippocampus mL<sup>3</sup> cut-off",
-                x = c(5.402554, 5.402554, 5.402554, 5.402554),
-                y = c(max(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO), min(new.dat$CSF.pTau.INNO)),
-                z = c(max(new.dat$Centiloid),min(new.dat$Centiloid), max(new.dat$Centiloid),min(new.dat$Centiloid)),
-
-                # Next define all triples (i,j,k) of vertices that form a 2-cell face.
-                # 1 face
-                i = c(0,3),
-                j = c(1,2),
-                k = c(3,0),
-
-                # Define the appearance of the 4 faces (2-cells)
-                opacity = 0.2,
-                showlegend = T) %>%
-      add_trace(type = "mesh3d",
-                name = "CSF pTau pg/mL Cut-off",
-                x = c(max(new.dat$Sum.hippo),max(new.dat$Sum.hippo),min(new.dat$Sum.hippo),min(new.dat$Sum.hippo)),
-                y = c(73.83,  73.83,  73.83, 73.83),
-                z = c(max(new.dat$Centiloid),min(new.dat$Centiloid),max(new.dat$Centiloid),min(new.dat$Centiloid)),
-                i = c(0,1),
-                j = c(1,2),
-                k = c(2,3),
-                opacity = 0.2,
-                showlegend = T) %>%
-      layout(legend = LEGEND_2,
-             scene = list(xaxis = axy2, yaxis = axx2, zaxis = axz2,
-                          camera = list(
-                            eye = list(
-                              x = 1.25,
-                              y = 1.25,
-                              z = 1.25
-                            ),
-                            center = list(x = 0,
-                                          y = 0,
-                                          z = 0)
-                          ))) %>%
-      onRender("
-      function(el, x){
-  var id = el.getAttribute('id');
-  var gd = document.getElementById(id);
-  Plotly.plot(id).then(attach);
-  function attach() {
-    var cnt = 0;
-
-    function run() {
-      rotate('scene', Math.PI / 180);
-      requestAnimationFrame(run);
-    }
-    run();
-
-    function rotate(id, angle) {
-      var eye0 = gd.layout[id].camera.eye
-      var rtz = xyz2rtz(eye0);
-      rtz.t += angle;
-
-      var eye1 = rtz2xyz(rtz);
-      Plotly.relayout(gd, id + '.camera.eye', eye1)
-    }
-
-    function xyz2rtz(xyz) {
-      return {
-        r: Math.sqrt(xyz.x * xyz.x + xyz.y * xyz.y),
-        t: Math.atan2(xyz.y, xyz.x),
-        z: xyz.z
-      };
-    }
-
-    function rtz2xyz(rtz) {
-      return {
-        x: rtz.r * Math.cos(rtz.t),
-        y: rtz.r * Math.sin(rtz.t),
-        z: rtz.z
-      };
-    }
-  };
-}
-    ")
+    group2_animation$plot <- AnimatedPlanesFunction(
+      dat = data_old, 
+      xinput = data_old$Sum.hippo, 
+      yinput = data_old$CSF.pTau.INNO, 
+      zinput = data_old$Centiloid, 
+      cols = data_old$Clifford_class, 
+      leg = LEGEND_2,
+      xax = axx2,
+      yax = axy2,
+      zax = axz2,
+      XCUT = hippo_threshold, 
+      YCUT = ptau_threshold, 
+      ZCUT = centiloid_threshold, 
+      XNAME = HIPPO_cutoff_label, 
+      YNAME = ptau_cutoff_label, 
+      ZNAME = Centloid_cutoff_label
+    )
 
   })
 
@@ -2807,51 +1970,23 @@ output$plot5.P3 <- renderPlotly({
   observeEvent(input$CUBESTATICG2, {
     new.dat <- req(data_internal$raw)
     df_young <- filter(new.dat, Age < 70)
-    df7 <- mutate(df_young, scat_col = ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
-                                              "selected - Stage 2 clinically asymptomatic",
-                                              ifelse(CSF.pTau.INNO >59.23  & Sum.hippo <5.402554 & Centiloid > 20 & Clifford_class == "Stage 1, preclinical AD stage",
-                                                     "selected - Stage 1 preclinical AD stage",
-                                                     ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "SNAP",
-                                                            "selected - SNAP",
-                                                            ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "MCI unlikely due to AD",
-                                                                   "selected - MCI unlikely due to AD", "unselected")))))
-
-
-    df7$scat_col <- factor(df7$scat_col, levels = c("unselected", "selected - Stage 2 clinically asymptomatic",
-                                                    "selected - Stage 1 preclinical AD stage", "selected - SNAP",
-                                                    "selected - MCI unlikely due to AD"))
-
-
-    df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO), max(df7$CSF.pTau.INNO), 59.23,59.23,   max(df7$CSF.pTau.INNO),  max(df7$CSF.pTau.INNO), 59.23,59.23),
-                            Y_VAL = c(min(df7$Sum.hippo, na.rm = T),  5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554, min(df7$Sum.hippo, na.rm = T),   5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554),
-                            Z_VAL = c(20,      20,    20,      20,  max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T)),
-                            MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-
-    # Make apoe4 a factor
-    df7$apoe4 <- factor(df7$apoe4, levels = c(1,0))
-
-    cube_g2_animate$plot <- plot_ly()%>%
-      add_markers(type = "scatter3d",
-                  mode = "markers",
-                  data = df7,
-                  x = ~CSF.pTau.INNO,
-                  y = ~Sum.hippo,
-                  z = ~Centiloid,
-                  color = ~scat_col,
-                  colors = c('gray', 'red', "gold", "green")) %>%
-      add_trace(type = 'mesh3d',
-                data = df_mesh_1,
-                x = ~X_VAL,
-                y = ~Y_VAL,
-                z = ~Z_VAL,
-                i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-                j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-                k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-                facecolor = rep("blue", 12),
-                opacity = 0.1,
-                name = "A+/T+/N+ Positive Area",
-                showlegend = T) %>%
-      layout(legend = LEGEND_2, scene = list(xaxis = axx2, yaxis = axy2, zaxis = axz2))
+    
+    ptau_threshold <- req(ptau_cutoff_lower$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
+    cube_g2_animate$plot <- G2CubeVisualisation(dat = df_young, 
+                                             xinput = df_young$Sum.hippo,
+                                             yinput = df_young$CSF.pTau.INNO, 
+                                             zinput = df_young$Centiloid, 
+                                             leg = LEGEND_2,
+                                             xax=axx2,
+                                             yax = axy2,
+                                             zax = axz2, 
+                                             XCUT = hippo_threshold, 
+                                             YCUT = ptau_threshold, 
+                                             ZCUT = centiloid_threshold)
 
   })
 
@@ -2859,254 +1994,69 @@ output$plot5.P3 <- renderPlotly({
   observeEvent(input$CUBEROTATEG2, {
     new.dat <- req(data_internal$raw)
     df_young <- filter(new.dat, Age < 70)
-    df7 <- mutate(df_young, scat_col = ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
-                                              "selected - Stage 2 clinically asymptomatic",
-                                              ifelse(CSF.pTau.INNO >59.23  & Sum.hippo <5.402554 & Centiloid > 20 & Clifford_class == "Stage 1, preclinical AD stage",
-                                                     "selected - Stage 1 preclinical AD stage",
-                                                     ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "SNAP",
-                                                            "selected - SNAP",
-                                                            ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "MCI unlikely due to AD",
-                                                                   "selected - MCI unlikely due to AD", "unselected")))))
-
-
-    df7$scat_col <- factor(df7$scat_col, levels = c("unselected", "selected - Stage 2 clinically asymptomatic",
-                                                    "selected - Stage 1 preclinical AD stage", "selected - SNAP",
-                                                    "selected - MCI unlikely due to AD"))
-
-
-    df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO), max(df7$CSF.pTau.INNO), 59.23,59.23,   max(df7$CSF.pTau.INNO),  max(df7$CSF.pTau.INNO), 59.23,59.23),
-                            Y_VAL = c(min(df7$Sum.hippo, na.rm = T),  5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554, min(df7$Sum.hippo, na.rm = T),   5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554),
-                            Z_VAL = c(20,      20,    20,      20,  max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T)),
-                            MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-
-    # Make apoe4 a factor
-    df7$apoe4 <- factor(df7$apoe4, levels = c(1,0))
-
-    cube_g2_animate$plot <- plot_ly()%>%
-      add_markers(type = "scatter3d",
-                  mode = "markers",
-                  data = df7,
-                  x = ~CSF.pTau.INNO,
-                  y = ~Sum.hippo,
-                  z = ~Centiloid,
-                  color = ~scat_col,
-                  colors = c('gray', 'red', "gold", "green")) %>%
-      add_trace(type = 'mesh3d',
-                data = df_mesh_1,
-                x = ~X_VAL,
-                y = ~Y_VAL,
-                z = ~Z_VAL,
-                i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-                j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-                k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-                facecolor = rep("blue", 12),
-                opacity = 0.1,
-                name = "A+/T+/N+ Positive Area",
-                showlegend = T) %>%
-      layout(legend = LEGEND_2, scene = list(xaxis = axx2, yaxis = axy2, zaxis = axz2,
-                                             camera = list(
-                                               eye = list(
-                                                 x = 1.25,
-                                                 y = 1.25,
-                                                 z = 1.25
-                                               ),
-                                               center = list(x = 0,
-                                                             y = 0,
-                                                             z = 0)
-                                             ))) %>%
-      onRender("
-      function(el, x){
-  var id = el.getAttribute('id');
-  var gd = document.getElementById(id);
-  Plotly.plot(id).then(attach);
-  function attach() {
-    var cnt = 0;
-
-    function run() {
-      rotate('scene', Math.PI / 180);
-      requestAnimationFrame(run);
-    }
-    run();
-
-    function rotate(id, angle) {
-      var eye0 = gd.layout[id].camera.eye
-      var rtz = xyz2rtz(eye0);
-      rtz.t += angle;
-
-      var eye1 = rtz2xyz(rtz);
-      Plotly.relayout(gd, id + '.camera.eye', eye1)
-    }
-
-    function xyz2rtz(xyz) {
-      return {
-        r: Math.sqrt(xyz.x * xyz.x + xyz.y * xyz.y),
-        t: Math.atan2(xyz.y, xyz.x),
-        z: xyz.z
-      };
-    }
-
-    function rtz2xyz(rtz) {
-      return {
-        x: rtz.r * Math.cos(rtz.t),
-        y: rtz.r * Math.sin(rtz.t),
-        z: rtz.z
-      };
-    }
-  };
-}
-    ")
+    
+    ptau_threshold <- req(ptau_cutoff_lower$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
+    cube_g2_animate$plot <- AnimatedG2CubeVisualisation(dat = df_young, 
+                                                xinput = df_young$Sum.hippo,
+                                                yinput = df_young$CSF.pTau.INNO, 
+                                                zinput = df_young$Centiloid, 
+                                                leg = LEGEND_2,
+                                                xax=axx2,
+                                                yax = axy2,
+                                                zax = axz2, 
+                                                XCUT = hippo_threshold, 
+                                                YCUT = ptau_threshold, 
+                                                ZCUT = centiloid_threshold)
   })
 
   observeEvent(input$G2P2CUBESTATIC, {
     new.dat <- req(data_internal$raw)
     df_old <- filter(new.dat, Age > 70)
-    df7 <- mutate(df_old, scat_col = ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
-                                            "selected - Stage 2 clinically asymptomatic",
-                                            ifelse(CSF.pTau.INNO >73.83   & Sum.hippo <5.402554 & Centiloid > 20 & Clifford_class == "Stage 1, preclinical AD stage",
-                                                   "selected - Stage 1 preclinical AD stage",
-                                                   ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "SNAP",
-                                                          "selected - SNAP",
-                                                          ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "MCI unlikely due to AD",
-                                                                 "selected - MCI unlikely due to AD", "unselected")))))
-
-
-    df7$scat_col <- factor(df7$scat_col, levels = c("unselected", "selected - Stage 2 clinically asymptomatic",
-                                                    "selected - Stage 1 preclinical AD stage", "selected - SNAP",
-                                                    "selected - MCI unlikely due to AD"))
-
-
-    df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO), max(df7$CSF.pTau.INNO), 73.83 ,73.83 ,   max(df7$CSF.pTau.INNO),  max(df7$CSF.pTau.INNO), 73.83 ,73.83 ),
-                            Y_VAL = c(min(df7$Sum.hippo, na.rm = T),  5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554, min(df7$Sum.hippo, na.rm = T),   5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554),
-                            Z_VAL = c(20,      20,    20,      20,  max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T)),
-                            MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-
-    # Make apoe4 a factor
-    df7$apoe4 <- factor(df7$apoe4, levels = c(1,0))
-
-    cube_g2_animate$plot <- plot_ly()%>%
-      add_markers(type = "scatter3d",
-                  mode = "markers",
-                  data = df7,
-                  x = ~CSF.pTau.INNO,
-                  y = ~Sum.hippo,
-                  z = ~Centiloid,
-                  color = ~scat_col,
-                  colors = c('gray', 'red', "gold", "green")) %>%
-      add_trace(type = 'mesh3d',
-                data = df_mesh_1,
-                x = ~X_VAL,
-                y = ~Y_VAL,
-                z = ~Z_VAL,
-                i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-                j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-                k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-                facecolor = rep("blue", 12),
-                opacity = 0.1,
-                name = "A+/T+/N+ Positive Area",
-                showlegend = T) %>%
-      layout(legend = LEGEND_2, scene = list(xaxis = axx2, yaxis = axy2, zaxis = axz2))
+    
+    ptau_threshold <- req(ptau_cutoff_upper$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
+    cube_g2_animate$plot <- G2CubeVisualisation(dat = df_old, 
+                                                xinput = df_old$Sum.hippo,
+                                                yinput = df_old$CSF.pTau.INNO, 
+                                                zinput = df_old$Centiloid, 
+                                                leg = LEGEND_2,
+                                                xax=axx2,
+                                                yax = axy2,
+                                                zax = axz2, 
+                                                XCUT = hippo_threshold, 
+                                                YCUT = ptau_threshold, 
+                                                ZCUT = centiloid_threshold)
+    
 
   })
 
   observeEvent(input$G2P2Rotate, {
     new.dat <- req(data_internal$raw)
     df_old <- filter(new.dat, Age > 70)
-    df7 <- mutate(df_old, scat_col = ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
-                                            "selected - Stage 2 clinically asymptomatic",
-                                            ifelse(CSF.pTau.INNO >73.83   & Sum.hippo <5.402554 & Centiloid > 20 & Clifford_class == "Stage 1, preclinical AD stage",
-                                                   "selected - Stage 1 preclinical AD stage",
-                                                   ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "SNAP",
-                                                          "selected - SNAP",
-                                                          ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "MCI unlikely due to AD",
-                                                                 "selected - MCI unlikely due to AD", "unselected")))))
-
-
-    df7$scat_col <- factor(df7$scat_col, levels = c("unselected", "selected - Stage 2 clinically asymptomatic",
-                                                    "selected - Stage 1 preclinical AD stage", "selected - SNAP",
-                                                    "selected - MCI unlikely due to AD"))
-
-
-    df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO), max(df7$CSF.pTau.INNO), 73.83 ,73.83 ,   max(df7$CSF.pTau.INNO),  max(df7$CSF.pTau.INNO), 73.83 ,73.83 ),
-                            Y_VAL = c(min(df7$Sum.hippo, na.rm = T),  5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554, min(df7$Sum.hippo, na.rm = T),   5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554),
-                            Z_VAL = c(20,      20,    20,      20,  max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T)),
-                            MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-
-    # Make apoe4 a factor
-    df7$apoe4 <- factor(df7$apoe4, levels = c(1,0))
-
-    cube_g2_animate$plot <- plot_ly()%>%
-      add_markers(type = "scatter3d",
-                  mode = "markers",
-                  data = df7,
-                  x = ~CSF.pTau.INNO,
-                  y = ~Sum.hippo,
-                  z = ~Centiloid,
-                  color = ~scat_col,
-                  colors = c('gray', 'red', "gold", "green")) %>%
-      add_trace(type = 'mesh3d',
-                data = df_mesh_1,
-                x = ~X_VAL,
-                y = ~Y_VAL,
-                z = ~Z_VAL,
-                i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-                j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-                k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-                facecolor = rep("blue", 12),
-                opacity = 0.1,
-                name = "A+/T+/N+ Positive Area",
-                showlegend = T) %>%
-      layout(legend = LEGEND_2, scene = list(xaxis = axx2, yaxis = axy2, zaxis = axz2,
-                                             camera = list(
-                                               eye = list(
-                                                 x = 1.25,
-                                                 y = 1.25,
-                                                 z = 1.25
-                                               ),
-                                               center = list(x = 0,
-                                                             y = 0,
-                                                             z = 0)
-                                             ))) %>%
-      onRender("
-      function(el, x){
-  var id = el.getAttribute('id');
-  var gd = document.getElementById(id);
-  Plotly.plot(id).then(attach);
-  function attach() {
-    var cnt = 0;
-
-    function run() {
-      rotate('scene', Math.PI / 180);
-      requestAnimationFrame(run);
-    }
-    run();
-
-    function rotate(id, angle) {
-      var eye0 = gd.layout[id].camera.eye
-      var rtz = xyz2rtz(eye0);
-      rtz.t += angle;
-
-      var eye1 = rtz2xyz(rtz);
-      Plotly.relayout(gd, id + '.camera.eye', eye1)
-    }
-
-    function xyz2rtz(xyz) {
-      return {
-        r: Math.sqrt(xyz.x * xyz.x + xyz.y * xyz.y),
-        t: Math.atan2(xyz.y, xyz.x),
-        z: xyz.z
-      };
-    }
-
-    function rtz2xyz(rtz) {
-      return {
-        x: rtz.r * Math.cos(rtz.t),
-        y: rtz.r * Math.sin(rtz.t),
-        z: rtz.z
-      };
-    }
-  };
-}
-    ")
+    
+    ptau_threshold <- req(ptau_cutoff_upper$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
+    cube_g2_animate$plot <- AnimatedG2CubeVisualisation(dat = df_old, 
+                                                xinput = df_old$Sum.hippo,
+                                                yinput = df_old$CSF.pTau.INNO, 
+                                                zinput = df_old$Centiloid, 
+                                                leg = LEGEND_2,
+                                                xax=axx2,
+                                                yax = axy2,
+                                                zax = axz2, 
+                                                XCUT = hippo_threshold, 
+                                                YCUT = ptau_threshold, 
+                                                ZCUT = centiloid_threshold)
   })
 
   output$plot5.P2 <- renderPlotly({
@@ -3294,153 +2244,15 @@ output$plot5.P3 <- renderPlotly({
     # new.dat$apoe4 <- as.factor(new.dat$apoe4, levels = c("0","1"))
     new.dat$Age_binary <- factor(new.dat$Age_binary, levels = c("0","1"))
     if (input$BIOMARKERG2 == "Centiloid"){
-      cent1 <- ggplot(new.dat, aes(x = Sex, y = Centiloid, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ggtitle("Sex and Centiloid")
-
-      new.dat$apoe4 <- factor(new.dat$apoe4, levels = c("0","1"))
-
-      cent2 <- ggplot(new.dat, aes(x = apoe4, y = Centiloid, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ggtitle("Apoe4 and Centiloid")
-
-      setDT(new.dat)[Age < 65.5, AgeGroup := "<65"]
-      new.dat[Age >65.5 & Age < 70.5, AgeGroup := "66-70"]
-      new.dat[Age > 70.5 & Age < 75.5, AgeGroup := "71-75"]
-      new.dat[Age > 75.5 & Age < 80.5, AgeGroup := "76-80"]
-      new.dat[Age > 80.5 & Age < 85.5, AgeGroup := "81-85"]
-      new.dat[Age > 85.5, AgeGroup := "86+"]
-
-      cent4 <- ggplot(new.dat, aes(x = AgeGroup, y = Centiloid, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        xlab("Age Group")+
-        ylab("Centiloid")+
-        ggtitle("AgeGroup and Centiloid")
-
-      # Education and age binarised
-
-      cent5 <- ggplot(new.dat, aes(x = Education_binary, y = Centiloid, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        xlab("Education Binary")+
-        ylab("Centiloid")+
-        ggtitle("Education_binary and Centiloid")
-
-      cent6 <- ggplot(new.dat, aes(x = Age_binary, y = Centiloid, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        xlab("Age Binary")+
-        ylab("Centiloid")+
-        ggtitle("Age Binary and Centiloid")
-
-      grid.arrange(cent1, cent2, cent4, cent5, cent6, ncol = 3)
+      BoxplotFunction(new.dat, new.dat$Centiloid, input_title = axz2)
 
     } else if (input$BIOMARKERG2 == "CSF pTau pg/mL"){
 
-      ##################### P TAU ##########################
-      cent1 <- ggplot(new.dat, aes(x = Sex, y = CSF.pTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        xlab("Sex")+
-        ylab("CSF pTau pg/mL")+
-        ggtitle("Sex and CSF pTau pg/mL")
-
-      new.dat$apoe4 <- factor(new.dat$apoe4, levels = c("0","1"))
-
-      cent2 <- ggplot(new.dat, aes(x = apoe4, y = CSF.pTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        xlab("Apoe4")+
-        ylab("CSF pTau pg/mL")+
-        ggtitle("Apoe4 and CSF pTau pg/mL")
-
-      setDT(new.dat)[Age < 65.5, AgeGroup := "<65"]
-      new.dat[Age >65.5 & Age < 70.5, AgeGroup := "66-70"]
-      new.dat[Age > 70.5 & Age < 75.5, AgeGroup := "71-75"]
-      new.dat[Age > 75.5 & Age < 80.5, AgeGroup := "76-80"]
-      new.dat[Age > 80.5 & Age < 85.5, AgeGroup := "81-85"]
-      new.dat[Age > 85.5, AgeGroup := "86+"]
-
-      cent4 <- ggplot(new.dat, aes(x = AgeGroup, y = CSF.pTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF pTau pg/mL")+
-        xlab("Age Group")+
-        ggtitle("Age Group and CSF pTau pg/mL")
-
-      # Education and age binarised
-
-      cent5 <- ggplot(new.dat, aes(x = Education_binary, y = CSF.pTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        ylab("CSF pTau pg/mL")+
-        xlab("Education Binary")+
-        ggtitle("Education Binary and CSF pTau pg/mL")
-
-      cent6 <- ggplot(new.dat, aes(x = Age_binary, y = CSF.pTau.INNO, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        xlab("Age Binary")+
-        ylab("CSF pTau pg/mL")+
-        ggtitle("Age Binary and CSF pTau pg/mL")
-
-      grid.arrange(cent1, cent2, cent4, cent5, cent6, ncol = 3)
+      BoxplotFunction(new.dat, new.dat$CSF.pTau.INNO, input_title = axy)
 
     }else if (input$BIOMARKERG2 == "BOXHIP1"){
 
-      ###################### HIPPO CAMPUS ##############################
-
-      cent1 <- ggplot(new.dat, aes(x = Sex, y = Sum.hippo, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        xlab("Sex")+
-        ylab(bquote("Hippocampus "~mL^3))+
-        ggtitle("Sex and Hippocampus")
-
-      new.dat$apoe4 <- factor(new.dat$apoe4, levels = c("0","1"))
-
-      cent2 <- ggplot(new.dat, aes(x = apoe4, y = Sum.hippo, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        xlab("Apoe4")+
-        ylab(bquote("Hippocampus "~mL^3))+
-        ggtitle("Apoe4 and Hippocampus")
-
-      setDT(new.dat)[Age < 65.5, AgeGroup := "<65"]
-      new.dat[Age >65.5 & Age < 70.5, AgeGroup := "66-70"]
-      new.dat[Age > 70.5 & Age < 75.5, AgeGroup := "71-75"]
-      new.dat[Age > 75.5 & Age < 80.5, AgeGroup := "76-80"]
-      new.dat[Age > 80.5 & Age < 85.5, AgeGroup := "81-85"]
-      new.dat[Age > 85.5, AgeGroup := "86+"]
-
-      cent4 <- ggplot(new.dat, aes(x = AgeGroup, y = Sum.hippo, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        xlab("Age Group")+
-        ylab(bquote("Hippocampus "~mL^3))+
-        ggtitle("AgeGroup and Hippocampus")
-
-      # Education and age binarised
-
-      cent5 <- ggplot(new.dat, aes(x = Education_binary, y = Sum.hippo, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        xlab("Education Binary")+
-        ylab(bquote("Hippocampus "~mL^3))+
-        ggtitle("Education Binary and Hippocampus")
-
-      cent6 <- ggplot(new.dat, aes(x = Age_binary, y = Sum.hippo, na.rm = T))+
-        geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+
-        theme_bw()+
-        xlab("Education Binary")+
-        ylab(bquote("Hippocampus "~mL^3))+
-        ggtitle("Age Binary and Hippocampus")
-
-      grid.arrange(cent1, cent2, cent4, cent5, cent6, ncol = 3)
-
+      BoxplotFunction(new.dat, new.dat$Sum.hippo, input_title = hippo.boxplot)
     }
 
   })
@@ -4442,7 +3254,7 @@ output$plot5.P3 <- renderPlotly({
     group_2_table}, hover = T, striped = T, bordered = T,
                                 width = "auto", align = "c", colnames = F, na = "")
   
-
+  
   
 ############################# END OF SERVER FUNCTION ###########################  
 }
