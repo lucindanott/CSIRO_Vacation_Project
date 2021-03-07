@@ -43,6 +43,7 @@ server <- function(input, output){
   source("new_table_function.R")
   source("LinearRegressionTables.R")
   source("ProcessingData.R")
+  source("AddinDataG1.R")
   
   ########################## DOWNLOAD DATA SET ####################################
   
@@ -264,6 +265,65 @@ server <- function(input, output){
     title = "Hippocampus"
   )
   
+  ############# Read the TExt Input for ASSAY Type inputted ##########
+  
+  output$NewCUTOFFLabels <- renderText({
+    new.dat <- req(data_internal$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippoframe <- x$hippoframe
+    paste0("You have inputted new cut-off values for the CSF data. These points have been updated
+           across the app. The new assay type analysed is ", input$AssayLabel, ". The cut-off thresholds
+           have been updated below. To return to the supplied data or make a new selection, please refresh
+           the website to clear all previous inputs.")
+  })
+    output$NewCUTOFFLabels2 <- renderText({
+    new.dat <- req(data_internal$raw)
+    paste0("You have inputted new cut-off values for the CSF data. These points have been updated
+           across the app. The new assay type analysed is ", input$AssayLabel, ". The cut-off thresholds
+           have been updated below. To return to the supplied data or make a new selection, please refresh
+           the website to clear all previous inputs.")
+  })
+  
+
+  output$ABTEXT <- renderText({
+    new.dat <- req(data_internal$raw)
+    AB_threshold <- req(AB_cutoff_singular$raw)
+    paste0("A: is quantified by CSF AB1-42, positive participants have values less than ", AB_threshold)
+  })
+  
+  output$PTAUTEXT <- renderText({
+    new.dat <- req(data_internal$raw)
+    ptau_threshold <- req(ptau_cutoff_singular$raw)
+    paste0("T: is quantified by phosphor-Tau CSF p-181, positive participants have values greater than ", ptau_threshold)
+  })
+  
+  output$TTAUTEXT <- renderText({
+    new.dat <- req(data_internal$raw)
+    ttau_threshold <- req(ttau_cutoff_singular$raw)
+    paste0("N: is CSF t-Tau or total-Tau, positive particippants have values greater than ", ttau_threshold)
+  })
+  
+  output$CENTILOIDTEXT <- renderText({
+    new.dat <- req(data_internal$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    paste0("A: is quantified by Centiloid, positive particiapnts have values greater than ", centiloid_threshold)
+  })
+  
+  output$PTAU2TEXT <- renderText({
+    new.dat <- req(data_internal$raw)
+    ptau_threshold <- req(ptau_cutoff_singular$raw)
+    paste0("T: is quantified by phosphor-Tau CSF p-181, positive participants have values greater than ", ptau_threshold)
+  })
+  
+  output$HIPPOCAMPUSTEXT <- renderText({
+    new.dat <- req(data_internal$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippoframe <- x$hippoframe
+    paste0("N: is quantified by hippocampus volume, positive participants have values less than ", round(hippo_cutoff,2))
+  })
+  
   ############### Warning Message ########################
   shinyalert(title = "Important Note", 
              text = "This application was developed by CSIRO student intern. \n
@@ -332,6 +392,15 @@ server <- function(input, output){
   ##
   #
   
+  ############################ Demographic Summary ############################
+  ################################# TABLE #####################################
+  
+  output$table1 <- renderTable({
+    new.dat <- req(data_internal$raw)
+    table_2 <- new_table_function(dat=new.dat)
+    group_1_table <- table_2$group_1_table
+    group_1_table}, hover = T, striped = T, bordered = T, 
+    width = "auto", align = "c", colnames = F, na = "")
   
   
   ################################ 2D Visualisation ###########################
@@ -549,6 +618,73 @@ server <- function(input, output){
 
 
  })
+ 
+ 
+ 
+   #
+   ##
+   ###
+   ####
+   #####
+   ################## CONDITIONAL PANELS FOR ADDING 1 THRESHOLD #################
+   #####
+   ####
+   ###
+   ##
+   #
+   
+   ####################### GROUP 1 ###################
+   ###################### PLANES VISUALISATION #################
+
+   observeEvent(input$age_no_dependence_static, {
+     new.dat <- req(data_internal$raw)
+     AB_threshold <- req(AB_cutoff_singular$raw)
+     ptau_threshold <- req(ptau_cutoff_singular$raw)
+     ttau_treshold <- req(ttau_cutoff_singular$raw)
+     v$plot <- PlanesFunction(
+       dat = new.dat, 
+       xinput = new.dat$CSF.AB42.INNO, 
+       yinput = new.dat$CSF.pTau.INNO, 
+       zinput = new.dat$CSF.tTau.INNO, 
+       cols = new.dat$Burnham_class, 
+       leg = LEGEND_1,
+       xax = axx,
+       yax = axy,
+       zax = axz,
+       XCUT = AB_threshold, 
+       YCUT = ptau_threshold, 
+       ZCUT = ttau_treshold, 
+       XNAME = AB_cutoff_label, 
+       YNAME = ptau_cutoff_label, 
+       ZNAME = ttau_cutoff_label
+     )
+   })
+ 
+ 
+ observeEvent(input$age_no_dependence_rotating, {
+   new.dat <- req(data_internal$raw)
+   AB_threshold <- req(AB_cutoff_singular$raw)
+   ptau_threshold <- req(ptau_cutoff_singular$raw)
+   ttau_treshold <- req(ttau_cutoff_singular$raw)
+   v$plot <- AnimatedPlanesFunction(
+     dat = new.dat, 
+     xinput = new.dat$CSF.AB42.INNO, 
+     yinput = new.dat$CSF.pTau.INNO, 
+     zinput = new.dat$CSF.tTau.INNO, 
+     cols = new.dat$Burnham_class, 
+     leg = LEGEND_1,
+     xax = axx,
+     yax = axy,
+     zax = axz,
+     XCUT = AB_threshold, 
+     YCUT = ptau_threshold, 
+     ZCUT = ttau_treshold, 
+     XNAME = AB_cutoff_label, 
+     YNAME = ptau_cutoff_label, 
+     ZNAME = ttau_cutoff_label
+   )
+ })
+ 
 
   output$PLOTLYOUTPUT <- renderPlotly({
     if (is.null(v$plot)) return()
@@ -640,16 +776,73 @@ server <- function(input, output){
                                              YCUT = ptau_threshold, 
                                              ZCUT = ttau_treshold)
   })
+  
+  #
+  ##
+  ###
+  ####
+  #####
+  ################## CONDITIONAL PANELS FOR ADDING 1 THRESHOLD #################
+  #####
+  ####
+  ###
+  ##
+  #
+  
+  ####################### GROUP 1 ###################
+  ###################### CUBE VISUALISATION #################
+  
+  observeEvent(input$no_age_ATN, {
+    new.dat <- req(data_internal$raw)
+    AB_threshold <- req(AB_cutoff_singular$raw)
+    ptau_threshold <- req(ptau_cutoff_singular$raw)
+    ttau_treshold <- req(ttau_cutoff_singular$raw)
+    cube_animate$plot <- CubeVisualisationG1(dat = new.dat, 
+                                             xinput = new.dat$CSF.AB42.INNO,
+                                             yinput = new.dat$CSF.pTau.INNO, 
+                                             zinput = new.dat$CSF.tTau.INNO, 
+                                             leg = LEGEND_1,
+                                             xax=axx,
+                                             yax = axy,
+                                             zax = axz, 
+                                             XCUT = AB_threshold, 
+                                             YCUT = ptau_threshold, 
+                                             ZCUT = ttau_treshold)
+    
+  })
+  
+  observeEvent(input$no_age_ATN_rotating, {
+    new.dat <- req(data_internal$raw)
+    AB_threshold <- req(AB_cutoff_singular$raw)
+    ptau_threshold <- req(ptau_cutoff_singular$raw)
+    ttau_treshold <- req(ttau_cutoff_singular$raw)
+    cube_animate$plot <- AnimatedG1CubeVisualisation(dat = new.dat, 
+                                             xinput = new.dat$CSF.AB42.INNO,
+                                             yinput = new.dat$CSF.pTau.INNO, 
+                                             zinput = new.dat$CSF.tTau.INNO, 
+                                             leg = LEGEND_1,
+                                             xax=axx,
+                                             yax = axy,
+                                             zax = axz, 
+                                             XCUT = AB_threshold, 
+                                             YCUT = ptau_threshold, 
+                                             ZCUT = ttau_treshold)
+  })
+  
+  
 
   output$plot5.P3 <- renderPlotly({
     if (is.null(cube_animate$plot)) return()
     cube_animate$plot
   })
+  
+  
 
 
   ############################# SCATTER AND CUBE ##############################
 
   output$OWNBIOMARKERS <- renderPlotly({
+    
     new.dat <- req(data_internal$raw)
 
     df6 <- new.dat[,c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")]
@@ -658,25 +851,22 @@ server <- function(input, output){
     newDF <- rbind(df6, New.Person)
     newDF$Burnham_class <- factor(newDF$Burnham_class, levels = c("AD", "Pathological Change", "Non-AD pathological Change",
                                                       "Normal AD Biomarkers", "My own markers"))
+    
     ADD_DATA <- mutate(newDF, size_guide = ifelse(Burnham_class == "My own markers",18,12))
     ADD_DATA$size_guide <- as.numeric(ADD_DATA$size_guide)
 
     if (input$DATAVIS =="3D Plot"){
 
-      own_dat <- plot_ly(ADD_DATA,
-                         x = ~CSF.AB42.INNO,
-                         y = ~CSF.pTau.INNO,
-                         z = ~CSF.tTau.INNO,
-                         type = "scatter3d",
-                         color = ~Burnham_class,
-                         colors = c("firebrick", "darkorange", "gold", "forestgreen","hotpink" ),
-                         mode = "markers",
-                         marker = list(size = ~size_guide))
-      # size = ~size_guide,
-      # sizes = c(700,2000))
-      own_dat <- own_dat %>%
-        layout(legend = LEGEND_1, scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
-      own_dat
+      AddinDataG1(dat = ADD_DATA, 
+                  xinput = ADD_DATA$CSF.AB42.INNO,
+                  yinput = ADD_DATA$CSF.pTau.INNO, 
+                  zinput = ADD_DATA$CSF.tTau.INNO, 
+                  cols = ADD_DATA$Burnham_class, 
+                  leg = LEGEND_1, 
+                  xax = axx,
+                  yax = axy,
+                  zax = axz, 
+                  size_guide_1 = ADD_DATA$size_guide)
 
 
     } else if(input$DATAVIS == "A+/T+/N+ Visualisation"){
@@ -690,58 +880,25 @@ server <- function(input, output){
         names(New.Person) <- c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")
         newDF <- rbind(df6, New.Person)
         newDF$Burnham_class <- factor(newDF$Burnham_class, levels = c("AD", "Pathological Change", "Non-AD pathological Change",
-                                                          "Normal AD Biomarkers", "My own markers"))
+                                                                      "Normal AD Biomarkers", "My own markers"))
         ADD_DATA <- mutate(newDF, size_guide = ifelse(Burnham_class == "My own markers",18,12))
         ADD_DATA$size_guide <- as.numeric(ADD_DATA$size_guide)
-        df7 <- mutate(ADD_DATA, colours_new = ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO > 378.65 & CSF.AB42.INNO <656 & Burnham_class == "AD",
-                                                     "selected - AD",
-                                                     ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO >378.65 & CSF.AB42.INNO < 656 & Burnham_class == "Pathological Change",
-                                                            "selected - Pathological Change",
-                                                            ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO > 378.65 & CSF.AB42.INNO < 656 & Burnham_class == "Non-AD pathological Change",
-                                                                   "selected - Non-AD pathological Change",
-                                                                   ifelse(CSF.pTau.INNO >73.83 & CSF.tTau.INNO > 378.65 & CSF.AB42.INNO < 656 & Burnham_class == "Normal AD Biomarkers",
-                                                                          "selected - Normal AD Biomarker",
-                                                                          ifelse(Burnham_class == "My own markers",
-                                                                                 "My own markers", "unselected"))))))
-
-
-        df7$colours_new <- factor(df7$colours_new, levels = c("unselected", "selected - AD",
-                                                              "selected - Pathological Change",
-                                                              "selected - Non-AD pathological Change",
-                                                              "selected - Normal AD Biomarker",
-                                                              "My own markers"))
-
-
-        df_mesh_1 <- data.frame(X_VAL = c(656,  656,    min(df7$CSF.AB42.INNO),    min(df7$CSF.AB42.INNO),    656,   656,   min(df7$CSF.AB42.INNO),   min(df7$CSF.AB42.INNO)),
-                                Y_VAL = c(73.83,  max(df7$CSF.pTau.INNO),    73.83,  max(df7$CSF.pTau.INNO),    73.83, max(df7$CSF.pTau.INNO),   73.83, max(df7$CSF.pTau.INNO)),
-                                Z_VAL = c(378.65, 378.65, 378.65, 378.65, max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO)),
-                                MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-        cube3 <- plot_ly()%>%
-          add_markers(type = "scatter3d",
-                      mode = "markers",
-                      marker = list(size = ~size_guide),
-                      data = df7,
-                      x = ~CSF.AB42.INNO,
-                      y = ~CSF.pTau.INNO,
-                      z = ~CSF.tTau.INNO,
-                      color = ~colours_new,
-                      colors = c('gray', "firebrick", "orange", "gold", "forestgreen", "hotpink")) %>%
-          add_trace(type = 'mesh3d',
-                    data = df_mesh_1,
-                    x = ~X_VAL,
-                    y = ~Y_VAL,
-                    z = ~Z_VAL,
-                    i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-                    j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-                    k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-                    facecolor = rep("blue", 12),
-                    opacity = 0.1,
-                    name = "A+/T+/N+ Positive Area",
-                    showlegend = T)
-        cube3 <- cube3 %>%
-          layout(legend = LEGEND_1,
-                 scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
-        cube3
+        
+        AB_threshold <- req(AB_cutoff$raw)
+        ptau_threshold <- req(ptau_cutoff_upper$raw)
+        ttau_treshold <- req(ttau_cutoff_upper$raw)
+        
+        ATNVisualisation(dat = ADD_DATA, xinput = ADD_DATA$CSF.AB42.INNO, yinput = ADD_DATA$CSF.pTau.INNO, 
+                         zinput = ADD_DATA$CSF.tTau.INNO,
+                         XCUT = AB_threshold, 
+                         YCUT = ptau_threshold, 
+                         ZCUT = ttau_treshold, 
+                         leg = LEGEND_1, 
+                         xax = axx,
+                         yax = axy,
+                         zax = axz, 
+                         size_guide = ADD_DATA$size_guide)
+        
       }else{
         df_young <- filter(new.dat, Age <70)
         df6 <- df_young[,c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")]
@@ -749,61 +906,85 @@ server <- function(input, output){
         names(New.Person) <- c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")
         newDF <- rbind(df6, New.Person)
         newDF$Burnham_class <- factor(newDF$Burnham_class, levels = c("AD", "Pathological Change", "Non-AD pathological Change",
-                                                          "Normal AD Biomarkers", "My own markers"))
+                                                                      "Normal AD Biomarkers", "My own markers"))
         ADD_DATA <- mutate(newDF, size_guide = ifelse(Burnham_class == "My own markers",18,12))
         ADD_DATA$size_guide <- as.numeric(ADD_DATA$size_guide)
-        df7 <- mutate(ADD_DATA, colours_new = ifelse(CSF.pTau.INNO >59.23  & CSF.tTau.INNO > 303.54  & CSF.AB42.INNO <656 & Burnham_class == "AD",
-                                                     "selected - AD",
-                                                     ifelse(CSF.pTau.INNO >59.23  & CSF.tTau.INNO >303.54  & CSF.AB42.INNO < 656 & Burnham_class == "Pathological Change",
-                                                            "selected - Pathological Change",
-                                                            ifelse(CSF.pTau.INNO >59.23  & CSF.tTau.INNO > 303.54  & CSF.AB42.INNO < 656 & Burnham_class == "Non-AD pathological Change",
-                                                                   "selected - Non-AD pathological Change",
-                                                                   ifelse(CSF.pTau.INNO >59.23 & CSF.tTau.INNO > 303.54  & CSF.AB42.INNO < 656 & Burnham_class == "Normal AD Biomarkers",
-                                                                          "selected - Normal AD Biomarker",
-                                                                          ifelse(Burnham_class == "My own markers",
-                                                                                 "My own markers", "unselected"))))))
+        
+        AB_threshold <- req(AB_cutoff$raw)
+        ptau_threshold <- req(ptau_cutoff_lower$raw)
+        ttau_treshold <- req(ttau_cutoff_lower$raw)
+        
+        ATNVisualisation(dat = ADD_DATA, xinput = ADD_DATA$CSF.AB42.INNO, yinput = ADD_DATA$CSF.pTau.INNO, 
+                         zinput = ADD_DATA$CSF.tTau.INNO,
+                         XCUT = AB_threshold, 
+                         YCUT = ptau_threshold, 
+                         ZCUT = ttau_treshold, 
+                         leg = LEGEND_1, 
+                         xax = axx,
+                         yax = axy,
+                         zax = axz, 
+                         size_guide = ADD_DATA$size_guide)
 
-
-        df7$colours_new <- factor(df7$colours_new, levels = c("unselected", "selected - AD",
-                                                              "selected - Pathological Change",
-                                                              "selected - Non-AD pathological Change",
-                                                              "selected - Normal AD Biomarker",
-                                                              "My own markers"))
-
-
-        df_mesh_1 <- data.frame(X_VAL = c(656,  656,    min(df7$CSF.AB42.INNO),    min(df7$CSF.AB42.INNO),    656,   656,   min(df7$CSF.AB42.INNO),   min(df7$CSF.AB42.INNO)),
-                                Y_VAL = c(59.23 ,  max(df7$CSF.pTau.INNO),    59.23 ,  max(df7$CSF.pTau.INNO),    59.23 , max(df7$CSF.pTau.INNO),   59.23 , max(df7$CSF.pTau.INNO)),
-                                Z_VAL = c(303.54 , 303.54 , 303.54 , 303.54 , max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO)),
-                                MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-        cube3 <- plot_ly()%>%
-          add_markers(type = "scatter3d",
-                      mode = "markers",
-                      marker = list(size = ~size_guide),
-                      data = df7,
-                      x = ~CSF.AB42.INNO,
-                      y = ~CSF.pTau.INNO,
-                      z = ~CSF.tTau.INNO,
-                      color = ~colours_new,
-                      colors = c('gray', "firebrick", "orange", "gold", "forestgreen", "hotpink")) %>%
-          add_trace(type = 'mesh3d',
-                    data = df_mesh_1,
-                    x = ~X_VAL,
-                    y = ~Y_VAL,
-                    z = ~Z_VAL,
-                    i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-                    j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-                    k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-                    facecolor = rep("blue", 12),
-                    opacity = 0.1,
-                    name = "A+/T+/N+ Positive Area",
-                    showlegend = T)
-        cube3 <- cube3 %>%
-          layout(legend = LEGEND_1,
-                 scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
-        cube3
       }
     }
+    
   })
+  
+  output$ADDINDATA_NO_AGE <- renderPlotly({
+    new.dat <- req(data_internal$raw)
+    AB_threshold <- req(AB_cutoff$raw)
+    ptau_threshold <- req(ptau_cutoff_singular$raw)
+    ttau_treshold <- req(ttau_cutoff_singular$raw)
+    
+    if(input$no_age_dependence == "no_age_atn_AYOB"){
+      df6 <- new.dat[,c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")]
+      New.Person <- data.frame(input$AB_no_age_input, input$ptau_no_age_input, input$ttau_no_age_input, "My own markers")
+      names(New.Person) <- c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")
+      newDF <- rbind(df6, New.Person)
+      newDF$Burnham_class <- factor(newDF$Burnham_class, levels = c("AD", "Pathological Change", "Non-AD pathological Change",
+                                                                    "Normal AD Biomarkers", "My own markers"))
+      ADD_DATA <- mutate(newDF, size_guide = ifelse(Burnham_class == "My own markers",18,12))
+      ADD_DATA$size_guide <- as.numeric(ADD_DATA$size_guide)
+      
+      
+      
+      ATNVisualisation(dat = ADD_DATA, xinput = ADD_DATA$CSF.AB42.INNO, yinput = ADD_DATA$CSF.pTau.INNO, 
+                       zinput = ADD_DATA$CSF.tTau.INNO,
+                       XCUT = AB_threshold, 
+                       YCUT = ptau_threshold, 
+                       ZCUT = ttau_treshold, 
+                       leg = LEGEND_1, 
+                       xax = axx,
+                       yax = axy,
+                       zax = axz, 
+                       size_guide = ADD_DATA$size_guide)
+    }  else if(input$no_age_dependence == "no_age_3D"){
+      new.dat <- req(data_internal$raw)
+      
+      df6 <- new.dat[,c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")]
+      New.Person <- data.frame(input$AB_no_age_input, input$ptau_no_age_input, input$ttau_no_age_input, "My own markers")
+      names(New.Person) <- c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")
+      newDF <- rbind(df6, New.Person)
+      newDF$Burnham_class <- factor(newDF$Burnham_class, levels = c("AD", "Pathological Change", "Non-AD pathological Change",
+                                                                    "Normal AD Biomarkers", "My own markers"))
+      
+      ADD_DATA <- mutate(newDF, size_guide = ifelse(Burnham_class == "My own markers",18,12))
+      ADD_DATA$size_guide <- as.numeric(ADD_DATA$size_guide)
+      AddinDataG1(dat = ADD_DATA, 
+                  xinput = ADD_DATA$CSF.AB42.INNO,
+                  yinput = ADD_DATA$CSF.pTau.INNO, 
+                  zinput = ADD_DATA$CSF.tTau.INNO, 
+                  cols = ADD_DATA$Burnham_class, 
+                  leg = LEGEND_1, 
+                  xax = axx,
+                  yax = axy,
+                  zax = axz, 
+                  size_guide_1 = ADD_DATA$size_guide)
+    }
+  })
+    
+
+
 
   ########################### Statistical Modelling  ##########################
   ############################## VISUALISATION ################################
@@ -863,301 +1044,6 @@ server <- function(input, output){
     }
   })
 
-  ######################## 3D PREDICTIVE SURFACES ############################
-
-  output$SURFACEPLOT <- renderPlotly({
-    new.dat <- req(data_internal$raw)
-
-    if (input$DEMOGRAPHIC == "APOE-e4 allele"){
-      new_data_frame <- filter(new.dat, apoe4 == 1)
-
-      my_lm <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, new_data_frame)
-      # Set up Axis
-
-      axis_x1 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z1 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
-
-      ## PLOT THE POINTS
-
-      my_lm_surface <- expand.grid(CSF.AB42.INNO = axis_x1,CSF.pTau.INNO = axis_z1,KEEP.OUT.ATTRS = F)
-      my_lm_surface$CSF.tTau.INNO <- predict.lm(my_lm, newdata = my_lm_surface)
-      my_lm_surface <- acast(my_lm_surface, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
-
-      my_plot <- plot_ly()
-      my_plot <- add_markers(
-        p = my_plot,
-        data = new.dat,
-        x = ~CSF.AB42.INNO,
-        y = ~ CSF.pTau.INNO,
-        z = ~CSF.tTau.INNO,
-        text = ~Diagnosis,
-        type = "scatter3d",
-        color = ~Burnham_class,
-        colors = c("firebrick", "darkorange", "gold", "forestgreen"),
-        mode = "markers")
-      my_plot <- add_trace(
-        p = my_plot,
-        z = my_lm_surface,
-        x = axis_x1,
-        y = axis_z1,
-        type = "surface",
-        colorscale = list(c(0,1), c("green","red")),
-        opacity = 0.6,
-        showscale = F,
-        name = "Regression for APOE4 Carriers",
-        showlegend = T
-      )
-
-      new_data_frame_2 <- filter(new.dat, apoe4 == 0)
-
-      my_lm_2 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, new_data_frame_2)
-      # Set up Axis
-
-      axis_x2 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z2 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
-
-      ## PLOT THE POINTS
-
-      my_lm_surface_2 <- expand.grid(CSF.AB42.INNO = axis_x2,CSF.pTau.INNO = axis_z2,KEEP.OUT.ATTRS = F)
-      my_lm_surface_2$CSF.tTau.INNO <- predict.lm(my_lm_2, newdata = my_lm_surface_2)
-      my_lm_surface_2 <- acast(my_lm_surface_2, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
-
-      my_plot <- add_trace(p = my_plot,
-                           z = my_lm_surface_2,
-                           x = axis_x2,
-                           y = axis_z2,
-                           type = "surface",
-                           colorscale = list(c(0,1), c("tan","blue")),
-                           opacity = 0.6,
-                           showscale = F,
-                           name = "Regression for APOE4 Non-Carriers",
-                           showlegend = T)
-      my_plot <- my_plot %>%
-        layout(legend = LEGEND_1,
-               scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
-      my_plot
-    }else if (input$DEMOGRAPHIC == "Sex"){
-      female_data <- filter(new.dat, Sex == "Female")
-
-      my_lm_female <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, female_data)
-      # Set up Axis
-
-      axis_x1_female <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z1_female <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
-
-      ## PLOT THE POINTS
-
-      my_lm_surface_female <- expand.grid(CSF.AB42.INNO = axis_x1_female,CSF.pTau.INNO = axis_z1_female,KEEP.OUT.ATTRS = F)
-      my_lm_surface_female$CSF.tTau.INNO <- predict.lm(my_lm_female, newdata = my_lm_surface_female)
-      my_lm_surface_female <- acast(my_lm_surface_female, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
-
-      my_plot <- plot_ly()
-      my_plot <- add_markers(
-        p = my_plot,
-        data = new.dat,
-        x = ~CSF.AB42.INNO,
-        y = ~ CSF.pTau.INNO,
-        z = ~CSF.tTau.INNO,
-        text = ~Diagnosis,
-        type = "scatter3d",
-        color = ~Burnham_class,
-        colors = c("firebrick", "darkorange", "gold", "forestgreen"),
-        mode = "markers"
-      )
-      my_plot <- add_trace(
-        p = my_plot,
-        z = my_lm_surface_female,
-        x = axis_x1_female,
-        y = axis_z1_female,
-        type = "surface",
-        colorscale = list(c(0,1), c("green","red")),
-        opacity = 0.6,
-        showscale = F,
-        name = "Regression for Females",
-        showlegend = T)
-
-      male_data <- filter(new.dat, Sex == "Male")
-
-      my_lm_male <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, male_data)
-      # Set up Axis
-
-      axis_x2_male <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z2_male <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
-
-      ## PLOT THE POINTS
-
-      my_lm_surface_male <- expand.grid(CSF.AB42.INNO = axis_x2_male,CSF.pTau.INNO = axis_z2_male,KEEP.OUT.ATTRS = F)
-      my_lm_surface_male$CSF.tTau.INNO <- predict.lm(my_lm_male, newdata = my_lm_surface_male)
-      my_lm_surface_male <- acast(my_lm_surface_male, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
-
-      my_plot <- add_trace(p = my_plot,
-                           z = my_lm_surface_male,
-                           x = axis_x2_male,
-                           y = axis_z2_male,
-                           type = "surface",
-                           colorscale = list(c(0,1), c("tan","blue")),
-                           opacity = 0.6,
-                           showscale = F,
-                           name = "Regression for Males",
-                           showlegend = T)
-      my_plot <- my_plot %>%
-        layout(legend = LEGEND_1,
-               scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
-      my_plot
-    }else if (input$DEMOGRAPHIC == "Age"){
-      #####################################################
-      ###################      AGE    #####################
-
-      # 1 is for education over 12years
-      # 0 is for education under 12 years
-
-
-      Age_binary <- filter(new.dat, Age_binary == 1)
-
-      age_lm_1 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, Age_binary)
-      # Set up Axis
-
-      x1 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      z1 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
-
-      ## PLOT THE POINTS
-
-      age_surface_1 <- expand.grid(CSF.AB42.INNO = x1,CSF.pTau.INNO = z1,KEEP.OUT.ATTRS = F)
-      age_surface_1$CSF.tTau.INNO <- predict.lm(age_lm_1, newdata = age_surface_1)
-      age_surface_1 <- acast(age_surface_1, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
-
-      my_plot <- plot_ly()
-      my_plot <- add_markers(
-        p = my_plot,
-        data = new.dat,
-        x = ~CSF.AB42.INNO,
-        y = ~ CSF.pTau.INNO,
-        z = ~CSF.tTau.INNO,
-        text = ~Diagnosis,
-        type = "scatter3d",
-        color = ~Burnham_class,
-        colors = c("firebrick", "darkorange", "gold", "forestgreen"),
-        mode = "markers"
-      )
-      my_plot <- add_trace(
-        p = my_plot,
-        z = age_surface_1,
-        x = x1,
-        y = z1,
-        type = "surface",
-        colorscale = list(c(0,1), c("green","red")),
-        opacity = 0.6,
-        showscale = F,
-        name = "Regression for Individuals over the Age of 72.5",
-        showlegend = T)
-
-      age_0 <- filter(new.dat, Age_binary == 0)
-
-      age_lm_2 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, age_0)
-      # Set up Axis
-
-      x2 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      z2 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
-
-      ## PLOT THE POINTS
-
-      age_surface_2 <- expand.grid(CSF.AB42.INNO = x2,CSF.pTau.INNO = z2,KEEP.OUT.ATTRS = F)
-      age_surface_2$CSF.tTau.INNO <- predict.lm(age_lm_2, newdata = age_surface_2)
-      age_surface_2 <- acast(age_surface_2, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
-
-      my_plot <- add_trace(p = my_plot,
-                           z = age_surface_2,
-                           x = x2,
-                           y = z1,
-                           type = "surface",
-                           colorscale = list(c(0,1), c("tan","blue")),
-                           opacity = 0.6,
-                           showscale = F,
-                           name = "Regression for Individuals under the age of 72.5",
-                           showlegend = T)
-      my_plot <- my_plot %>%
-        layout(legend = LEGEND_1,
-               scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
-      my_plot
-    }else if (input$DEMOGRAPHIC == "Education"){
-      #####################################################
-      ###################  Education  #####################
-
-
-      # 1 is for education over 12years
-      # 0 is for education under 12 years
-
-
-      eduction_data <- filter(new.dat, Education_binary == 1)
-
-      my_education_1 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, eduction_data)
-      # Set up Axis
-
-      axis_x1_education <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z1_education <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
-
-      ## PLOT THE POINTS
-
-      my_lm_surface_education <- expand.grid(CSF.AB42.INNO = axis_x1_education,CSF.pTau.INNO = axis_z1_education,KEEP.OUT.ATTRS = F)
-      my_lm_surface_education$CSF.tTau.INNO <- predict.lm(my_education_1, newdata = my_lm_surface_education)
-      my_lm_surface_education <- acast(my_lm_surface_education, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
-
-      my_plot <- plot_ly()
-      my_plot <- add_markers(
-        p = my_plot,
-        data = new.dat,
-        x = ~CSF.AB42.INNO,
-        y = ~ CSF.pTau.INNO,
-        z = ~CSF.tTau.INNO,
-        text = ~Diagnosis,
-        type = "scatter3d",
-        color = ~Burnham_class,
-        colors = c("firebrick", "darkorange", "gold", "forestgreen"),
-        mode = "markers")
-      my_plot <- add_trace(p = my_plot,
-                           z = my_lm_surface_education,
-                           x = axis_x1_education,
-                           y = axis_z1_education,
-                           type = "surface",
-                           colorscale = list(c(0,1), c("green","red")),
-                           opacity = 0.6,
-                           showscale = F,
-                           name = "Regression for Individuals with over 12 Years of Education",
-                           showlegend = T)
-
-      education_data_0 <- filter(new.dat, Education_binary == 0)
-
-      my_lm_ed_0 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, education_data_0)
-      # Set up Axis
-
-      axis_x2 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z2 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
-
-      ## PLOT THE POINTS
-
-      my_lm_surface_ed_0 <- expand.grid(CSF.AB42.INNO = axis_x2,CSF.pTau.INNO = axis_z2,KEEP.OUT.ATTRS = F)
-      my_lm_surface_ed_0$CSF.tTau.INNO <- predict.lm(my_lm_ed_0, newdata = my_lm_surface_ed_0)
-      my_lm_surface_ed_0 <- acast(my_lm_surface_ed_0, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
-
-      my_plot <- add_trace(p = my_plot,
-                           z = my_lm_surface_ed_0,
-                           x = axis_x2,
-                           y = axis_z2,
-                           type = "surface",
-                           colorscale = list(c(0,1), c("tan","blue")),
-                           opacity = 0.6,
-                           showscale = F,
-                           name = "Regression for Individuals with less than 12 Years of Education",
-                           showlegend = T)
-      my_plot <- my_plot %>%
-        layout(legend = LEGEND_1,
-               scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
-
-
-      my_plot
-
-    }
-  })
 
   ############################ MODEL SUMMARIES ###############################
 
@@ -1255,95 +1141,7 @@ server <- function(input, output){
 
   })
 
-  ########################### P-VALUE TABLE ###############################
-  output$filetable <- renderUI({
-    new.dat <- req(data_internal$raw)
-    lm_pTau <- lm(CSF.pTau.INNO ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-    lm_AB <- lm(CSF.AB42.INNO ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-    lm_tTau <- lm(CSF.tTau.INNO ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-    newdf <- as.data.frame(summary(lm_AB)$coefficients[,4])
-    R_Squared <- as.data.frame(summary(lm_AB)$r.squared)
-    names(R_Squared) <- "summary(lm_AB)$coefficients[, 4]"
-    total <- rbind(newdf, R_Squared)
-    newdf1 <- as.data.frame(summary(lm_pTau)$coefficients[,4])
-    R_Squared1 <- as.data.frame(summary(lm_pTau)$r.squared)
-    names(R_Squared1) <- "summary(lm_pTau)$coefficients[, 4]"
-    total1 <- rbind(newdf1, R_Squared1)
-    newdf2 <- as.data.frame(summary(lm_tTau)$coefficients[,4])
-    R_Squared2 <- as.data.frame(summary(lm_tTau)$r.squared)
-    names(R_Squared2) <- "summary(lm_tTau)$coefficients[, 4]"
-    total2 <- rbind(newdf2, R_Squared2)
-    results <- cbind(total,total1,total2)
-    results2 <- results %>%
-      mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-    where <- (results2 <= 0.05)
-    style <- 'background-color: yellow; color: black;'
-    css.cell <- matrix('', nrow(results2), ncol(results2))
-    css.cell[where] <- style
-    names(results2) = c("CSF AB1-42 pg/mL","CSF pTau pg/mL","CSF tTau pg/mL")
-    rownames(results2) = c("Intercept","Age","Sex (Male)","Education Binary (under 12 years education)","apoe4 (non-carrier)","R squared value")
-    # print(results2)
 
-    mytableout = htmlTable (
-      results2,
-      css.cell = css.cell,
-      # cgroup = "P-values for Independent Variables",
-      caption = "Table 2: P-Values summaries from all regression computed for Group 1"
-    )
-
-    mytableout
-
-  })
-
-  output$group1pvalue <- renderUI({
-    new.dat <- req(data_internal$raw)
-    lm_ab <- lm(CSF.AB42.INNO ~ CSF.pTau.INNO+CSF.tTau.INNO, data = new.dat)
-    lm_ptau <- lm(CSF.pTau.INNO ~ CSF.AB42.INNO+CSF.tTau.INNO, data = new.dat)
-    lm_ttau <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, data = new.dat)
-
-    # Make a matrix for the data
-
-    p_group1 <- matrix(NA, ncol=3, nrow=5)
-
-
-    p_group1[1,1] = signif(summary(lm_ab)$coefficients[1,4],digits = 2)
-    p_group1[1,2] = signif(summary(lm_ptau)$coefficients[1,4],digits = 2)
-    p_group1[1,3] = signif(summary(lm_ttau)$coefficients[1,4],digits = 2)
-    p_group1[2,1] = "NA"
-    p_group1[2,2] = signif(summary(lm_ptau)$coefficients[2,4],digits = 2)
-    p_group1[2,3] = signif(summary(lm_ttau)$coefficients[2,4],digits = 2)
-
-    p_group1[3,1] = signif(summary(lm_ab)$coefficients[2,4],digits = 2)
-    p_group1[3,2] = "NA"
-
-    p_group1[3,3] = signif(summary(lm_ttau)$coefficients[3,4],digits = 2)
-
-    p_group1[4,1] = signif(summary(lm_ab)$coefficients[3,4],digits=2)
-    p_group1[4,2] = signif(summary(lm_ptau)$coefficients[3,4], digits = 2)
-    p_group1[4,3] = "NA"
-
-    p_group1[5,1] = signif(summary(lm_ab)$r.squared, digits = 2)
-    p_group1[5,2] = signif(summary(lm_ptau)$r.squared, digits = 2)
-    p_group1[5,3] = signif(summary(lm_ttau)$r.squared, digits =2)
-
-    newdataframe <- as.matrix(p_group1)
-    newdataframe <- as.numeric(newdataframe)
-    where <- (newdataframe <= 0.05)
-    style <- 'background-color: yellow; color: black;'
-    css.cell <- matrix('', nrow(p_group1), ncol(p_group1))
-    css.cell[where] <- style
-    # p_group1 <- p_group1 %>%
-    #   mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-    rownames(p_group1) = c("Intercept","CSF AB1-42 pg/mL","CSF pTau pg/mL", "CSF tTau pg/mL", "R-squared Value")
-    colnames(p_group1) = c("CSF AB1-42 pg/mL   ", "CSF pTau pg/mL   ", "CSF tTau pg/mL   ")
-    mytableout = htmlTable (
-      p_group1,
-      css.cell = css.cell,
-      caption = "Table 3: p-value summaries for all Biomarker interplay"
-    )
-    mytableout
-
-  })
 
   ####################### EXTRA A+/T+/N+ VISUALISATION ########################
   output$G1ExtraCube <- renderPlotly({
@@ -1400,9 +1198,6 @@ server <- function(input, output){
                               Y_VAL = c(59.23  ,max(df7$CSF.pTau.INNO),    59.23  ,  max(df7$CSF.pTau.INNO),    59.23 , max(df7$CSF.pTau.INNO),   59.23 , max(df7$CSF.pTau.INNO)),
                               Z_VAL = c(303.54  , 303.54  , 303.54  , 303.54  , max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO)),
                               MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-
-      # Make apoe4 a factor
-      df7$apoe4 <- factor(df7$apoe4, levels = c(1,0))
 
       cube <- plot_ly()%>%
         add_markers(type = "scatter3d",
@@ -1515,6 +1310,106 @@ server <- function(input, output){
 
   })
   
+  #
+  ##
+  ###
+  ####
+  #####
+  ################## CONDITIONAL PANELS FOR ADDING 1 THRESHOLD #################
+  #####
+  ####
+  ###
+  ##
+  #
+  
+  output$no_age_dependence_additional_cube <- renderPlotly({
+    new.dat <- req(data_internal$raw)
+    AB_threshold <- req(AB_cutoff$raw)
+    ptau_threshold <- req(ptau_cutoff_singular$raw)
+    ttau_treshold <- req(ttau_cutoff_singular$raw)
+    df_young <- filter(new.dat, Age < 70)
+    df7 <- mutate(new.dat, scat_col = ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "AD",
+                                              "AD meeting all cut-offs",
+                                              ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO <AB_threshold & CSF.tTau.INNO > ttau_treshold  & Burnham_class == "Pathological Change",
+                                                     "Pathological Change meeting all cut-offs",
+                                                     ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO > ttau_treshold  & Burnham_class == "Non-AD pathological Change",
+                                                            "Non-AD Pathological Change meeting all cut-offs",
+                                                            ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO > ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
+                                                                   "Normal AD Biomarkers meeting all cut-offs",
+                                                                   ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & Burnham_class == "AD",
+                                                                          "AD meeting 2 cut offs",
+                                                                          ifelse(CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "AD",
+                                                                                 "AD meeting 2 cut offs",
+                                                                                 ifelse(CSF.pTau.INNO >ptau_threshold   & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "AD",
+                                                                                        "AD meeting 2 cut offs",
+                                                                                        ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & Burnham_class == "Pathological Change",
+                                                                                               "Pathological Change meeting 2 cut-offs",
+                                                                                               ifelse(CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Pathological Change",
+                                                                                                      "Pathological Change meeting 2 cut-offs",
+                                                                                                      ifelse(CSF.pTau.INNO >59.23   & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Pathological Change",
+                                                                                                             "Pathological Change meeting 2 cut-offs",
+                                                                                                             ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & Burnham_class == "Non-AD pathological Change",
+                                                                                                                    "Non-AD Pathological Change meeting 2 cut-offs",
+                                                                                                                    ifelse(CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Non-AD pathological Change",
+                                                                                                                           "Non-AD Pathological Change meeting 2 cut-offs",
+                                                                                                                           ifelse(CSF.pTau.INNO >ptau_threshold   & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Non-AD pathological Change",
+                                                                                                                                  "Non-AD Pathological Change meeting 2 cut-offs",
+                                                                                                                                  ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                         "Normal AD Biomarker meeting 2 cut-offs",
+                                                                                                                                         ifelse(CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                                "Normal AD Biomarker meeting 2 cut-offs",
+                                                                                                                                                ifelse(CSF.pTau.INNO >ptau_threshold   & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                                       "Normal AD Biomarker meeting 2 cut-offs","unselected")))))))))))))))))
+    
+    
+    
+    df7$scat_col <- factor(df7$scat_col, levels = c("unselected",
+                                                    "AD meeting all cut-offs",
+                                                    "Pathological Change meeting all cut-offs",
+                                                    "Non-AD Pathological Change meeting all cut-offs",
+                                                    "Normal AD Biomarkers meeting all cut-offs",
+                                                    "AD meeting 2 cut offs",
+                                                    "Pathological Change meeting 2 cut-offs",
+                                                    "Non-AD Pathological Change meeting 2 cut-offs",
+                                                    "Normal AD Biomarker meeting 2 cut-offs"))
+    
+    
+    df_mesh_1 <- data.frame(X_VAL = c(AB_threshold,  AB_threshold,  min(df7$CSF.AB42.INNO),    min(df7$CSF.AB42.INNO),    AB_threshold,   AB_threshold,   min(df7$CSF.AB42.INNO),   min(df7$CSF.AB42.INNO)),
+                            Y_VAL = c(ptau_threshold  ,max(df7$CSF.pTau.INNO),    ptau_threshold  ,  max(df7$CSF.pTau.INNO),    ptau_threshold , max(df7$CSF.pTau.INNO),   ptau_threshold , max(df7$CSF.pTau.INNO)),
+                            Z_VAL = c(ttau_treshold  , ttau_treshold  , ttau_treshold  , ttau_treshold  , max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO)),
+                            MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
+    
+    cube <- plot_ly()%>%
+      add_markers(type = "scatter3d",
+                  mode = "markers",
+                  data = df7,
+                  x = ~CSF.AB42.INNO,
+                  y = ~CSF.pTau.INNO,
+                  z = ~CSF.tTau.INNO,
+                  color = ~scat_col,
+                  colors = c('gray', "firebrick", "darkorange", "gold", "forestgreen","hotpink", "aquamarine", "blueviolet", "darkorchid")) %>%
+      add_trace(type = 'mesh3d',
+                data = df_mesh_1,
+                x = ~X_VAL,
+                y = ~Y_VAL,
+                z = ~Z_VAL,
+                i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
+                j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
+                k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
+                facecolor = rep("blue", 12),
+                opacity = 0.1,
+                name = "A+/T+/N+ Positive Area",
+                showlegend = T)
+    cube <- cube %>%
+      layout(legend = LEGEND_1,
+             scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
+    cube
+    
+    
+    
+    
+  })
+  
   #############################################################################
   ############################### HIPPO CUT OFF ###############################
   #############################################################################
@@ -1567,6 +1462,55 @@ server <- function(input, output){
     
     paste0("The cut-off is ",round(hippo_cutoff,3),".")
   })
+  
+  # Regular ggplot for HIPPOCAMPUS
+  
+  output$plot_gg1 <- renderPlot({
+    new.dat <- req(data_internal$raw)
+    # new.dat <- req(my_data)
+    new.dat$Diagnosis <- factor(new.dat$Diagnosis, levels = c("AD", "MCI", "HC"))
+    p <- ggplot(new.dat, aes(x = Sum.hippo, color = Diagnosis, fill = Diagnosis))+
+      geom_density(alpha = 0.5)+
+      theme_bw()+
+      scale_color_manual(values = c("red", "orange", "green"))+
+      scale_fill_manual(values=c("red", "orange", "green"))+
+      xlab(bquote('Hippocampus'~(mL^3)))+
+      ylab("Density")+
+      ggtitle("Density of Hippocampus by Diagnosis")
+    p
+  })
+  
+  output$intersect_plot1 <- renderPlot({
+    new.dat <- req(data_internal$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippoframe <- x$hippoframe
+    
+    ggplot(hippoframe, aes(x=x))+
+      theme_bw()+
+      geom_line(aes(y = y, colour = "AD"), lwd = 2)+
+      geom_line(aes(y=y2, colour = "HC"), lwd = 2)+
+      geom_vline(xintercept =  hippo_cutoff, colour = "black", lwd = 1.5)+
+      scale_colour_manual("", values = c("AD"="red", 
+                                         "HC" = "green"))+
+      labs(title = "Legend")+
+      xlab(bquote('Hippocampus'~(mL^3)))+
+      ylab("Density")+
+      ggtitle("Density Curve of AD and HC with Intersecting Lines")
+  })
+  
+  
+  
+  ############### RENDER TEXT FOR HIPPOCAMPUS OUTPUT 
+  
+  output$texthippo1 <- renderText({
+    new.dat <- req(data_internal$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippoframe <- x$hippoframe
+    
+    paste0("The cut-off is ",round(hippo_cutoff,3),".")
+  })
 
   #
   ##
@@ -1577,6 +1521,17 @@ server <- function(input, output){
   ###
   ##
   #
+  
+  ############################ Demographic Summary ############################
+  ################################# TABLE #####################################
+  
+  output$table.2 <- renderTable({
+    new.dat <- req(data_internal$raw)
+    table_2 <- new_table_function(dat = new.dat)
+    group_2_table <- table_2$group_2_table
+    group_2_table}, hover = T, striped = T, bordered = T,
+    width = "auto", align = "c", colnames = F, na = "")
+  
 
 
   ################################ 2D Visualisation ###########################
@@ -1792,6 +1747,77 @@ server <- function(input, output){
     )
 
   })
+  
+  #
+  ##
+  ###
+  ####
+  #####
+  ################## CONDITIONAL PANELS FOR ADDING 1 THRESHOLD #################
+  #####
+  ####
+  ###
+  ##
+  #
+  
+  observeEvent(input$no_age_G2, {
+    new.dat <- req(data_internal$raw)
+
+    ptau_threshold <- req(ptau_cutoff_singular$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
+    
+    group2_animation$plot <- PlanesFunction(
+      dat = new.dat, 
+      xinput = new.dat$Sum.hippo, 
+      yinput = new.dat$CSF.pTau.INNO, 
+      zinput = new.dat$Centiloid, 
+      cols = new.dat$Clifford_class, 
+      leg = LEGEND_2,
+      xax = axx2,
+      yax = axy2,
+      zax = axz2,
+      XCUT = hippo_threshold, 
+      YCUT = ptau_threshold, 
+      ZCUT = centiloid_threshold, 
+      XNAME = HIPPO_cutoff_label, 
+      YNAME = ptau_cutoff_label, 
+      ZNAME = Centloid_cutoff_label
+    )
+    
+  })
+  
+  observeEvent(input$no_age_G2_rotating, {
+    new.dat <- req(data_internal$raw)
+    
+    ptau_threshold <- req(ptau_cutoff_singular$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
+    
+    group2_animation$plot <- AnimatedPlanesFunction(
+      dat = new.dat, 
+      xinput = new.dat$Sum.hippo, 
+      yinput = new.dat$CSF.pTau.INNO, 
+      zinput = new.dat$Centiloid, 
+      cols = new.dat$Clifford_class, 
+      leg = LEGEND_2,
+      xax = axx2,
+      yax = axy2,
+      zax = axz2,
+      XCUT = hippo_threshold, 
+      YCUT = ptau_threshold, 
+      ZCUT = centiloid_threshold, 
+      XNAME = HIPPO_cutoff_label, 
+      YNAME = ptau_cutoff_label, 
+      ZNAME = Centloid_cutoff_label
+    )
+    
+  })
+  
 
   output$CONDITIONPLOT <- renderPlotly({
     if (is.null(group2_animation$plot)) return()
@@ -1895,6 +1921,58 @@ server <- function(input, output){
                                                 YCUT = ptau_threshold, 
                                                 ZCUT = centiloid_threshold)
   })
+  
+  #
+  ##
+  ###
+  ####
+  #####
+  ################## CONDITIONAL PANELS FOR ADDING 1 THRESHOLD #################
+  #####
+  ####
+  ###
+  ##
+  #
+  observeEvent(input$no_age_ATN_group_static, {
+    new.dat <- req(data_internal$raw)
+    ptau_threshold <- req(ptau_cutoff_singular$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
+    cube_g2_animate$plot <- G2CubeVisualisation(dat = new.dat, 
+                                                xinput = new.dat$Sum.hippo,
+                                                yinput = new.dat$CSF.pTau.INNO, 
+                                                zinput = new.dat$Centiloid, 
+                                                leg = LEGEND_2,
+                                                xax=axx2,
+                                                yax = axy2,
+                                                zax = axz2, 
+                                                XCUT = hippo_threshold, 
+                                                YCUT = ptau_threshold, 
+                                                ZCUT = centiloid_threshold)
+  })
+  
+  observeEvent(input$no_age_ATN_group_rotating, {
+    new.dat <- req(data_internal$raw)
+    ptau_threshold <- req(ptau_cutoff_singular$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
+    cube_g2_animate$plot <- AnimatedG2CubeVisualisation(dat = new.dat, 
+                                                xinput = new.dat$Sum.hippo,
+                                                yinput = new.dat$CSF.pTau.INNO, 
+                                                zinput = new.dat$Centiloid, 
+                                                leg = LEGEND_2,
+                                                xax=axx2,
+                                                yax = axy2,
+                                                zax = axz2, 
+                                                XCUT = hippo_threshold, 
+                                                YCUT = ptau_threshold, 
+                                                ZCUT = centiloid_threshold)
+  })
+  
 
   output$plot5.P2 <- renderPlotly({
     if (is.null(cube_g2_animate$plot)) return()
@@ -1919,22 +1997,19 @@ server <- function(input, output){
     newdf4 <- mutate(newdf3, size_guide2 = ifelse(Clifford_class == "My own markers",18,12))
     newdf4$size_guide2 <- as.numeric(newdf4$size_guide2)
     if (input$DATAVIS2 == "3D Plot"){
+      
+      AddinDataG1(dat = newdf4, 
+                  xinput = newdf4$Sum.hippo,
+                  yinput = newdf4$CSF.pTau.INNO, 
+                  zinput = newdf4$Centiloid, 
+                  cols = newdf4$Clifford_class, 
+                  leg = LEGEND_2, 
+                  xax = axx2,
+                  yax = axy2,
+                  zax = axz2, 
+                  size_guide_1 = newdf4$size_guide2)
 
-      new_data_plot <- plot_ly(newdf4, x = ~CSF.pTau.INNO,
-                               y = ~Sum.hippo,
-                               z = ~Centiloid,
-                               type = "scatter3d",
-                               mode = "markers",
-                               marker = list(size = ~size_guide2),
-                               sizemode = 'Diameter',
-                               color = ~Clifford_class,
-                               colors = c("firebrick", "orange",'gold',"forestgreen","hotpink"))
-
-      new_data_plot <- new_data_plot %>%
-        layout(legend = LEGEND_2, scene = list(xaxis = axx2, yaxis = axy2, zaxis = axz2))
-      new_data_plot
-
-
+      
     }else if (input$DATAVIS2 == "A+/T+/N+ Visualisation"){
 
       AgeInput2 <- input$age
@@ -1953,56 +2028,25 @@ server <- function(input, output){
                                                                           "My own markers"))
         newdf4 <- mutate(newdf3, size_guide2 = ifelse(Clifford_class == "My own markers",18,12))
         newdf4$size_guide2 <- as.numeric(newdf4$size_guide2)
-        new_group2 <- mutate(newdf4, scat_col = ifelse(CSF.pTau.INNO >73.83  & Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
-                                                       "selected - Stage 2 clinically asymptomatic",
-                                                       ifelse(CSF.pTau.INNO >73.83  & Sum.hippo <5.402554 & Centiloid > 20 & Clifford_class == "Stage 1, preclinical AD stage",
-                                                              "selected - Stage 1 preclinical AD stage",
-                                                              ifelse(CSF.pTau.INNO >73.83  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "SNAP",
-                                                                     "selected - SNAP",
-                                                                     ifelse(CSF.pTau.INNO >73.83  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "MCI unlikely due to AD",
-                                                                            "selected - MCI unlikely due to AD",
-                                                                            ifelse(Clifford_class == "My own markers", "My own markers", "unselected"))))))
-
-
-        new_group2$scat_col <- factor(new_group2$scat_col, levels = c("unselected", "selected - Stage 2 clinically asymptomatic",
-                                                                      "selected - Stage 1 preclinical AD stage", "selected - SNAP",
-                                                                      "selected - MCI unlikely due to AD",
-                                                                      "My own markers"))
-
-
-        df_mesh_1 <- data.frame(X_VAL = c(max(new_group2$CSF.pTau.INNO), max(new_group2$CSF.pTau.INNO), 73.83,     73.83 ,   max(new_group2$CSF.pTau.INNO),  max(new_group2$CSF.pTau.INNO),  73.83,     73.83),
-                                Y_VAL = c(min(new_group2$Sum.hippo, na.rm = T),  5.402554, min(new_group2$Sum.hippo, na.rm = T), 5.402554, min(new_group2$Sum.hippo, na.rm = T),   5.402554, min(new_group2$Sum.hippo, na.rm = T), 5.402554),
-                                Z_VAL = c(20,      20,    20,      20,  max(new_group2$Centiloid, na.rm = T), max(new_group2$Centiloid, na.rm = T),   max(new_group2$Centiloid, na.rm = T),    max(new_group2$Centiloid, na.rm = T)),
-                                MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-
-        # Make apoe4 a factor
-
-        cube_data_vis <- plot_ly()%>%
-          add_markers(type = "scatter3d",
-                      mode = "markers",
-                      marker = list(size = ~size_guide2),
-                      data = new_group2,
-                      x = ~CSF.pTau.INNO,
-                      y = ~Sum.hippo,
-                      z = ~Centiloid,
-                      color = ~scat_col,
-                      colors = c('gray', 'red', "yellow", "green", "hotpink")) %>%
-          add_trace(type = 'mesh3d',
-                    data = df_mesh_1,
-                    x = ~X_VAL,
-                    y = ~Y_VAL,
-                    z = ~Z_VAL,
-                    i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-                    j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-                    k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-                    facecolor = rep("blue", 12),
-                    opacity = 0.1,
-                    name = "A+/T+/N+ Positive Area",
-                    showlegend = T)
-
-        cube_data_vis <- cube_data_vis %>%
-          layout(legend = LEGEND_2, scene = list(xaxis = axx2, yaxis = axy2, zaxis = axz2))
-        cube_data_vis
+        
+        ptau_threshold <- req(ptau_cutoff_upper$raw)
+        centiloid_threshold <- req(centiloid_cutoff$raw)
+        x <- HippoFunction(dat = new.dat)
+        hippo_cutoff <- x$hippocampus_threshold
+        hippo_threshold <- hippo_cutoff
+        
+        G2ATNVisualisation(dat = newdf4, xinput = newdf4$Sum.hippo, yinput = newdf4$CSF.pTau.INNO, 
+                         zinput = newdf4$Centiloid,
+                         XCUT = hippo_threshold, 
+                         YCUT = ptau_threshold, 
+                         ZCUT = centiloid_threshold, 
+                         leg = LEGEND_2, 
+                         xax = axx2,
+                         yax = axy2,
+                         zax = axz2, 
+                         size_guide = newdf4$size_guide)
+        
+        
       }else {
         df_young <- filter(new.dat, Age <70)
         df8 <- df_young[,c("Sum.hippo", "CSF.pTau.INNO", "Centiloid", "Clifford_class")]
@@ -2017,55 +2061,23 @@ server <- function(input, output){
                                                                           "My own markers"))
         newdf4 <- mutate(newdf3, size_guide2 = ifelse(Clifford_class == "My own markers",18,12))
         newdf4$size_guide2 <- as.numeric(newdf4$size_guide2)
-        new_group2 <- mutate(newdf4, scat_col = ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
-                                                       "selected - Stage 2 clinically asymptomatic",
-                                                       ifelse(CSF.pTau.INNO >59.23  & Sum.hippo <5.402554 & Centiloid > 20 & Clifford_class == "Stage 1, preclinical AD stage",
-                                                              "selected - Stage 1 preclinical AD stage",
-                                                              ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "SNAP",
-                                                                     "selected - SNAP",
-                                                                     ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "MCI unlikely due to AD",
-                                                                            "selected - MCI unlikely due to AD",
-                                                                            ifelse(Clifford_class == "My own markers", "My own markers", "unselected"))))))
-
-
-        new_group2$scat_col <- factor(new_group2$scat_col, levels = c("unselected", "selected - Stage 2 clinically asymptomatic",
-                                                                      "selected - Stage 1 preclinical AD stage", "selected - SNAP",
-                                                                      "selected - MCI unlikely due to AD",
-                                                                      "My own markers"))
-
-
-        df_mesh_1 <- data.frame(X_VAL = c(max(new_group2$CSF.pTau.INNO), max(new_group2$CSF.pTau.INNO), 59.23 , 59.23 ,   max(new_group2$CSF.pTau.INNO),  max(new_group2$CSF.pTau.INNO),  59.23,     59.23),
-                                Y_VAL = c(min(new_group2$Sum.hippo, na.rm = T),  5.402554, min(new_group2$Sum.hippo, na.rm = T), 5.402554, min(new_group2$Sum.hippo, na.rm = T),   5.402554, min(new_group2$Sum.hippo, na.rm = T), 5.402554),
-                                Z_VAL = c(20,      20,    20,      20,  max(new_group2$Centiloid, na.rm = T), max(new_group2$Centiloid, na.rm = T),   max(new_group2$Centiloid, na.rm = T),    max(new_group2$Centiloid, na.rm = T)),
-                                MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
-
-
-        cube_data_vis <- plot_ly()%>%
-          add_markers(type = "scatter3d",
-                      mode = "markers",
-                      marker = list(size = ~size_guide2),
-                      data = new_group2,
-                      x = ~CSF.pTau.INNO,
-                      y = ~Sum.hippo,
-                      z = ~Centiloid,
-                      color = ~scat_col,
-                      colors = c('gray', 'red', "yellow", "green", "hotpink")) %>%
-          add_trace(type = 'mesh3d',
-                    data = df_mesh_1,
-                    x = ~X_VAL,
-                    y = ~Y_VAL,
-                    z = ~Z_VAL,
-                    i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
-                    j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
-                    k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
-                    facecolor = rep("blue", 12),
-                    opacity = 0.1,
-                    name = "A+/T+/N+ Positive Area",
-                    showlegend = T)
-
-        cube_data_vis <- cube_data_vis %>%
-          layout(legend = LEGEND_2, scene = list(xaxis = axx2, yaxis = axy2, zaxis = axz2))
-        cube_data_vis
+        
+        ptau_threshold <- req(ptau_cutoff_lower$raw)
+        centiloid_threshold <- req(centiloid_cutoff$raw)
+        x <- HippoFunction(dat = new.dat)
+        hippo_cutoff <- x$hippocampus_threshold
+        hippo_threshold <- hippo_cutoff
+        
+        G2ATNVisualisation(dat = newdf4, xinput = newdf4$Sum.hippo, yinput = newdf4$CSF.pTau.INNO, 
+                           zinput = newdf4$Centiloid,
+                           XCUT = hippo_threshold, 
+                           YCUT = ptau_threshold, 
+                           ZCUT = centiloid_threshold, 
+                           leg = LEGEND_2, 
+                           xax = axx2,
+                           yax = axy2,
+                           zax = axz2, 
+                           size_guide = newdf4$size_guide)
 
       }
     }
@@ -2480,93 +2492,7 @@ server <- function(input, output){
     }
   })
 
-  ############################## DISCUSSION ##################################
-  output$group2table <- renderUI({
-    new.dat <- req(data_internal$raw)
-    lm_pTau <- lm(CSF.pTau.INNO ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-    lm_Centiloid <- lm(Centiloid ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-    lm_Hippo <- lm(Sum.hippo ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-    newdf <- as.data.frame(summary(lm_Centiloid)$coefficients[,4])
-    R_Squared <- as.data.frame(summary(lm_Centiloid)$r.squared)
-    names(R_Squared) <- "summary(lm_Centiloid)$coefficients[, 4]"
-    total <- rbind(newdf, R_Squared)
-    newdf1 <- as.data.frame(summary(lm_pTau)$coefficients[,4])
-    ptau_r_squared <- as.data.frame(summary(lm_pTau)$r.squared)
-    names(ptau_r_squared) <- "summary(lm_pTau)$coefficients[, 4]"
-    total1 <- rbind(newdf1,ptau_r_squared)
-    newdf2 <- as.data.frame(summary(lm_Hippo)$coefficients[,4])
-    hippo_squared <- as.data.frame(summary(lm_Hippo)$r.squared)
-    names(hippo_squared) <- "summary(lm_Hippo)$coefficients[, 4]"
-    total2 <- rbind(newdf2,hippo_squared)
-    results <- cbind(total,total1,total2)
-    results2 <- results %>%
-      mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-    where <- (results2 <= 0.05)
-    style <- 'background-color: yellow; color: black;'
-    css.cell <- matrix('', nrow(results2), ncol(results2))
-    css.cell[where] <- style
-    names(results2) = c("Centiloid","CSF pTau pg/mL","Hippocampus mL<sup>3</sup>")
-    rownames(results2) = c("Intercept","Age","Sex (Male)","Education Binary (under 12 years education)","apoe4 (non-carrier)", "R Squared Value")
-    mytableout = htmlTable (
-      results2,
-      css.cell = css.cell,
-      caption = "Table 5: P-Values summaries from all regression computed for Group 2",
-    )
-    mytableout
-  })
 
-  output$group2pvalue <- renderUI({
-    new.dat <- req(data_internal$raw)
-    lm_centiloid <- lm(Centiloid ~ CSF.pTau.INNO+Sum.hippo, data = new.dat)
-    lm_ptau <- lm(CSF.pTau.INNO ~ Centiloid+Sum.hippo, data = new.dat)
-    lm_hippo <- lm(Sum.hippo ~ Centiloid+CSF.pTau.INNO, data = new.dat)
-
-    # Make a matrix for the data
-
-    p_group1 <- matrix(NA, ncol=3, nrow=5)
-
-
-    p_group1[1,1] = signif(summary(lm_centiloid)$coefficients[1,4],digits = 2)
-    p_group1[1,2] = signif(summary(lm_ptau)$coefficients[1,4],digits = 2)
-    p_group1[1,3] = signif(summary(lm_hippo)$coefficients[1,4],digits = 2)
-    p_group1[2,1] = "NA"
-    p_group1[2,2] = signif(summary(lm_ptau)$coefficients[2,4],digits = 2)
-    p_group1[2,3] = signif(summary(lm_hippo)$coefficients[2,4],digits = 2)
-
-    p_group1[3,1] = signif(summary(lm_centiloid)$coefficients[2,4],digits = 2)
-    p_group1[3,2] = "NA"
-
-    p_group1[3,3] = signif(summary(lm_hippo)$coefficients[3,4],digits = 2)
-
-    p_group1[4,1] = signif(summary(lm_centiloid)$coefficients[3,4],digits=2)
-    p_group1[4,2] = signif(summary(lm_ptau)$coefficients[3,4], digits = 2)
-    p_group1[4,3] = "NA"
-
-    p_group1[5,1] = signif(summary(lm_centiloid)$r.squared, digits = 2)
-    p_group1[5,2] = signif(summary(lm_ptau)$r.squared, digits = 2)
-    p_group1[5,3] = signif(summary(lm_hippo)$r.squared, digits =2)
-
-    newdataframe <- as.matrix(p_group1)
-    newdataframe <- as.numeric(newdataframe)
-    # p_group1 <- p_group1 %>%
-    #   mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-    where <- (newdataframe <= 0.05)
-    style <- 'background-color: yellow; color: black;'
-    css.cell <- matrix('', nrow(p_group1), ncol(p_group1))
-    css.cell[where] <- style
-
-    rownames(p_group1) = c("Intercept","Centiloid","CSF pTau pg/mL", "Hippocampus mL<sup>3</sup>", "R-squared Value")
-    colnames(p_group1) = c("Centiloid", "CSF pTau pg/mL", "Hippocampus mL<sup>3</sup>")
-    mytableout = htmlTable (
-      p_group1,
-      css.cell = css.cell,
-      caption = "Table 6: p-value summaries for all Biomarker interplay"
-    )
-
-
-    mytableout
-
-  })
 
   ########################## EXTRA A+/T+/N+ VIZ  ###########################
 
@@ -2740,29 +2666,395 @@ server <- function(input, output){
     }
   })
   
-  ############################ Demographic Summary ############################
-  ################################# TABLE #####################################
-  
-  output$table1 <- renderTable({
+  output$NO_AGE_CUBE_NEW_G2 <- renderPlotly({
     new.dat <- req(data_internal$raw)
-    table_2 <- new_table_function(dat=new.dat)
-    group_1_table <- table_2$group_1_table
-    group_1_table}, hover = T, striped = T, bordered = T, 
-                               width = "auto", align = "c", colnames = F, na = "")
+    ptau_threshold <- req(ptau_cutoff_singular$raw)
+    centiloid_threshold <- req(centiloid_cutoff$raw)
+    x <- HippoFunction(dat = new.dat)
+    hippo_cutoff <- x$hippocampus_threshold
+    hippo_threshold <- hippo_cutoff
+    
+    df7 <- mutate(new.dat, scat_col = ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 2, clinically asymptomatic",
+                                              "Stage 2 Clinically Asymptomatic meeting all cut-offs",
+                                              ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo <hippo_threshold & Centiloid > centiloid_threshold & Clifford_class == "Stage 1, preclinical AD stage",
+                                                     "Stage 1 Preclinical AD meeting all cut-offs",
+                                                     ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Centiloid > centiloid_threshold & Clifford_class == "SNAP",
+                                                            "SNAP meeting all cut-offs",
+                                                            ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Centiloid > centiloid_threshold & Clifford_class == "MCI unlikely due to AD",
+                                                                   "MCI unlikely due to AD meeting all cut-offs",
+                                                                   ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "Stage 2, clinically asymptomatic",
+                                                                          "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
+                                                                          ifelse(Sum.hippo < hippo_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 2, clinically asymptomatic",
+                                                                                 "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
+                                                                                 ifelse(CSF.pTau.INNO >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 2, clinically asymptomatic",
+                                                                                        "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
+                                                                                        ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "Stage 1, preclinical AD stage",
+                                                                                               "Stage 1 Preclinical AD meeting 2 cut-offs",
+                                                                                               ifelse(Sum.hippo < hippo_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 1, preclinical AD stage",
+                                                                                                      "Stage 1 Preclinical AD meeting 2 cut-offs",
+                                                                                                      ifelse(CSF.pTau.INNO >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 1, preclinical AD stage",
+                                                                                                             "Stage 1 Preclinical AD meeting 2 cut-offs",
+                                                                                                             ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "SNAP",
+                                                                                                                    "SNAP meeting 2 cut-offs",
+                                                                                                                    ifelse(Sum.hippo < hippo_threshold & Centiloid >centiloid_threshold & Clifford_class == "SNAP",
+                                                                                                                           "SNAP meeting 2 cut-offs",
+                                                                                                                           ifelse(CSF.pTau.INNO >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "SNAP",
+                                                                                                                                  "SNAP meeting 2 cut-offs",
+                                                                                                                                  ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "MCI unlikely due to AD",
+                                                                                                                                         "MCI unlikely due to AD meeting 2 cut-offs",
+                                                                                                                                         ifelse(Sum.hippo < hippo_threshold & Centiloid >centiloid_threshold & Clifford_class == "MCI unlikely due to AD",
+                                                                                                                                                "MCI unlikely due to AD meeting 2 cut-offs",
+                                                                                                                                                ifelse(CSF.pTau.INNO >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "MCI unlikely due to AD",
+                                                                                                                                                       "MCI unlikely due to AD meeting 2 cut-offs","unselected")))))))))))))))))
+    
+    
+    
+    df7$scat_col <- factor(df7$scat_col, levels = c("unselected", "Stage 2 Clinically Asymptomatic meeting all cut-offs",
+                                                    "Stage 1 Preclinical AD meeting all cut-offs", "SNAP meeting all cut-offs",
+                                                    "MCI unlikely due to AD meeting all cut-offs",
+                                                    #"Patients who are within 10% of any cut-off",
+                                                    "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
+                                                    "Stage 1 Preclinical AD meeting 2 cut-offs",
+                                                    "SNAP meeting 2 cut-offs",
+                                                    "MCI unlikely due to AD meeting 2 cut-offs"))
+    
+    
+    df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO), max(df7$CSF.pTau.INNO), ptau_threshold,ptau_threshold,   max(df7$CSF.pTau.INNO),  max(df7$CSF.pTau.INNO), ptau_threshold,ptau_threshold),
+                            Y_VAL = c(min(df7$Sum.hippo, na.rm = T),  hippo_threshold, min(df7$Sum.hippo, na.rm = T), hippo_threshold, min(df7$Sum.hippo, na.rm = T),   hippo_threshold, min(df7$Sum.hippo, na.rm = T), hippo_threshold),
+                            Z_VAL = c(centiloid_threshold,      centiloid_threshold,    centiloid_threshold,      centiloid_threshold,  max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T)),
+                            MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
+    
+    # Make apoe4 a factor
+    df7$apoe4 <- factor(df7$apoe4, levels = c(1,0))
+    
+    cube2 <- plot_ly()%>%
+      add_markers(type = "scatter3d",
+                  mode = "markers",
+                  data = df7,
+                  x = ~CSF.pTau.INNO,
+                  y = ~Sum.hippo,
+                  z = ~Centiloid,
+                  color = ~scat_col,
+                  colors = c('gray', 'red', "gold","yellow", "green", "aquamarine", "chocolate1", "darkorchid1","deeppink")) %>%
+      add_trace(type = 'mesh3d',
+                data = df_mesh_1,
+                x = ~X_VAL,
+                y = ~Y_VAL,
+                z = ~Z_VAL,
+                i = c(7, 1,  6, 0, 4, 0, 3, 6, 0, 3, 4,7),
+                j = c(3, 5,  4, 2, 0, 1, 6, 3, 1, 2, 5,6),
+                k = c(1, 7, 0, 6, 5, 5, 7, 2, 3, 0, 7, 4),
+                facecolor = rep("blue", 12),
+                opacity = 0.1,
+                name = "A+/T+/N+ Positive Area",
+                showlegend = T)
+    
+    cube2 <- cube2 %>%
+      layout(legend = LEGEND_2, scene = list(xaxis = axx2, yaxis = axy2, zaxis = axz2))
+    cube2
+    
+    
+    
+  })
   
   
+  ######################## 3D PREDICTIVE SURFACES ############################
   
-  ############################ Demographic Summary ############################
-  ################################# TABLE #####################################
-  
-  output$table.2 <- renderTable({
+  output$SURFACEPLOT <- renderPlotly({
     new.dat <- req(data_internal$raw)
-    table_2 <- new_table_function(dat = new.dat)
-    group_2_table <- table_2$group_2_table
-    group_2_table}, hover = T, striped = T, bordered = T,
-                                width = "auto", align = "c", colnames = F, na = "")
+    
+    if (input$DEMOGRAPHIC == "APOE-e4 allele"){
+      new_data_frame <- filter(new.dat, apoe4 == 1)
+      
+      my_lm <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, new_data_frame)
+      # Set up Axis
+      
+      axis_x1 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
+      axis_z1 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      
+      ## PLOT THE POINTS
+      
+      my_lm_surface <- expand.grid(CSF.AB42.INNO = axis_x1,CSF.pTau.INNO = axis_z1,KEEP.OUT.ATTRS = F)
+      my_lm_surface$CSF.tTau.INNO <- predict.lm(my_lm, newdata = my_lm_surface)
+      my_lm_surface <- acast(my_lm_surface, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      
+      my_plot <- plot_ly()
+      my_plot <- add_markers(
+        p = my_plot,
+        data = new.dat,
+        x = ~CSF.AB42.INNO,
+        y = ~ CSF.pTau.INNO,
+        z = ~CSF.tTau.INNO,
+        text = ~Diagnosis,
+        type = "scatter3d",
+        color = ~Burnham_class,
+        colors = c("firebrick", "darkorange", "gold", "forestgreen"),
+        mode = "markers")
+      my_plot <- add_trace(
+        p = my_plot,
+        z = my_lm_surface,
+        x = axis_x1,
+        y = axis_z1,
+        type = "surface",
+        colorscale = list(c(0,1), c("green","red")),
+        opacity = 0.6,
+        showscale = F,
+        name = "Regression for APOE4 Carriers",
+        showlegend = T
+      )
+      
+      new_data_frame_2 <- filter(new.dat, apoe4 == 0)
+      
+      my_lm_2 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, new_data_frame_2)
+      # Set up Axis
+      
+      axis_x2 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
+      axis_z2 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      
+      ## PLOT THE POINTS
+      
+      my_lm_surface_2 <- expand.grid(CSF.AB42.INNO = axis_x2,CSF.pTau.INNO = axis_z2,KEEP.OUT.ATTRS = F)
+      my_lm_surface_2$CSF.tTau.INNO <- predict.lm(my_lm_2, newdata = my_lm_surface_2)
+      my_lm_surface_2 <- acast(my_lm_surface_2, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      
+      my_plot <- add_trace(p = my_plot,
+                           z = my_lm_surface_2,
+                           x = axis_x2,
+                           y = axis_z2,
+                           type = "surface",
+                           colorscale = list(c(0,1), c("tan","blue")),
+                           opacity = 0.6,
+                           showscale = F,
+                           name = "Regression for APOE4 Non-Carriers",
+                           showlegend = T)
+      my_plot <- my_plot %>%
+        layout(legend = LEGEND_1,
+               scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
+      my_plot
+    }else if (input$DEMOGRAPHIC == "Sex"){
+      female_data <- filter(new.dat, Sex == "Female")
+      
+      my_lm_female <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, female_data)
+      # Set up Axis
+      
+      axis_x1_female <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
+      axis_z1_female <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      
+      ## PLOT THE POINTS
+      
+      my_lm_surface_female <- expand.grid(CSF.AB42.INNO = axis_x1_female,CSF.pTau.INNO = axis_z1_female,KEEP.OUT.ATTRS = F)
+      my_lm_surface_female$CSF.tTau.INNO <- predict.lm(my_lm_female, newdata = my_lm_surface_female)
+      my_lm_surface_female <- acast(my_lm_surface_female, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      
+      my_plot <- plot_ly()
+      my_plot <- add_markers(
+        p = my_plot,
+        data = new.dat,
+        x = ~CSF.AB42.INNO,
+        y = ~ CSF.pTau.INNO,
+        z = ~CSF.tTau.INNO,
+        text = ~Diagnosis,
+        type = "scatter3d",
+        color = ~Burnham_class,
+        colors = c("firebrick", "darkorange", "gold", "forestgreen"),
+        mode = "markers"
+      )
+      my_plot <- add_trace(
+        p = my_plot,
+        z = my_lm_surface_female,
+        x = axis_x1_female,
+        y = axis_z1_female,
+        type = "surface",
+        colorscale = list(c(0,1), c("green","red")),
+        opacity = 0.6,
+        showscale = F,
+        name = "Regression for Females",
+        showlegend = T)
+      
+      male_data <- filter(new.dat, Sex == "Male")
+      
+      my_lm_male <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, male_data)
+      # Set up Axis
+      
+      axis_x2_male <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
+      axis_z2_male <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      
+      ## PLOT THE POINTS
+      
+      my_lm_surface_male <- expand.grid(CSF.AB42.INNO = axis_x2_male,CSF.pTau.INNO = axis_z2_male,KEEP.OUT.ATTRS = F)
+      my_lm_surface_male$CSF.tTau.INNO <- predict.lm(my_lm_male, newdata = my_lm_surface_male)
+      my_lm_surface_male <- acast(my_lm_surface_male, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      
+      my_plot <- add_trace(p = my_plot,
+                           z = my_lm_surface_male,
+                           x = axis_x2_male,
+                           y = axis_z2_male,
+                           type = "surface",
+                           colorscale = list(c(0,1), c("tan","blue")),
+                           opacity = 0.6,
+                           showscale = F,
+                           name = "Regression for Males",
+                           showlegend = T)
+      my_plot <- my_plot %>%
+        layout(legend = LEGEND_1,
+               scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
+      my_plot
+    }else if (input$DEMOGRAPHIC == "Age"){
+      #####################################################
+      ###################      AGE    #####################
+      
+      # 1 is for education over 12years
+      # 0 is for education under 12 years
+      
+      
+      Age_binary <- filter(new.dat, Age_binary == 1)
+      
+      age_lm_1 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, Age_binary)
+      # Set up Axis
+      
+      x1 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
+      z1 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      
+      ## PLOT THE POINTS
+      
+      age_surface_1 <- expand.grid(CSF.AB42.INNO = x1,CSF.pTau.INNO = z1,KEEP.OUT.ATTRS = F)
+      age_surface_1$CSF.tTau.INNO <- predict.lm(age_lm_1, newdata = age_surface_1)
+      age_surface_1 <- acast(age_surface_1, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      
+      my_plot <- plot_ly()
+      my_plot <- add_markers(
+        p = my_plot,
+        data = new.dat,
+        x = ~CSF.AB42.INNO,
+        y = ~ CSF.pTau.INNO,
+        z = ~CSF.tTau.INNO,
+        text = ~Diagnosis,
+        type = "scatter3d",
+        color = ~Burnham_class,
+        colors = c("firebrick", "darkorange", "gold", "forestgreen"),
+        mode = "markers"
+      )
+      my_plot <- add_trace(
+        p = my_plot,
+        z = age_surface_1,
+        x = x1,
+        y = z1,
+        type = "surface",
+        colorscale = list(c(0,1), c("green","red")),
+        opacity = 0.6,
+        showscale = F,
+        name = "Regression for Individuals over the Age of 72.5",
+        showlegend = T)
+      
+      age_0 <- filter(new.dat, Age_binary == 0)
+      
+      age_lm_2 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, age_0)
+      # Set up Axis
+      
+      x2 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
+      z2 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      
+      ## PLOT THE POINTS
+      
+      age_surface_2 <- expand.grid(CSF.AB42.INNO = x2,CSF.pTau.INNO = z2,KEEP.OUT.ATTRS = F)
+      age_surface_2$CSF.tTau.INNO <- predict.lm(age_lm_2, newdata = age_surface_2)
+      age_surface_2 <- acast(age_surface_2, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      
+      my_plot <- add_trace(p = my_plot,
+                           z = age_surface_2,
+                           x = x2,
+                           y = z1,
+                           type = "surface",
+                           colorscale = list(c(0,1), c("tan","blue")),
+                           opacity = 0.6,
+                           showscale = F,
+                           name = "Regression for Individuals under the age of 72.5",
+                           showlegend = T)
+      my_plot <- my_plot %>%
+        layout(legend = LEGEND_1,
+               scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
+      my_plot
+    }else if (input$DEMOGRAPHIC == "Education"){
+      #####################################################
+      ###################  Education  #####################
+      
+      
+      # 1 is for education over 12years
+      # 0 is for education under 12 years
+      
+      
+      eduction_data <- filter(new.dat, Education_binary == 1)
+      
+      my_education_1 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, eduction_data)
+      # Set up Axis
+      
+      axis_x1_education <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
+      axis_z1_education <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      
+      ## PLOT THE POINTS
+      
+      my_lm_surface_education <- expand.grid(CSF.AB42.INNO = axis_x1_education,CSF.pTau.INNO = axis_z1_education,KEEP.OUT.ATTRS = F)
+      my_lm_surface_education$CSF.tTau.INNO <- predict.lm(my_education_1, newdata = my_lm_surface_education)
+      my_lm_surface_education <- acast(my_lm_surface_education, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      
+      my_plot <- plot_ly()
+      my_plot <- add_markers(
+        p = my_plot,
+        data = new.dat,
+        x = ~CSF.AB42.INNO,
+        y = ~ CSF.pTau.INNO,
+        z = ~CSF.tTau.INNO,
+        text = ~Diagnosis,
+        type = "scatter3d",
+        color = ~Burnham_class,
+        colors = c("firebrick", "darkorange", "gold", "forestgreen"),
+        mode = "markers")
+      my_plot <- add_trace(p = my_plot,
+                           z = my_lm_surface_education,
+                           x = axis_x1_education,
+                           y = axis_z1_education,
+                           type = "surface",
+                           colorscale = list(c(0,1), c("green","red")),
+                           opacity = 0.6,
+                           showscale = F,
+                           name = "Regression for Individuals with over 12 Years of Education",
+                           showlegend = T)
+      
+      education_data_0 <- filter(new.dat, Education_binary == 0)
+      
+      my_lm_ed_0 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, education_data_0)
+      # Set up Axis
+      
+      axis_x2 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
+      axis_z2 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      
+      ## PLOT THE POINTS
+      
+      my_lm_surface_ed_0 <- expand.grid(CSF.AB42.INNO = axis_x2,CSF.pTau.INNO = axis_z2,KEEP.OUT.ATTRS = F)
+      my_lm_surface_ed_0$CSF.tTau.INNO <- predict.lm(my_lm_ed_0, newdata = my_lm_surface_ed_0)
+      my_lm_surface_ed_0 <- acast(my_lm_surface_ed_0, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      
+      my_plot <- add_trace(p = my_plot,
+                           z = my_lm_surface_ed_0,
+                           x = axis_x2,
+                           y = axis_z2,
+                           type = "surface",
+                           colorscale = list(c(0,1), c("tan","blue")),
+                           opacity = 0.6,
+                           showscale = F,
+                           name = "Regression for Individuals with less than 12 Years of Education",
+                           showlegend = T)
+      my_plot <- my_plot %>%
+        layout(legend = LEGEND_1,
+               scene = list(xaxis = axx, yaxis = axy, zaxis = axz))
+      
+      
+      my_plot
+      
+    }
+  })
   
-  
-  
+
+
 ############################# END OF SERVER FUNCTION ###########################  
 }

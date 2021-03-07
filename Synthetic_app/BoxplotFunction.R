@@ -15,6 +15,7 @@ BoxplotFunction <- function(dat, xinput, input_title){
   dat$apoe4 <- factor(dat$apoe4, levels = c("0","1"))
   dat$Age_binary <- factor(dat$Age_binary, levels = c("0","1"))
   dat$Sex <- factor(dat$Sex, levels = c("Female", "Male"))
+  dat$Education_binary <- factor(dat$Education_binary, levels = c("0","1"))
   
   plot2 <- ggplot(dat, aes(x = Sex, y = xinput, na.rm = T))+
     geom_boxplot(color = "red", fill = "orange", alpha = 0.2)+

@@ -57,6 +57,9 @@ t = setTimeout(logout, 120000);  // time is in milliseconds (1000 is 1 second)
 }
 idleTimer();"
 
+share <- list(
+  image = ""
+)
 
 # User Interface
 ui<- 
@@ -266,6 +269,8 @@ ui<-
               ## Panel 2 -------------------------------------
               tabPanel(title ="Group 1: CSF ATN Biomarkers",
                        br(), 
+                       conditionalPanel(
+                         condition = "input.sample_or_real == 'sample' || input.newDataSUBMIT",
                        box(solidHeader = F, 
                            collapsible = F, 
                            width = 12, 
@@ -361,7 +366,121 @@ ui<-
                                       spinal cord. A lumbar puncture would be performed at the lower back, in the lumbar region. Source: Medical Animation [11].", style = "text-align: justify;width:265px")
                              )
                            )
-                       ),     
+                       )
+                       ),
+                       conditionalPanel(
+                         condition = "input.SUMBITNEW",
+                         box(solidHeader = F, 
+                             collapsible = F, 
+                             width = 12, 
+                             fluidRow(
+                               column(width = 9, 
+                                      textOutput("NewCUTOFFLabels"),
+                                      tags$head(tags$style("#NewCUTOFFLabels{
+                                 font-size: 18px;color:#6C3483;font-weight:bold                             }"
+                                      )
+                                      ),
+                                      br(),
+                                      p("The National Institute on Aging and Alzheimer's Association (NIA-AA) proposed a new 
+                                      research framework: Towards a Biological definition of Alzheimer's disease which uses the 
+                                      three-biomarker previously mentioned: AB-amyloid, Tau and Neurodegeneration, AT(N), to 
+                                      generate an eight group biomarker based definition of Alzheimer's disease [2]. These eight groups
+                                      were then collapsed into four main groups corresponding to the classifications of Burnham et al. [2]. The table below 
+                                      illustrates the groups.",style ="text-align: justify;width:100%;font-size:18px"),
+                                      HTML('<style type="text/css">
+                  .tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
+                          .tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
+                                  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+                      .tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
+                              font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+                      .tg .tg-mcqj{border-color:#000000;font-weight:bold;text-align:left;vertical-align:top}
+                              .tg .tg-73oq{border-color:#000000;text-align:left;vertical-align:top}
+                                      .tg .tg-xwyw{border-color:#000000;text-align:center;vertical-align:middle}
+                                              </style>
+                                              <table class="tg">
+                                                  <thead>
+                                                  <tr>
+                                                  <th class="tg-mcqj">NIA-AA Research Framework</th>
+                                                      <th class="tg-mcqj">Burnham Classification</th>
+                                                          </tr>
+                                                          </thead>
+                                                          <tbody>
+                                                          <tr>
+                                                          <td class="tg-73oq">A+/T+/N+</td>
+                                                              <td class="tg-xwyw" rowspan="2">AD</td>
+                                                                  </tr>
+                                                                  <tr>
+                                                                  <td class="tg-73oq">A+/T+/N-</td>
+                                                                      </tr>
+                                                                      <tr>
+                                                                      <td class="tg-73oq">A+/T-/N+</td>
+                                                                          <td class="tg-xwyw" rowspan="2">Pathological Change</td>
+                                                                              </tr>
+                                                                              <tr>
+                                                                              <td class="tg-73oq">A+/T-/N-</td>
+                                                                                  </tr>
+                                                                                  <tr>
+                                                                                  <td class="tg-73oq">A-/T+/N+</td>
+                                                                                      <td class="tg-xwyw" rowspan="3">Non-AD Pathological Change</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                          <td class="tg-73oq">A-/T-/N+</td>
+                                                                                              </tr>
+                                                                                              <tr>
+                                                                                              <td class="tg-73oq">A-/T+/N-</td>
+                                                                                                  </tr>
+                                                                                                  <tr>
+                                                                                                  <td class="tg-73oq">A-/T-/N-</td>
+                                                                                                      <td class="tg-xwyw">Normal AD Biomarkers</td>
+                                                                                                          </tr>
+                                                                                                          </tbody>
+                                                                                                          </table>'),
+                                      p("Table 1: Group 1 Classifications adapted from Burham et al. [2]"),
+                                      br(),
+                                      p("Several imaging
+                                      and CSF techniques can be used to detect these biomarkers. Imaging 
+                                      techniques include MRI and PET
+                                      scans. Lumbar punctures are used to collect CSF data. In this panel, we apply the AT(N) classification 
+                                      system to CSF biomarkers from data collected in AIBL. The type of assay used in AD research is important.
+                                        Group 1 is described by the following biomarkers and cut-off thresholds:",style ="text-align: justify;width:100%;font-size:18px"), 
+                                      tags$div(
+                                        tags$ul(
+                                          tags$li(textOutput("ABTEXT"), tags$head(tags$style("#ABTEXT{
+                                 font-size: 18px;                             }"
+                                          )
+                                          )
+                                          ), 
+                                          tags$li(textOutput("PTAUTEXT"), tags$head(tags$style("#PTAUTEXT{
+                                 font-size: 18px;                             }"
+                                          )
+                                          )
+                                          ),  
+                                          tags$li(textOutput("TTAUTEXT"), tags$head(tags$style("#TTAUTEXT{
+                                 font-size: 18px;                             }"
+                                          )
+                                          )
+                                          ),  
+                                        )
+                                      ), 
+                                      p("This tab is broken down into eight components; data selection, a demographic summary, a reactive 2D plot, 
+                                      interactive 3D plots (with the options of adding in the positive thresholds for the 
+                                      biomarkers), an A+/T+/N+ positive area visual, Add in your own data point option and statistical modelling.",style ="text-align: justify;width:100%;font-size:18px"),
+                                      # p("For more information on INNO assay and the biomarker cut-offs please see ",a(href = "https://www.fujirebio.com/sites/default/files/2019-09/INNOTEST_Alzheimer_brochure.pdf",
+                                      #                                                                                'here', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end")
+                                      #   )
+                               ),
+                               
+                               column(width = 3,
+                                      align = "left",
+                                      tags$a(href = "http://www.medical-animations.com/contact.html",
+                                             img(src = "CSF.gif", height = "230px", width = "265px", title = "Adaption from Medical Animation Australia")),
+                                      # textOutput("TEXT1")
+                                      p("Figure 4: a visual representation of the cerebrospinal fluid that surrounds the brain and travels down the
+                                      spinal cord. A lumbar puncture would be performed at the lower back, in the lumbar region. Source: Medical Animation [11].", style = "text-align: justify;width:265px")
+                               )
+                             )
+                         ),
+                       ),
                        br(),
                        
                        br(),
@@ -1268,8 +1387,7 @@ ui<-
                                                       fullwidth = T
                                                     ),
                                                     br(),
-                                                    p("The thresholds are as above. The user can remove the cut-offs to the 
-                                                      right side of the plot at their discretion",style ="text-align: justify;width:100%;font-size:16px")
+                                                    
                                                     
                                                   )
                                                 )
@@ -1285,58 +1403,96 @@ ui<-
                                    tabPanel("A+/T+/N+ Visualisation",
                                             sidebarLayout(
                                               sidebarPanel(
-                                                pickerInput("CUBE1", "Select the Specific Age Group", 
-                                                            choices = c("60-70", "70+"),
-                                                            selected = "60-70", 
-                                                            multiple = F),
                                                 conditionalPanel(
-                                                  condition = "input.CUBE1 == '60-70'", 
-                                                  p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update from the previous plot
+                                                  condition = "input.sample_or_real == 'sample' || input.newDataSUBMIT",
+                                                  pickerInput("CUBE1", "Select the Specific Age Group", 
+                                                              choices = c("60-70", "70+"),
+                                                              selected = "60-70", 
+                                                              multiple = F),
+                                                  conditionalPanel(
+                                                    condition = "input.CUBE1 == '60-70'", 
+                                                    p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update from the previous plot
                                                     until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
-                                                  actionGroupButtons(
-                                                    inputIds = c("ATNStatic", "ATNrotating"), 
-                                                    labels = list("Interactive Static", "Rotating Animation"), 
-                                                    status = "info",
-                                                    size = 'lg',
-                                                    fullwidth = T
-                                                  )
-                                                ),
-                                                conditionalPanel(
-                                                  condition = "input.CUBE1 == '70+'", 
-                                                  p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update from the previous plot
+                                                    actionGroupButtons(
+                                                      inputIds = c("ATNStatic", "ATNrotating"), 
+                                                      labels = list("Interactive Static", "Rotating Animation"), 
+                                                      status = "info",
+                                                      size = 'lg',
+                                                      fullwidth = T
+                                                    )
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.CUBE1 == '70+'", 
+                                                    p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update from the previous plot
                                                     until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
-                                                  actionGroupButtons(
-                                                    inputIds = c("ATNStaticP2", "ATNrotatingP2"), 
-                                                    labels = list("Interactive Static", "Rotating Animation"), 
-                                                    status = "info",
-                                                    size = 'lg',
-                                                    fullwidth = T
-                                                  )
-                                                ),
-                                                br(),
-                                                p("In this plot, the selected individuals (in red) are those that 
+                                                    actionGroupButtons(
+                                                      inputIds = c("ATNStaticP2", "ATNrotatingP2"), 
+                                                      labels = list("Interactive Static", "Rotating Animation"), 
+                                                      status = "info",
+                                                      size = 'lg',
+                                                      fullwidth = T
+                                                    )
+                                                  ),
+                                                  br(),
+                                                  p("In this plot, the selected individuals (in red) are those that 
                                                   meet all 3 biomarker's definition of being biomarker positive (in the A+/T+/N+ area). The unselected (in grey) are those that don't meet
                                                   all 3 definitions of being biomarker positive.",style ="text-align: justify;width:100%;font-size:18px"),
-                                                br(),
-                                                p("Alzheimer's disease is not as simple as these binary classifications and cut-offs. In previous 2D and 3D plots, there is a lot overlap between data points
+                                                  br(),
+                                                  p("Alzheimer's disease is not as simple as these binary classifications and cut-offs. In previous 2D and 3D plots, there is a lot overlap between data points
                                                   of different classifications, emphasising that AD is not described by a specific cut-off, but a pathway that is unique to each individual.",style ="text-align: justify;width:100%;font-size:18px"), 
-                                                p(strong("Please click the button below to identify borderline individuals.",style ="text-align: justify;width:100%;font-size:18px")), 
-                                                actionButton("g1cube", "Borderline A+/T+/N+ Visualisation", icon=icon("fas fa-cubes")), 
-                                                bsModal(id = "G1CUBE", 
-                                                        title = "Borderline A+/T+/N+ Visualisation", 
-                                                        trigger = "g1cube", 
-                                                        size = "large", 
-                                                        p("In this plot, those who met the requirements of two  cut-offs are shown. For 70+ Age Group, xx% of the data have meet only 2 of the 3 cut-offs. For 60-70 Age Group, xx% of the data 
+                                                  p(strong("Please click the button below to identify borderline individuals.",style ="text-align: justify;width:100%;font-size:18px")), 
+                                                  actionButton("g1cube", "Borderline A+/T+/N+ Visualisation", icon=icon("fas fa-cubes")), 
+                                                  bsModal(id = "G1CUBE", 
+                                                          title = "Borderline A+/T+/N+ Visualisation", 
+                                                          trigger = "g1cube", 
+                                                          size = "large", 
+                                                          p("In this plot, those who met the requirements of two  cut-offs are shown. For 70+ Age Group, xx% of the data have meet only 2 of the 3 cut-offs. For 60-70 Age Group, xx% of the data 
                                                           have meet 2 out of the 3 cut-offs. This plot highlights the pitfalls of classification of individuals from binarized cut-offs and demonstrates the inappropriateness of 
                                                           categorising individuals based on these predetermined cut-offs.",style ="text-align: justify;width:100%;font-size:18px"),
-                                                        p("As before, please select the specific age group to view the plot. The plots produced below are an interactive static plot for the user
+                                                          p("As before, please select the specific age group to view the plot. The plots produced below are an interactive static plot for the user
                                                           to move at their discretion.",style ="text-align: justify;width:100%;font-size:18px"), 
-                                                        selectInput("cubeg1input", "Select the Specific Age Group:",
-                                                                    choices = c("60-70", "70+"),
-                                                                    selected = "70+",
-                                                                    multiple = F),
-                                                        shinycssloaders:: withSpinner(plotlyOutput("G1ExtraCube", height = 600))
+                                                          selectInput("cubeg1input", "Select the Specific Age Group:",
+                                                                      choices = c("60-70", "70+"),
+                                                                      selected = "70+",
+                                                                      multiple = F),
+                                                          shinycssloaders:: withSpinner(plotlyOutput("G1ExtraCube", height = 600))
+                                                  )
+                                                  
+                                                ), 
+                                                conditionalPanel(
+                                                  condition = "input.SUMBITNEW", 
+                                                  p(strong("The assay inputted by the user is not age dependent.",
+                                                           style ="text-align: justify;width:100%;font-size:16px")), 
+                                                  p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update from the previous plot
+                                                    until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
+                                                  actionGroupButtons(
+                                                    inputIds = c("no_age_ATN", "no_age_ATN_rotating"), 
+                                                    labels = list("Interactive Static", "Rotating Animation"), 
+                                                    status = "info",
+                                                    size = 'lg',
+                                                    fullwidth = T
+                                                  ), 
+                                                  br(),
+                                                  p("In this plot, the selected individuals (in red) are those that 
+                                                  meet all 3 biomarker's definition of being biomarker positive (in the A+/T+/N+ area). The unselected (in grey) are those that don't meet
+                                                  all 3 definitions of being biomarker positive.",style ="text-align: justify;width:100%;font-size:18px"),
+                                                  br(),
+                                                  p("Alzheimer's disease is not as simple as these binary classifications and cut-offs. In previous 2D and 3D plots, there is a lot overlap between data points
+                                                  of different classifications, emphasising that AD is not described by a specific cut-off, but a pathway that is unique to each individual.",style ="text-align: justify;width:100%;font-size:18px"), 
+                                                  p(strong("Please click the button below to identify borderline individuals.",style ="text-align: justify;width:100%;font-size:18px")), 
+                                                  actionButton("ANothercube", "Borderline A+/T+/N+ Visualisation", icon=icon("fas fa-cubes")), 
+                                                  bsModal(id = "ANOTHERG1CUBE", 
+                                                          title = "Borderline A+/T+/N+ Visualisation", 
+                                                          trigger = "ANothercube", 
+                                                          size = "large", 
+                                                          p("In this plot, those who met the requirements of two  cut-offs are shown. This plot highlights the pitfalls of classification of individuals from binarized cut-offs and demonstrates the inappropriateness of 
+                                                          categorising individuals based on these predetermined cut-offs.",style ="text-align: justify;width:100%;font-size:18px"),
+                                                          p("The plots produced below are an interactive static plot for the user
+                                                          to move at their discretion.",style ="text-align: justify;width:100%;font-size:18px"), 
+                                                          shinycssloaders:: withSpinner(plotlyOutput("no_age_dependence_additional_cube", height = 600))
+                                                  )
                                                 )
+                                                
                                                 
                                                 
                                               ), 
@@ -1353,32 +1509,69 @@ ui<-
                                               sidebarPanel(
                                                 p('Enter your own ATN biomarker data to see your standing in the cohort',style ="text-align: justify;width:100%;font-size:18px"),
                                                 br(),
-                                                numericInput("age1", "Please enter your age:", 
-                                                             50,
-                                                             min = 1, 
-                                                             max = 200),
-                                                numericInput("obs", "CSF AB1-42 pg/mL", 
-                                                             800,
-                                                             min = 1,
-                                                             max = 2000),
-                                                numericInput("ptau", "CSF pTau pg/mL", 
-                                                             30,
-                                                             min = -100,
-                                                             max = 1000), 
-                                                numericInput("ttau", "CSF tTau pg/mL", 
-                                                             300, 
-                                                             min = 1, 
-                                                             max = 1000), 
-                                                pickerInput("DATAVIS", "Select the form of visualisation:", 
-                                                            choices = c("3D Plot", "A+/T+/N+ Visualisation"),
-                                                            selected = "3D Plot",
-                                                            multiple = F),
+                                                conditionalPanel(
+                                                  condition = "input.sample_or_real == 'sample' || input.newDataSUBMIT",
+                                                  numericInput("age1", "Please enter your age:", 
+                                                               50,
+                                                               min = 1, 
+                                                               max = 200),
+                                                  numericInput("obs", "CSF AB1-42 pg/mL", 
+                                                               800,
+                                                               min = 1,
+                                                               max = 2000),
+                                                  numericInput("ptau", "CSF pTau pg/mL", 
+                                                               30,
+                                                               min = -100,
+                                                               max = 1000), 
+                                                  numericInput("ttau", "CSF tTau pg/mL", 
+                                                               300, 
+                                                               min = 1, 
+                                                               max = 1000), 
+                                                  pickerInput("DATAVIS", "Select the form of visualisation:", 
+                                                              choices = c("3D Plot", "A+/T+/N+ Visualisation"),
+                                                              selected = "3D Plot",
+                                                              multiple = F),
+                                                ),
+                                                conditionalPanel(
+                                                  condition = "input.SUMBITNEW", 
+                                                  numericInput("no_age_dependence", "Please enter your age:", 
+                                                               50,
+                                                               min = 1, 
+                                                               max = 200),
+                                                  numericInput("AB_no_age_input", "CSF AB1-42 pg/mL", 
+                                                               800,
+                                                               min = 1,
+                                                               max = 2000),
+                                                  numericInput("ptau_no_age_input", "CSF pTau pg/mL", 
+                                                               30,
+                                                               min = -100,
+                                                               max = 1000), 
+                                                  numericInput("ttau_no_age_input", "CSF tTau pg/mL", 
+                                                               300, 
+                                                               min = 1, 
+                                                               max = 1000), 
+                                                  pickerInput("no_age_dependence", "Select the form of visualisation:", 
+                                                              choices = c("3D Plot" = "no_age_3D", "A+/T+/N+ Visualisation" = "no_age_atn_AYOB"),
+                                                              selected = "3D Plot",
+                                                              multiple = F),
+                                                ),
                                                 p("The plots produced are an interactive static plot for the user
                                                           to move at their discretion.", style = "width:100%;font-size:18px")
                                               ), 
-                                              mainPanel(br(), br(),shinycssloaders:: withSpinner(
-                                                plotlyOutput("OWNBIOMARKERS", height = 600)
-                                              ) )
+                                              mainPanel(br(), br(),
+                                                        conditionalPanel(
+                                                          condition = "input.sample_or_real == 'sample' || input.newDataSUBMIT", 
+                                                          shinycssloaders:: withSpinner(
+                                                            plotlyOutput("OWNBIOMARKERS", height = 600)
+                                                          )
+                                                        ), 
+                                                        conditionalPanel(
+                                                          condition = "input.SUMBITNEW", 
+                                                          shinycssloaders:: withSpinner(
+                                                            plotlyOutput("ADDINDATA_NO_AGE", height = 600)
+                                                          )
+                                                        )
+                                                         )
                                             )
                                    ), 
                                    tabPanel("Statistical Modelling",
@@ -1519,15 +1712,17 @@ ui<-
               # Panel 3 -------------------------------------
               tabPanel(title ="Group 2: Combined Modality Data",
                        br(), 
-                       box(solidHeader = F, 
-                           collapsible = F, 
-                           width = 12, 
-                           fluidRow(
-                             column(width = 9, 
-                                    p("Similarly to Group 1, the NIA-AA Framework can be collapsed according to the groups established in Clifford et al. [3]. The groups
+                       conditionalPanel(
+                         condition = "input.sample_or_real == 'sample' || input.newDataSUBMIT",
+                         box(solidHeader = F, 
+                             collapsible = F, 
+                             width = 12, 
+                             fluidRow(
+                               column(width = 9, 
+                                      p("Similarly to Group 1, the NIA-AA Framework can be collapsed according to the groups established in Clifford et al. [3]. The groups
                                     are shown in the table below.",style ="text-align: justify;width:100%;font-size:18px"), 
-                                    # HTML('<center><img src="Capture.JPG"></center>'), 
-                                    HTML('<style type="text/css">
+                                      # HTML('<center><img src="Capture.JPG"></center>'), 
+                                      HTML('<style type="text/css">
 .tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
 .tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
   font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
@@ -1575,56 +1770,187 @@ ui<-
                                       </tr>
                                       </tbody>
                                       </table>'),
-                                    p("Table 4: Group 2 Classifications adapted from Clifford et al. [3]"),
-                                    br(),
-                                    p("In this group, AB-Amyloid plaques (A) are quantified by the Centiloid value measured through PET imaging. Tau (T) was measured through phosphor-Tau CSF p-181 and Neurodegeneration (N)
+                                      p("Table 4: Group 2 Classifications adapted from Clifford et al. [3]"),
+                                      br(),
+                                      p("In this group, AB-Amyloid plaques (A) are quantified by the Centiloid value measured through PET imaging. Tau (T) was measured through phosphor-Tau CSF p-181 and Neurodegeneration (N)
                                       was quantified via the hippocampus volume, measured  by MRI imaging.",style ="text-align: justify;width:100%;font-size:18px"),
-                                    p("The thresholds for Amyloid, Tau and Neurodegeneration were derived from literature. The Centiloid cut-off was cited in Villemagne et al. [13],Dore et al. [6] and
+                                      p("The thresholds for Amyloid, Tau and Neurodegeneration were derived from literature. The Centiloid cut-off was cited in Villemagne et al. [13],Dore et al. [6] and
                                     Bourgeat et al. [1]. The CSF pTau 
                                     cut-off is specified in Doecke et al.[6] and Li et al.[9]. The cut-off for hippocampus is established in Clifford et al. [4]. For more imformation on the derivation of the 
                                     hippocampus, please click the View Derivation button below.",style ="text-align: justify;width:100%;font-size:18px"), 
-                                    p("Group 2 is therefore described below with the 
+                                      p("Group 2 is therefore described below with the 
                                     corresponding cut-off thresholds:",style ="text-align: justify;width:100%;font-size:18px"),
-                                    tags$div(
-                                      tags$ul(
-                                        tags$li("A: is quantified by Centiloid, positive participants have values greater than 20",style ="text-align: justify;width:100%;font-size:18px"),
-                                        tags$li("T: is quantified by phosphor-Tau CSF p-181, positive participants aged 60-70 have values greater than 59.23 and individuals aged 70+ have values greater than 73.83",style ="text-align: justify;width:100%;font-size:18px"), 
-                                        tags$li("N: is quantified by hippocampus volume, positive participants have values less than 5.4.",style ="text-align: justify;width:100%;font-size:18px")
-                                      )
-                                    ),
-                                    
-                                    p("This tab is broken down into seven components; a demographic summary, a reactive 2D plot, 
+                                      tags$div(
+                                        tags$ul(
+                                          tags$li("A: is quantified by Centiloid, positive participants have values greater than 20",style ="text-align: justify;width:100%;font-size:18px"),
+                                          tags$li("T: is quantified by phosphor-Tau CSF p-181, positive participants aged 60-70 have values greater than 59.23 and individuals aged 70+ have values greater than 73.83",style ="text-align: justify;width:100%;font-size:18px"), 
+                                          tags$li("N: is quantified by hippocampus volume, positive participants have values less than 5.4.",style ="text-align: justify;width:100%;font-size:18px")
+                                        )
+                                      ),
+                                      
+                                      p("This tab is broken down into seven components; a demographic summary, a reactive 2D plot, 
                                       interactive 3D plots (with the options of adding in the positive thresholds for the 
                                       biomarkers), an A+/T+/N+ positive area visual, Add in your own data point option and statistical modelling.",style ="text-align: justify;width:100%;font-size:18px"),
-                                    actionButton("hipplot", "View Derivation", icon=icon("bar-chart")),
-                                    br(),
-                                    # Shiny BS Modal to display the Dataset inside a MOdal with spinner added 
-                                    bsModal(id = "HIPPLOT", 
-                                            title = "Derivation of hippocampus Cut-off", 
-                                            trigger = "hipplot", 
-                                            size = "large", 
-                                            p("The hippocampus volume cut-off was derived from mixture methods. This method was established in Clifford et al. [4].
+                                      actionButton("hipplot", "View Derivation", icon=icon("bar-chart")),
+                                      br(),
+                                      # Shiny BS Modal to display the Dataset inside a MOdal with spinner added 
+                                      bsModal(id = "HIPPLOT", 
+                                              title = "Derivation of hippocampus Cut-off", 
+                                              trigger = "hipplot", 
+                                              size = "large", 
+                                              p("The hippocampus volume cut-off was derived from mixture methods. This method was established in Clifford et al. [4].
                                             The cut-off is the intersection (in black) of the normal curves of the hippocampus volume for Alzheimer's Disease (AD) and Healthy Cognitive (HC), as shown below.",style ="text-align: justify;width:100%;font-size:18px"),
-                                            textOutput("texthippo"),
-                                            tags$head(tags$style("#texthippo{
+                                              textOutput("texthippo"),
+                                              tags$head(tags$style("#texthippo{
                                  font-size: 18px;                                 }"
-                                            )
-                                            ),
-                                            plotOutput("plot_gg"), plotOutput('intersect_plot')
-                                    ),
-                                    br(),
-                             ), 
-                             column(width = 3,
-                                    align = "left",
-                                    tags$a(href = "https://biofinder.se/data-biomarkers/tau-pet-imaging/",
-                                           img(src = "TauPET.gif", height = "230px", width = "260px",
-                                               title = "Adaption from Sweish Biofinder Study")
-                                    ),
-                                    p("Figure 5: This image gives a visual representation of a PET scan. In a PET scan, radioactive substances, known as
+                                              )
+                                              ),
+                                              plotOutput("plot_gg"), plotOutput('intersect_plot')
+                                      ),
+                                      br(),
+                               ), 
+                               column(width = 3,
+                                      align = "left",
+                                      tags$a(href = "https://biofinder.se/data-biomarkers/tau-pet-imaging/",
+                                             img(src = "TauPET.gif", height = "230px", width = "260px",
+                                                 title = "Adaption from Sweish Biofinder Study")
+                                      ),
+                                      p("Figure 5: This image gives a visual representation of a PET scan. In a PET scan, radioactive substances, known as
                                       radiotracers are used to visualise and measure changes in metabolic process. This animation shows a PET scan
                                       of a patient with Alzheimer's Disease measuring Tau (indicated by red sections). Source: the Swedish BioFINDER study [12].", style = "text-align: justify;width:260px"))
-                           )
-                       ),   
+                             )
+                         ) 
+                       ), 
+                       conditionalPanel(
+                         condition = "input.SUMBITNEW", 
+                         box(solidHeader = F, 
+                             collapsible = F, 
+                             width = 12, 
+                             fluidRow(
+                               column(width = 9,
+                                      textOutput("NewCUTOFFLabels2"),
+                                      tags$head(tags$style("#NewCUTOFFLabels2{
+                                 font-size: 18px;color:#6C3483;font-weight:bold                             }"
+                                      )
+                                      ),
+                                      br(), 
+                                      
+                                      p("Similarly to Group 1, the NIA-AA Framework can be collapsed according to the groups established in Clifford et al. [3]. The groups
+                                    are shown in the table below.",style ="text-align: justify;width:100%;font-size:18px"), 
+                                      # HTML('<center><img src="Capture.JPG"></center>'), 
+                                      HTML('<style type="text/css">
+.tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
+.tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
+  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
+  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-mcqj{border-color:#000000;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-73oq{border-color:#000000;text-align:left;vertical-align:top}
+.tg .tg-xwyw{border-color:#000000;text-align:center;vertical-align:middle}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-mcqj">NIA-AA Research Framework</th>
+    <th class="tg-mcqj">Clifford Classification</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-73oq">A+/T+/N+</td>
+    <td class="tg-xwyw" rowspan="2">Stage 2, Clinically Asymptomatic</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">A+/T+/N-</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">A+/T-/N+</td>
+    <td class="tg-xwyw" rowspan="2">Stage 1, Preclinical AD Stage</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">A+/T-/N-</td>
+  </tr>
+  <tr>
+    <td class="tg-73oq">A-/T+/N+</td>
+    <td class="tg-xwyw" rowspan="3">SNAP (Suspected Non-Alzheimers <br>Disease Person)</td>
+                                      </tr>
+                                      <tr>
+                                      <td class="tg-73oq">A-/T-/N+</td>
+                                      </tr>
+                                      <tr>
+                                      <td class="tg-73oq">A-/T+/N-</td>
+                                      </tr>
+                                      <tr>
+                                      <td class="tg-73oq">A-/T-/N-</td>
+                                      <td class="tg-xwyw">MCI unlikely due to AD</td>
+                                      </tr>
+                                      </tbody>
+                                      </table>'),
+                                      p("Table 4: Group 2 Classifications adapted from Clifford et al. [3]"),
+                                      br(),
+                                      p("In this group, AB-Amyloid plaques (A) are quantified by the Centiloid value measured through PET imaging. Tau (T) was measured through phosphor-Tau CSF p-181 and Neurodegeneration (N)
+                                      was quantified via the hippocampus volume, measured  by MRI imaging.",style ="text-align: justify;width:100%;font-size:18px"),
+                                      p("The thresholds for Amyloid, Tau and Neurodegeneration were derived from literature. The Centiloid cut-off was cited in Villemagne et al. [13],Dore et al. [6] and
+                                    Bourgeat et al. [1]. The CSF pTau 
+                                    cut-off is specified in Doecke et al.[6] and Li et al.[9]. The cut-off for hippocampus is established in Clifford et al. [4]. For more imformation on the derivation of the 
+                                    hippocampus, please click the View Derivation button below.",style ="text-align: justify;width:100%;font-size:18px"), 
+                                      p("Group 2 is therefore described below with the 
+                                    corresponding cut-off thresholds:",style ="text-align: justify;width:100%;font-size:18px"),
+                                      tags$div(
+                                        tags$ul(
+                                          tags$li(textOutput("CENTILOIDTEXT"), tags$head(tags$style("#CENTILOIDTEXT{
+                                 font-size: 18px;                             }"
+                                          )
+                                          )
+                                          ), 
+                                          tags$li(textOutput("PTAU2TEXT"), tags$head(tags$style("#PTAU2TEXT{
+                                 font-size: 18px;                             }"
+                                          )
+                                          )
+                                          ), 
+                                          tags$li(textOutput("HIPPOCAMPUSTEXT"), tags$head(tags$style("#HIPPOCAMPUSTEXT{
+                                 font-size: 18px;                             }"
+                                          )
+                                          )
+                                          ),
+                                        )
+                                      ),
+                                      
+                                      p("This tab is broken down into seven components; a demographic summary, a reactive 2D plot, 
+                                      interactive 3D plots (with the options of adding in the positive thresholds for the 
+                                      biomarkers), an A+/T+/N+ positive area visual, Add in your own data point option and statistical modelling.",style ="text-align: justify;width:100%;font-size:18px"),
+                                      actionButton("hippodippo", "View Derivation", icon=icon("bar-chart")),
+                                      br(),
+                                      # Shiny BS Modal to display the Dataset inside a MOdal with spinner added 
+                                      bsModal(id = "NEW_DERIVATION", 
+                                              title = "Derivation of hippocampus Cut-off", 
+                                              trigger = "hippodippo", 
+                                              size = "large", 
+                                              p("The hippocampus volume cut-off was derived from mixture methods. This method was established in Clifford et al. [4].
+                                            The cut-off is the intersection (in black) of the normal curves of the hippocampus volume for Alzheimer's Disease (AD) and Healthy Cognitive (HC), as shown below.",style ="text-align: justify;width:100%;font-size:18px"),
+                                              textOutput("texthippo1"),
+                                              tags$head(tags$style("#texthippo1{
+                                 font-size: 18px;                                 }"
+                                              )
+                                              ),
+                                              plotOutput("plot_gg1"), plotOutput('intersect_plot1')
+                                      ),
+                                      br(),
+                               ), 
+                               column(width = 3,
+                                      align = "left",
+                                      tags$a(href = "https://biofinder.se/data-biomarkers/tau-pet-imaging/",
+                                             img(src = "TauPET.gif", height = "230px", width = "260px",
+                                                 title = "Adaption from Sweish Biofinder Study")
+                                      ),
+                                      p("Figure 5: This image gives a visual representation of a PET scan. In a PET scan, radioactive substances, known as
+                                      radiotracers are used to visualise and measure changes in metabolic process. This animation shows a PET scan
+                                      of a patient with Alzheimer's Disease measuring Tau (indicated by red sections). Source: the Swedish BioFINDER study [12].", style = "text-align: justify;width:260px"))
+                             )
+                         ) 
+                       ),
+                       
+                        
                        
                        # Sidebar layout with input and output definitions
                        tabsetPanel(type = "tabs",
@@ -1705,14 +2031,7 @@ ui<-
                                                   c("Normal 3D Scatter Plot" = "Normal2",
                                                     "3D Scatter Plot with Cut-offs"= "planes2")),
                                                 
-                                                conditionalPanel(
-                                                  condition = "input.plotType2 == 'planes2'",
-                                                  selectInput(
-                                                    "AGEgroup2", "Select the specific Age Group",
-                                                    c("60-70",
-                                                      "70+"))
-                                                ),
-                                                
+                                            
                                                 conditionalPanel(
                                                   condition = "input.plotType2 == 'Normal2'", 
                                                   p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load
@@ -1727,34 +2046,61 @@ ui<-
                                                 conditionalPanel(
                                                   condition = "input.plotType2 == 'planes2'", 
                                                   conditionalPanel(
-                                                    condition = "input.AGEgroup2 == '60-70'", 
-                                                    p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update
+                                                    condition = "input.sample_or_real == 'sample'||input.newDataSUBMIT", 
+                                                    selectInput(
+                                                      "AGEgroup2", "Select the specific Age Group",
+                                                      c("60-70",
+                                                        "70+")), 
+                                                    conditionalPanel(
+                                                      condition = "input.AGEgroup2 == '60-70'", 
+                                                      p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update
                                                     until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
-                                                    actionGroupButtons(
-                                                      inputIds = c("G2STATICP2", "G2ROTATEP2"), 
-                                                      labels = list("Interactive Static", "Rotating Animation"), 
-                                                      status = "info", 
-                                                      size = "lg", 
-                                                      fullwidth = T
-                                                    ),
-                                                    br(),
-                                                    p("The thresholds are followed above.The user can remove the cut-offs to the right side of the plot at their discretion.",style ="text-align: justify;width:100%;font-size:18px")
+                                                      actionGroupButtons(
+                                                        inputIds = c("G2STATICP2", "G2ROTATEP2"), 
+                                                        labels = list("Interactive Static", "Rotating Animation"), 
+                                                        status = "info", 
+                                                        size = "lg", 
+                                                        fullwidth = T
+                                                      ),
+                                                      br(),
+                                                      p("The thresholds are followed above.The user can remove the cut-offs to the right side of the plot at their discretion.",
+                                                        style ="text-align: justify;width:100%;font-size:18px")
+                                                    ), 
+                                                    conditionalPanel(
+                                                      condition = "input.AGEgroup2 == '70+'", 
+                                                      p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update
+                                                    until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
+                                                      actionGroupButtons(
+                                                        inputIds = c("G2STATICP3", "G3ROTATINGP3"), 
+                                                        labels = list("Interactive Static", "Rotating Animation"),
+                                                        status = "info", 
+                                                        size = "lg", 
+                                                        fullwidth = T
+                                                      ),
+                                                      br(),
+                                                      p("The thresholds are followed above.The user can remove the cut-offs to the right side of the plot at their discretion.",
+                                                        style ="text-align: justify;width:100%;font-size:18px")
+                                                    )
                                                   ), 
                                                   conditionalPanel(
-                                                    condition = "input.AGEgroup2 == '70+'", 
+                                                    condition = "input.SUMBITNEW", 
+                                                    p(strong("The assay inputted by the user is not age dependent.",
+                                                             style ="text-align: justify;width:100%;font-size:16px")), 
                                                     p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update
                                                     until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
                                                     actionGroupButtons(
-                                                      inputIds = c("G2STATICP3", "G3ROTATINGP3"), 
+                                                      inputIds = c("no_age_G2", "no_age_G2_rotating"), 
                                                       labels = list("Interactive Static", "Rotating Animation"),
                                                       status = "info", 
                                                       size = "lg", 
                                                       fullwidth = T
                                                     ),
                                                     br(),
-                                                    p("The thresholds are followed above.The user can remove the cut-offs to the right side of the plot at their discretion.",style ="text-align: justify;width:100%;font-size:18px")
+                                                    p("The thresholds are followed above.The user can remove the cut-offs to the right side of the plot at their discretion.",
+                                                      style ="text-align: justify;width:100%;font-size:18px")
                                                   )
                                                 )
+                                                
                                               ),
                                               
                                               mainPanel(br(), br(), shinycssloaders:: withSpinner(
@@ -1769,63 +2115,103 @@ ui<-
                                    tabPanel("A+/T+/N+ Visualisation",
                                             sidebarLayout(
                                               sidebarPanel(
-                                                pickerInput("CUBE2", "Select the Specific Age Group", 
-                                                            choices = c("60-70", "70+"), 
-                                                            selected = "60-70", 
-                                                            multiple = F), 
                                                 conditionalPanel(
-                                                  condition = "input.CUBE2 == '60-70'", 
-                                                  p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update
+                                                  condition = "input.sample_or_real == 'sample' || input.newDataSUBMIT",
+                                                  pickerInput("CUBE2", "Select the Specific Age Group", 
+                                                              choices = c("60-70", "70+"), 
+                                                              selected = "60-70", 
+                                                              multiple = F), 
+                                                  conditionalPanel(
+                                                    condition = "input.CUBE2 == '60-70'", 
+                                                    p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update
                                                     until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
-                                                  actionGroupButtons(
-                                                    inputIds = c("CUBESTATICG2", "CUBEROTATEG2"), 
-                                                    labels = list("Interactive Static", "Rotating Animation"), 
-                                                    status = "info", 
-                                                    size = "lg", 
-                                                    fullwidth = T
+                                                    actionGroupButtons(
+                                                      inputIds = c("CUBESTATICG2", "CUBEROTATEG2"), 
+                                                      labels = list("Interactive Static", "Rotating Animation"), 
+                                                      status = "info", 
+                                                      size = "lg", 
+                                                      fullwidth = T
+                                                    )
+                                                  ),
+                                                  conditionalPanel(
+                                                    condition = "input.CUBE2 == '70+'", 
+                                                    p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update
+                                                    until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
+                                                    actionGroupButtons(
+                                                      inputIds = c("G2P2CUBESTATIC", "G2P2Rotate"), 
+                                                      labels = list("Interactive Static", "Rotating Animation"),
+                                                      status = "info",
+                                                      size = "lg", 
+                                                      fullwidth = T
+                                                    )
+                                                  ),
+                                                  br(),
+                                                  p("In the visual aid, the selected individuals are those that 
+                                                  meet all 3 biomarker's definition of being positive. The unselected are those they don't meet
+                                                  all 3 definitions of being positive.",style ="text-align: justify;width:100%;font-size:18px"),
+                                                  br(),
+                                                  br(),
+                                                  p("Alzheimer's disease is not as simple as these binary classifications and cut-offs. In previous 2D and 3D plots, there is a lot overlap between data points
+                                                  of different classifications. This emphasises that AD is not described by a specific cut-off, but a pathway that is unique to each individual.",style ="text-align: justify;width:100%;font-size:18px"), 
+                                                  # p("Instead of a standard A+/T+/N+ visualisation, we can add individuals who met 2 of the 3 cut-offs."), 
+                                                  p(strong("Please click the button below to identify borderline individuals."), style = "text-align: justify;width:100%;font-size:18px"), 
+                                                  actionButton("cubic", "Borderline A+/T+/N+ Visualisation", icon=icon("fas fa-cubes")), 
+                                                  br(), 
+                                                  bsModal(id = "CUBEG21", 
+                                                          title = "Borderline A+/T+/N+ Visualisation", 
+                                                          trigger = "cubic", 
+                                                          size = "large", 
+                                                          p("In this plot, those who met the requirements of two cut-offs and their respective 
+                                                          classification are shown. For 70+ Age Group, xx% of the data have meet only 2 of the 3 cut-offs. For 60-70 Age Group, xx% of the data 
+                                                          have meet 2 out of the 3 cut-offs. This plot highlights the pitfalls of classification of individuals from binarized cut-offs and demonstrates the inappropriateness of 
+                                                          categorising individuals based on these predetermined cut-offs",style ="text-align: justify;width:100%;font-size:18px"),
+                                                          p("As before, please select the specific age group to view the plot. The plots produced below are an interactive static plot for the user
+                                                          to move at their discretion.",style ="text-align: justify;width:100%;font-size:18px"), 
+                                                          selectInput("PopCube", "Select the Specific Age Group:",
+                                                                      choices = c("60-70", "70+"),
+                                                                      selected = "70+",
+                                                                      multiple = F),
+                                                          shinycssloaders:: withSpinner(plotlyOutput("EXTRACUBE", height = 600))
                                                   )
-                                                ),
+                                                ), 
                                                 conditionalPanel(
-                                                  condition = "input.CUBE2 == '70+'", 
+                                                  condition = "input.SUMBITNEW", 
+                                                  p(strong("The assay inputted by the user is not age dependent.",
+                                                           style ="text-align: justify;width:100%;font-size:16px")), 
                                                   p(strong("Please select whether you would like to view as an interactive static plot or a rotating animation. Note: the plot will not load or update
                                                     until a selection is made.", style ="text-align: justify;width:100%;font-size:16px;color:red")),
                                                   actionGroupButtons(
-                                                    inputIds = c("G2P2CUBESTATIC", "G2P2Rotate"), 
+                                                    inputIds = c("no_age_ATN_group_static", "no_age_ATN_group_rotating"), 
                                                     labels = list("Interactive Static", "Rotating Animation"),
                                                     status = "info",
                                                     size = "lg", 
                                                     fullwidth = T
-                                                  )
-                                                ),
-                                                br(),
-                                                p("In the visual aid, the selected individuals are those that 
+                                                  ), 
+                                                  br(),
+                                                  p("In the visual aid, the selected individuals are those that 
                                                   meet all 3 biomarker's definition of being positive. The unselected are those they don't meet
                                                   all 3 definitions of being positive.",style ="text-align: justify;width:100%;font-size:18px"),
-                                                br(),
-                                                br(),
-                                                p("Alzheimer's disease is not as simple as these binary classifications and cut-offs. In previous 2D and 3D plots, there is a lot overlap between data points
+                                                  br(),
+                                                  br(),
+                                                  p("Alzheimer's disease is not as simple as these binary classifications and cut-offs. In previous 2D and 3D plots, there is a lot overlap between data points
                                                   of different classifications. This emphasises that AD is not described by a specific cut-off, but a pathway that is unique to each individual.",style ="text-align: justify;width:100%;font-size:18px"), 
-                                                # p("Instead of a standard A+/T+/N+ visualisation, we can add individuals who met 2 of the 3 cut-offs."), 
-                                                p(strong("Please click the button below to identify borderline individuals."), style = "text-align: justify;width:100%;font-size:18px"), 
-                                                actionButton("cubic", "Borderline A+/T+/N+ Visualisation", icon=icon("fas fa-cubes")), 
-                                                br(), 
-                                                bsModal(id = "CUBEG21", 
-                                                        title = "Borderline A+/T+/N+ Visualisation", 
-                                                        trigger = "cubic", 
-                                                        size = "large", 
-                                                        p("In this plot, those who met the requirements of two cut-offs and their respective 
-                                                          classification are shown. For 70+ Age Group, xx% of the data have meet only 2 of the 3 cut-offs. For 60-70 Age Group, xx% of the data 
-                                                          have meet 2 out of the 3 cut-offs. This plot highlights the pitfalls of classification of individuals from binarized cut-offs and demonstrates the inappropriateness of 
+                                                  # p("Instead of a standard A+/T+/N+ visualisation, we can add individuals who met 2 of the 3 cut-offs."), 
+                                                  p(strong("Please click the button below to identify borderline individuals."), style = "text-align: justify;width:100%;font-size:18px"), 
+                                                  actionButton("NEW_NO_AGE_CUBE", "Borderline A+/T+/N+ Visualisation", icon=icon("fas fa-cubes")), 
+                                                  br(), 
+                                                  bsModal(id = "NO_AGE_CUBE", 
+                                                          title = "Borderline A+/T+/N+ Visualisation", 
+                                                          trigger = "NEW_NO_AGE_CUBE", 
+                                                          size = "large", 
+                                                          p("In this plot, those who met the requirements of two cut-offs and their respective 
+                                                          classification are shown.  This plot highlights the pitfalls of classification of individuals from binarized cut-offs and demonstrates the inappropriateness of 
                                                           categorising individuals based on these predetermined cut-offs",style ="text-align: justify;width:100%;font-size:18px"),
-                                                        p("As before, please select the specific age group to view the plot. The plots produced below are an interactive static plot for the user
+                                                          p("The plots produced below are an interactive static plot for the user
                                                           to move at their discretion.",style ="text-align: justify;width:100%;font-size:18px"), 
-                                                        selectInput("PopCube", "Select the Specific Age Group:",
-                                                                    choices = c("60-70", "70+"),
-                                                                    selected = "70+",
-                                                                    multiple = F),
-                                                        shinycssloaders:: withSpinner(plotlyOutput("EXTRACUBE", height = 600))
+                                                          shinycssloaders:: withSpinner(plotlyOutput("NO_AGE_CUBE_NEW_G2", height = 600))
+                                                  )
+                                                  
                                                 )
-                                                
                                               ), 
                                               mainPanel(shinycssloaders:: withSpinner(
                                                 plotlyOutput("plot5.P2", height = 600))
