@@ -1,6 +1,6 @@
 # CSIRO Vacation Project
 
-This repository contains the files for the synthetic simulated R Shiny App. This project was for the 2020/2021. 
+This repository contains the files for the synthetic simulated R Shiny App. This project was for summer 2020/2021. 
 
 **Project Title:** De-binarising the ATN Framework: Continuous modelling of biomarkers in 3D. 
 
