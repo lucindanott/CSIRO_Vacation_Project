@@ -31,11 +31,11 @@ server <- function(input, output){
   load("simulated_data.RData")
   load("ExampleCSV.RData")
   source("ScatterPlotFunction.R")
+  source("CubeVisualisationG1.R")
   source("AnimatedScatterPlotFunction.R")
   source("PlanesFunction.R")
   source("AnimatedPlanesFunction.R")
   source("HippoFunction.R")
-  # source("G1CubeVisualisation.R")
   source("AnimatedG1CubeVisualisation.R")
   source("G2CubeVisualisation.R")
   source("AnimatedG2CubeVisualisation.R")
@@ -662,7 +662,7 @@ server <- function(input, output){
     ptau_threshold <- req(ptau_cutoff_lower$raw)
     ttau_treshold <- req(ttau_cutoff_lower$raw)
     df_young <- filter(new.dat, Age < 70)
-    cube_animate$plot <- G1CubeVisualisation(dat = df_young, 
+    cube_animate$plot <- CubeVisualisationG1(dat = df_young, 
                                              xinput = df_young$CSF.AB42.INNO,
                                              yinput = df_young$CSF.pTau.INNO, 
                                              zinput = df_young$CSF.tTau.INNO, 
@@ -700,7 +700,7 @@ server <- function(input, output){
     ptau_threshold <- req(ptau_cutoff_upper$raw)
     ttau_treshold <- req(ttau_cutoff_upper$raw)
     df_old <- filter(new.dat, Age > 70)
-    cube_animate$plot <- G1CubeVisualisation(dat = df_old, 
+    cube_animate$plot <- CubeVisualisationG1(dat = df_old, 
                                              xinput = df_old$CSF.AB42.INNO,
                                              yinput = df_old$CSF.pTau.INNO, 
                                              zinput = df_old$CSF.tTau.INNO, 

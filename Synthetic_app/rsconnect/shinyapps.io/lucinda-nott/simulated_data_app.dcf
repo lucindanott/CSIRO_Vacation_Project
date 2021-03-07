@@ -5,9 +5,9 @@ account: lucinda-nott
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3636551
-bundleId: 4310599
+bundleId: 4310625
 url: https://lucinda-nott.shinyapps.io/simulated_data_app/
-when: 1615079319.08981
+when: 1615079878.93645
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: TableOutputfunctions.R
