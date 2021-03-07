@@ -41,6 +41,8 @@ server <- function(input, output){
   source("AnimatedG2CubeVisualisation.R")
   source("BoxplotFunction.R")
   source("new_table_function.R")
+  source("LinearRegressionTables.R")
+  source("ProcessingData.R")
   
   ########################## DOWNLOAD DATA SET ####################################
   
@@ -116,56 +118,9 @@ server <- function(input, output){
       stringsAsFactors = F
     )
     
-    file1_input$Diagnosis <- factor(file1_input$Diagnosis, levels = c("AD", "MCI", "HC"))
-
-    # # See above for alternative way to use mutate - feed it multiple variables to make in the one go
-    file1_input <- mutate(file1_input,
-                          A_status = ifelse(AB.status == "positive", "A+", "A-"),
-                             T_status = ifelse(pTau.status == "positive", "T+", "T-"),
-                          N_status = ifelse(tTau.status == "positive", "N+", "N-")
-    )
-    file1_input <- tidyr::unite(file1_input, Overall_status, A_status:N_status, sep = '/')
-
-    file1_input$Overall_status <- factor(file1_input$Overall_status, levels = c("A+/T+/N+", "A+/T+/N-", "A+/T-/N+",
-                                                                                      "A-/T+/N+", "A+/T-/N-","A-/T-/N+",
-                                                                                      "A-/T+/N-", "A-/T-/N-"))
-
-
-    file1_input <- mutate(
-      file1_input, Burnham_class = ifelse(Overall_status == "A-/T-/N-", "Normal AD Biomarkers",
-                                             ifelse(Overall_status == "A-/T+/N-", "Non-AD pathological Change",
-                                                    ifelse(Overall_status == "A-/T+/N+", "Non-AD pathological Change",
-                                                           ifelse(Overall_status == "A-/T-/N+", "Non-AD pathological Change",
-                                                                  ifelse(Overall_status == "A+/T-/N-", "Pathological Change",
-                                                                         ifelse(Overall_status == "A+/T-/N+", "Pathological Change",
-                                                                                ifelse(Overall_status == "A+/T+/N+", "AD",
-                                                                                       ifelse(Overall_status == "A+/T+/N-", "AD", NA)))))))))
-    file1_input <- mutate(file1_input, Clifford_class = ifelse(Burnham_class == "Normal AD Biomarkers", "MCI unlikely due to AD",
-                                                                     ifelse(Burnham_class == "AD", "Stage 2, clinically asymptomatic",
-                                                                            ifelse(Burnham_class == "Pathological Change", "Stage 1, preclinical AD stage",
-                                                                                   ifelse(Burnham_class == "Non-AD pathological Change", "SNAP", NA)))))
-
-
-
-
-    # # Surface for APOE4
-    # 
-    # file1_input$Apoe4 <- factor(simulated.data$apoe4, levels = c("1","0"))
-    # 
-    file1_input$Clifford_class <- factor(file1_input$Clifford_class, levels = c("Stage 2, clinically asymptomatic",
-                                                                                      "Stage 1, preclinical AD stage",
-                                                                                      "SNAP",
-                                                                                      "MCI unlikely due to AD"))
-
-
-
-
-    file1_input$Burnham_class <- factor(file1_input$Burnham_class, levels = c("AD",
-                                                                                    "Pathological Change",
-                                                                                    "Non-AD pathological Change",
-                                                                                    "Normal AD Biomarkers"))
-
-    file1_input <- mutate(file1_input, Age_binary = ifelse(Age < 72.5,1,0))
+    x <- ProcessingData(file1_input = file1_input)
+    file1_input <- x$file1_input
+    
     data_internal$raw <- file1_input
     shinyjs::runjs("window.scrollTo(0, 100)")
 
@@ -177,56 +132,9 @@ server <- function(input, output){
       stringsAsFactors = F
     )
     
-    file1_input$Diagnosis <- factor(file1_input$Diagnosis, levels = c("AD", "MCI", "HC"))
+    x <- ProcessingData(file1_input = file1_input)
+    file1_input <- x$file1_input
     
-    # # See above for alternative way to use mutate - feed it multiple variables to make in the one go
-    file1_input <- mutate(file1_input,
-                          A_status = ifelse(AB.status == "positive", "A+", "A-"),
-                          T_status = ifelse(pTau.status == "positive", "T+", "T-"),
-                          N_status = ifelse(tTau.status == "positive", "N+", "N-")
-    )
-    file1_input <- tidyr::unite(file1_input, Overall_status, A_status:N_status, sep = '/')
-    
-    file1_input$Overall_status <- factor(file1_input$Overall_status, levels = c("A+/T+/N+", "A+/T+/N-", "A+/T-/N+",
-                                                                                "A-/T+/N+", "A+/T-/N-","A-/T-/N+",
-                                                                                "A-/T+/N-", "A-/T-/N-"))
-    
-    
-    file1_input <- mutate(
-      file1_input, Burnham_class = ifelse(Overall_status == "A-/T-/N-", "Normal AD Biomarkers",
-                                          ifelse(Overall_status == "A-/T+/N-", "Non-AD pathological Change",
-                                                 ifelse(Overall_status == "A-/T+/N+", "Non-AD pathological Change",
-                                                        ifelse(Overall_status == "A-/T-/N+", "Non-AD pathological Change",
-                                                               ifelse(Overall_status == "A+/T-/N-", "Pathological Change",
-                                                                      ifelse(Overall_status == "A+/T-/N+", "Pathological Change",
-                                                                             ifelse(Overall_status == "A+/T+/N+", "AD",
-                                                                                    ifelse(Overall_status == "A+/T+/N-", "AD", NA)))))))))
-    file1_input <- mutate(file1_input, Clifford_class = ifelse(Burnham_class == "Normal AD Biomarkers", "MCI unlikely due to AD",
-                                                               ifelse(Burnham_class == "AD", "Stage 2, clinically asymptomatic",
-                                                                      ifelse(Burnham_class == "Pathological Change", "Stage 1, preclinical AD stage",
-                                                                             ifelse(Burnham_class == "Non-AD pathological Change", "SNAP", NA)))))
-    
-    
-    
-    
-    # # Surface for APOE4
-    # 
-    # file1_input$Apoe4 <- factor(simulated.data$apoe4, levels = c("1","0"))
-    # 
-    file1_input$Clifford_class <- factor(file1_input$Clifford_class, levels = c("Stage 2, clinically asymptomatic",
-                                                                                "Stage 1, preclinical AD stage",
-                                                                                "SNAP",
-                                                                                "MCI unlikely due to AD"))
-    
-    
-    
-    
-    file1_input$Burnham_class <- factor(file1_input$Burnham_class, levels = c("AD",
-                                                                              "Pathological Change",
-                                                                              "Non-AD pathological Change",
-                                                                              "Normal AD Biomarkers"))
-    
-    file1_input <- mutate(file1_input, Age_binary = ifelse(Age < 72.5,1,0))
     data_internal$raw <- file1_input
     shinyjs::runjs("window.scrollTo(0, 100)")
     
@@ -1259,106 +1167,45 @@ server <- function(input, output){
   output$LinearREG <- renderUI({
     new.dat <- req(data_internal$raw)
     if (input$LINEAR1 == "CSF AB1-42 pg/mL"){
-      lm_AB <- lm(CSF.AB42.INNO ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-      p_value_df <- as.data.frame(summary(lm_AB)$coefficients)
-      new_pvalue <- p_value_df %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(new_pvalue) = c("Intercept","Age","Sex (Male)","Education Binary (under 12 years education)", "apoe4 (non-carrier)")
-      mytableout = htmlTable (
-        new_pvalue,
-        caption = "Linear summary for CSF AB1-42 ~ Age+Sex+Education_binary+apoe4",
-        tfoot = paste("R-squared value=",signif(summary(lm_AB)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_AB)$adj.r.squared,2),sep = "     ")
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.AB42.INNO, 
+                             title_biomarker = "Linear summary for CSF AB1-42 ~ Age+Sex+Education_binary+apoe4")
     }else if (input$LINEAR1 == "CSF pTau pg/mL"){
-      lm_pTau <- lm(CSF.pTau.INNO ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-      ptau_sum <- as.data.frame(summary(lm_pTau)$coefficients)
-      ptau_new <- ptau_sum %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(ptau_new) = c("Intercept","Age","Sex (Male)","Education Binary (under 12 years education)", "apoe4 (non-carrier)")
-      mytableout = htmlTable (
-        ptau_new,
-        caption = "Linear summary for CSF pTau ~ Age+Sex+Education_binary+apoe4",
-        tfoot = paste("R-squared value=",signif(summary(lm_pTau)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_pTau)$adj.r.squared,2),sep = "     ")
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.pTau.INNO, 
+                             title_biomarker = "Linear summary for CSF ptau ~ Age+Sex+Education_binary+apoe4")
     }else if (input$LINEAR1 == "CSF tTau pg/mL"){
-      lm_tTau <- lm(CSF.tTau.INNO ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-      ptau_sum <- as.data.frame(summary(lm_tTau)$coefficients)
-      ptau_new <- ptau_sum %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(ptau_new) = c("Intercept","Age","Sex (Male)","Education Binary (under 12 years education)", "apoe4 (non-carrier)")
-      mytableout = htmlTable (
-        ptau_new,
-        caption = "Linear summary for CSF tTau ~ Age+Sex+Education_binary+apoe4",
-        tfoot = paste("R-squared value=",signif(summary(lm_tTau)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_tTau)$adj.r.squared,2),sep = "     ")
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.tTau.INNO, 
+                             title_biomarker = "Linear summary for CSF tTau ~ Age+Sex+Education_binary+apoe4")
     }
   })
   ####################### 2. Logistic FOR DEMOGRAPHICS ########################
 
   output$Logistictable <- renderUI({
     new.dat <- req(data_internal$raw)
+    new.dat <- mutate(new.dat, Binary_Abeta = ifelse(AB.status == "Positive", 1, 0))
+    new.dat$Binary_Abeta <- factor(new.dat$Binary_Abeta, levels = c("1", "0"))
+    new.dat <- mutate(new.dat, Binary_pTau = ifelse(pTau.status == "Positive", 1, 0))
+    new.dat$Binary_pTau <- factor(new.dat$Binary_pTau, levels = c("1", "0"))
+    new.dat <- mutate(new.dat, Binary_Tau = ifelse(tTau.status == "Positive", 1, 0))
+    new.dat$Binary_Tau <- factor(new.dat$Binary_Tau, levels = c("1", "0"))
 
     if (input$LOG1 == "CSF AB1-42 pg/mL"){
-      new.dat <- mutate(new.dat, Binary_Abeta = ifelse(AB.status == "Positive", 1, 0))
-      new.dat$Binary_Abeta <- factor(new.dat$Binary_Abeta, levels = c("1", "0"))
-      new.dat$apoe4 <- factor(new.dat$apoe4, levels = c("1", "0"))
-
-      mylogit <- glm(Binary_Abeta ~ Age+ Education_binary+Sex+apoe4, data = new.dat, family = "binomial")
-      # summary(mylogit)
-      sumarry_pvals <- as.data.frame(summary(mylogit)$coefficients)
-      new_sum <- sumarry_pvals %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(new_sum) = c("Intercept","Age","Sex (Male)","Education Binary (under 12 years education)", "apoe4 (non-carrier)")
-      mytableout = htmlTable (
-        new_sum,
-        caption = "Logistic summary for CSF AB1-42 ~ Age+Sex+Education_binary+apoe4"
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      
+      LogisticSummary(dat = new.dat, 
+                      xinput = new.dat$Binary_Abeta, 
+                      caption_title = "Logistic Summary for CSF AB1-42 ~ Age+Sex+Education_binary+apoe4")
+      
+      
     }else if (input$LOG1 == "CSF pTau pg/mL"){
-      new.dat <- mutate(new.dat, Binary_pTau = ifelse(pTau.status == "Positive", 1, 0))
-      new.dat$Binary_pTau <- factor(new.dat$Binary_pTau, levels = c("1", "0"))
-      mylogit_2 <- glm(Binary_pTau ~ Age+ Sex+Education_binary+apoe4, data = new.dat, family = "binomial")
-      # summary(mylogit)
-      sumarry_pvals <- as.data.frame(summary(mylogit_2)$coefficients)
-      new_sum <- sumarry_pvals %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(new_sum) = c("Intercept","Age","Sex (Male)","Education Binary (under 12 years education)", "apoe4 (non-carrier)")
-      mytableout = htmlTable (
-        new_sum,
-        caption = "Logistic summary for CSF pTau ~ Age+Sex+Education_binary+apoe4"
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      
+      LogisticSummary(dat = new.dat, 
+                      xinput = new.dat$Binary_pTau, 
+                      caption_title = "Logistic Summary for CSF pTau ~ Age+Sex+Education_binary+apoe4")
+      
     }else if (input$LOG1 == "CSF tTau pg/mL"){
-      new.dat <- mutate(new.dat, Binary_Tau = ifelse(tTau.status == "Positive", 1, 0))
-      new.dat$Binary_Tau <- factor(new.dat$Binary_Tau, levels = c("1", "0"))
-      mylogit_3 <- glm(Binary_Tau ~ Age+Sex+Education_binary+apoe4, data = new.dat, family = "binomial")
-      sumarry_pvals <- as.data.frame(summary(mylogit_3)$coefficients)
-      new_sum <- sumarry_pvals %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(new_sum) = c("Intercept","Age","Sex (Male)","Education Binary (under 12 years education)", "apoe4 (non-carrier)")
-      mytableout = htmlTable (
-        new_sum,
-        caption = "Logistic summary for CSF pTau ~ Age+Sex+Education_binary+apoe4"
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      
+      LogisticSummary(dat = new.dat, 
+                      xinput = new.dat$Binary_Tau, 
+                      caption_title = "Logistic Summary for CSF tTau ~ Age+Sex+Education_binary+apoe4")
     }
 
 
@@ -1370,51 +1217,40 @@ server <- function(input, output){
     new.dat <- req(data_internal$raw)
 
     if (input$interplay == "CSF AB1-42 pg/mL"){
-      lm_AB <- lm(CSF.AB42.INNO ~ CSF.pTau.INNO+CSF.tTau.INNO, data = new.dat)
-      p_value_df <- as.data.frame(summary(lm_AB)$coefficients)
-      new_pvalue <- p_value_df %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(new_pvalue) = c("Intercept","CSF pTau pg/mL","CSF tTau pg/mL")
-      mytableout = htmlTable (
-        new_pvalue,
-        caption = "Linear summary for CSF AB1-42 ~ CSF pTau + CSF tTau",
-        tfoot = paste("R-squared value=",signif(summary(lm_AB)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_AB)$adj.r.squared,2),sep = "     ")
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      
+      BiomarkerInterplay(dat = new.dat,
+                         biomarker1 = new.dat$CSF.AB42.INNO,
+                         biomarker2 = new.dat$CSF.pTau.INNO, 
+                         biomarker3 = new.dat$CSF.tTau.INNO, 
+                         title_biomarker1 = "CSF AB1-42 pg/mL",
+                         title_biomarker2 = "CSF pTau pg/mL", 
+                         title_biomarker3 = "CSF tTau pg/mL", 
+                         title_caption = "Linear summary for CSF AB1-42 ~ CSF pTau + CSF tTau")
+      
 
     }else if(input$interplay == "CSF pTau pg/mL"){
-      lm_AB <- lm(CSF.pTau.INNO ~ CSF.AB42.INNO+CSF.tTau.INNO, data = new.dat)
-      p_value_df <- as.data.frame(summary(lm_AB)$coefficients)
-      new_pvalue <- p_value_df %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(new_pvalue) = c("Intercept","CSF AB1-42 pg/mL","CSF tTau pg/mL")
-      mytableout = htmlTable (
-        new_pvalue,
-        caption = "Linear summary for CSF pTau ~ CSF AB1-42 + CSF tTau",
-        tfoot = paste("R-squared value=",signif(summary(lm_AB)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_AB)$adj.r.squared,2),sep = "     ")
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      # Biomarker1 - ptau
+      # Biomarker2 - AB
+      # Biomarker3 - tTau
+      BiomarkerInterplay(dat = new.dat,
+                         biomarker1 = new.dat$CSF.pTau.INNO,
+                         biomarker2 = new.dat$CSF.AB42.INNO, 
+                         biomarker3 = new.dat$CSF.tTau.INNO, 
+                         title_biomarker1 = "CSF ptau pg/mL",
+                         title_biomarker2 = "CSF AB1-42 pg/mL", 
+                         title_biomarker3 = "CSF tTau pg/mL", 
+                         title_caption = "Linear summary for CSF pTau ~ CSF AB1-42 + CSF tTau")
+      
     }else if(input$interplay == "CSF tTau pg/mL"){
-      lm_AB <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, data = new.dat)
-      p_value_df <- as.data.frame(summary(lm_AB)$coefficients)
-      new_pvalue <- p_value_df %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(new_pvalue) = c("Intercept","CSF AB1-42 pg/mL","CSF pTau pg/mL")
-      mytableout = htmlTable (
-        new_pvalue,
-        caption = "Linear summary for CSF tTau ~ CSF AB1-42 + CSF pTau",
-        tfoot = paste("R-squared value=",signif(summary(lm_AB)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_AB)$adj.r.squared,2),sep = "     ")
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      BiomarkerInterplay(dat = new.dat,
+                         
+                         biomarker1 = new.dat$CSF.pTau.INNO,
+                         biomarker2 = new.dat$CSF.AB42.INNO, 
+                         biomarker3 = new.dat$CSF.tTau.INNO, 
+                         title_biomarker1 = "CSF ttau pg/mL",
+                         title_biomarker2 = "CSF AB1-42 pg/mL", 
+                         title_biomarker3 = "CSF pTau pg/mL", 
+                         title_caption = "Linear summary for CSF tTau ~ CSF AB1-42 + CSF pTau")
     }
 
   })
@@ -2581,52 +2417,19 @@ server <- function(input, output){
   output$LINREGG2 <- renderUI({
     new.dat <- req(data_internal$raw)
     if (input$LING2 == "Centiloid"){
-      lm_Centiloid <- lm(Centiloid ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-      sumarry_pvals <- as.data.frame(summary(lm_Centiloid)$coefficients)
-      new_sum <- sumarry_pvals %>%
-        mutate(across(where(is.numeric), ~signif(.,digits = 2) #round(., digits = 6)
-        ))
-      rownames(new_sum) = c("Intercept","Age","Sex (Male)","Education Binary (under 12 years education)", "apoe4 (non-carrier)")
-      mytableout = htmlTable (
-        new_sum,
-        caption = "Linear summary for Centiloid ~ Age+Sex+Education_binary+apoe4",
-        tfoot = paste("R-squared value=",signif(summary(lm_Centiloid)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_Centiloid)$adj.r.squared,2),sep = "     ")
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      
+      LinearRegressionTables(dat = new.dat, biomarker = new.dat$Centiloid, 
+                             title_biomarker = "Linear summary for Centiloid ~ Age+Sex+Education_binary+apoe4")
+      
     }else if (input$LING2 == "CSF pTau pg/mL"){
-      lm_tTau <- lm(CSF.pTau.INNO ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-      sumarry_pvals <- as.data.frame(summary(lm_tTau)$coefficients)
-      new_sum <- sumarry_pvals %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)#round(., digits = 6)
-        ))
-      rownames(new_sum) = c("Intercept","Age","Sex (Male)","Education Binary (under 12 years education)", "apoe4 (non-carrier)")
-      mytableout = htmlTable (
-        new_sum,
-        caption = "Linear summary for Hippocampus ~ Age+Sex+Education_binary+apoe4",
-        tfoot = paste("R-squared value=",signif(summary(lm_tTau)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_tTau)$adj.r.squared,2),sep = "     ")
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      
+      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.pTau.INNO, 
+                             title_biomarker = "Linear summary for CSF pTau ~ Age+Sex+Education_binary+apoe4")
+      
     }else if (input$LING2 == "LINHIP1"){
-      lm_Sum.hippo <- lm(Sum.hippo ~ Age+Sex+Education_binary+apoe4, data = new.dat)
-      sumarry_pvals <- as.data.frame(summary(lm_Sum.hippo)$coefficients)
-      new_sum <- sumarry_pvals %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2#round(., digits = 6, s
-        )))
-      rownames(new_sum) = c("Intercept","Age","Sex (Male)","Education Binary (under 12 years education)", "apoe4 (non-carrier)")
-      mytableout = htmlTable (
-        new_sum,
-        caption = "Linear summary for Hippocampus ~ Age+Sex+Education_binary+apoe4",
-        tfoot = paste("R-squared value=",signif(summary(lm_Sum.hippo)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_Sum.hippo)$adj.r.squared,2),sep = "     ")      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      
+      LinearRegressionTables(dat = new.dat, biomarker = new.dat$Sum.hippo, 
+                             title_biomarker = "Linear summary for Hippocampus ~ Age+Sex+Education_binary+apoe4")
     }
   })
   ########################2. . Biomarker Interplay #########################
@@ -2634,50 +2437,46 @@ server <- function(input, output){
   output$INTERPLAY2 <- renderUI({
     new.dat <- req(data_internal$raw)
     if (input$INTERPLAYG2 == "Centiloid"){
-      lm_AB <- lm(Centiloid ~ CSF.pTau.INNO+Sum.hippo, data = new.dat)
-      p_value_df <- as.data.frame(summary(lm_AB)$coefficients)
-      new_pvalue <- p_value_df %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(new_pvalue) = c("Intercept","CSF pTau pg/mL","Hippocampus")
-      mytableout = htmlTable (
-        new_pvalue,
-        caption = "Linear summary for Centiloid ~ CSF pTau + Hippocampus",
-        tfoot = paste("R-squared value=",signif(summary(lm_AB)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_AB)$adj.r.squared,2),sep = "     ")
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      # Biomarker1 = centiloid
+      # 2 = ptau
+      # 3 - Sumhippo
+      BiomarkerInterplay(dat = new.dat,
+                         biomarker1 = new.dat$Centiloid,
+                         biomarker2 = new.dat$CSF.pTau.INNO, 
+                         biomarker3 = new.dat$Sum.hippo, 
+                         title_biomarker1 = "Centiloid",
+                         title_biomarker2 = "CSF ptau pg/mL", 
+                         title_biomarker3 = "Hippocampus", 
+                         title_caption = "Linear summary for Centiloid ~ CSF pTau + Hippocampus")
+      
+      
     }else if (input$INTERPLAYG2 == "CSF pTau pg/mL"){
-      lm_AB <- lm(CSF.pTau.INNO ~ Centiloid+Sum.hippo, data = new.dat)
-      p_value_df <- as.data.frame(summary(lm_AB)$coefficients)
-      new_pvalue <- p_value_df %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(new_pvalue) = c("Intercept","Centiloid","Sum.hippo")
-      mytableout = htmlTable (
-        new_pvalue,
-        caption = "Linear summary for CSF pTau ~ Centiloid + Hippocampus",
-        tfoot = paste("R-squared value=",signif(summary(lm_AB)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_AB)$adj.r.squared,2),sep = "     ")
-      )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      # 1 - ptau
+      # 2 - centiloid
+      # 3 - hippocampus
+      BiomarkerInterplay(dat = new.dat,
+                         biomarker1 = new.dat$CSF.pTau.INNO,
+                         biomarker2 = new.dat$Centiloid, 
+                         biomarker3 = new.dat$Sum.hippo, 
+                         title_biomarker1 = "CSF ptau pg/mL",
+                         title_biomarker2 = "Centiloid", 
+                         title_biomarker3 = "Hippocampus", 
+                         title_caption = "Linear summary for CSF pTau ~ Centiloid + Hippocampus") 
+      
+      
     }else if (input$INTERPLAYG2 == "MODELHIP1"){
-      lm_AB <- lm(Sum.hippo ~ Centiloid+CSF.pTau.INNO, data = new.dat)
-      p_value_df <- as.data.frame(summary(lm_AB)$coefficients)
-      new_pvalue <- p_value_df %>%
-        mutate(across(where(is.numeric), ~ signif(.,digits = 2)))
-      rownames(new_pvalue) = c("Intercept","Centiloid","CSF pTau pg/mL")
-      mytableout = htmlTable (
-        new_pvalue,
-        caption = "Linear summary for Hippocampus ~ Centiloid + CSF pTau",
-        tfoot = paste("R-squared value=",signif(summary(lm_AB)$r.squared,2), "Adjusted R-squared value=",
-                      signif(summary(lm_AB)$adj.r.squared,2),sep = "     ")
-        )
-      mytableout %>%
-        addHtmlTableStyle(col.rgroup = c("none", "#F7F7F7")) %>%
-        htmlTable
+      # 1 - sum.hippo 
+      # 2 = centiloid 
+      # 3 - ptau
+      
+      BiomarkerInterplay(dat = new.dat,
+                         biomarker1 = new.dat$Sum.hippo,
+                         biomarker2 = new.dat$Centiloid, 
+                         biomarker3 = new.dat$CSF.pTau.INNO, 
+                         title_biomarker1 = "Hippocampus",
+                         title_biomarker2 = "Centiloid", 
+                         title_biomarker3 = "CSF ptau pg/mL", 
+                         title_caption = "Linear summary for Hippocampus ~ Centiloid + CSF pTau") 
     }
   })
 
