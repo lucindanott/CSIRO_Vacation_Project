@@ -1,0 +1,13 @@
+name: simulated_data_app
+title: simulated_data_app
+username:
+account: lucinda-nott
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3636551
+bundleId: 4310599
+url: https://lucinda-nott.shinyapps.io/simulated_data_app/
+when: 1615079319.08981
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: TableOutputfunctions.R
