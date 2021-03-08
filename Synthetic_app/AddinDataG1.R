@@ -48,9 +48,9 @@ ATNVisualisation <- function(dat, xinput, yinput, zinput, XCUT,YCUT,ZCUT,leg,xax
                                                         "My own markers"))
   
   
-  df_mesh_1 <- data.frame(X_VAL = c(XCUT,  XCUT,    min(xinput),    min(xinput),    XCUT,   XCUT,   min(xinput),   min(xinput)),
-                          Y_VAL = c(YCUT,  max(yinput),    YCUT,  max(yinput),    YCUT, max(yinput),   YCUT, max(yinput)),
-                          Z_VAL = c(ZCUT, ZCUT, ZCUT, ZCUT, max(zinput),  max(zinput),  max(zinput),  max(zinput)),
+  df_mesh_1 <- data.frame(X_VAL = c(XCUT,  XCUT,    min(xinput, na.rm = T),    min(xinput, na.rm = T),    XCUT,   XCUT,   min(xinput, na.rm = T),   min(xinput, na.rm = T)),
+                          Y_VAL = c(YCUT,  max(yinput, na.rm = T),    YCUT,  max(yinput, na.rm = T),    YCUT, max(yinput, na.rm = T),   YCUT, max(yinput, na.rm = T)),
+                          Z_VAL = c(ZCUT, ZCUT, ZCUT, ZCUT, max(zinput, na.rm = T),  max(zinput, na.rm = T),  max(zinput, na.rm = T),  max(zinput, na.rm = T)),
                           MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
   cube3 <- plot_ly()%>%
     add_markers(type = "scatter3d",
@@ -99,7 +99,7 @@ G2ATNVisualisation <- function(dat, xinput, yinput, zinput, XCUT,YCUT,ZCUT,leg,x
                                                                 "My own markers"))
   
   
-  df_mesh_1 <- data.frame(Y_VAL = c(max(yinput), max(yinput), YCUT,     YCUT ,   max(yinput),  max(yinput),  YCUT,     YCUT),
+  df_mesh_1 <- data.frame(Y_VAL = c(max(yinput, na.rm = T), max(yinput, na.rm = T), YCUT,     YCUT ,   max(yinput, na.rm = T),  max(yinput, na.rm = T),  YCUT,     YCUT),
                           X_VAL = c(min(xinput, na.rm = T),  XCUT, min(xinput, na.rm = T), XCUT, min(xinput, na.rm = T),   XCUT, min(xinput, na.rm = T), XCUT),
                           Z_VAL = c(ZCUT,      ZCUT,    ZCUT,      ZCUT,  max(zinput, na.rm = T), max(zinput, na.rm = T),   max(zinput, na.rm = T), max(zinput, na.rm = T)),
                           MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))

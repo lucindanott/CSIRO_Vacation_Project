@@ -63,6 +63,7 @@ ProcessingData <- function(file1_input){
   
   file1_input <- mutate(file1_input, Age_binary = ifelse(Age < 72.5,1,0))
   
+
   # file1_input <- factor(file1_input$Education_binary, levels = c("1","0"))
   
   ops <- list(file1_input = file1_input)

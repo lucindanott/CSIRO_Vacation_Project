@@ -10,8 +10,11 @@
 
 HippoFunction <- function(dat){
   
-  AD_data <- filter(dat, Diagnosis == "AD")
-  HC_data <- filter(dat, Diagnosis == "HC")
+  dat1 <- dat[,c("Diagnosis", "Sum.hippo")]
+  dat2 <- na.omit(dat1)
+  
+  AD_data <- filter(dat2, Diagnosis == "AD")
+  HC_data <- filter(dat2, Diagnosis == "HC")
   m1 <- mean(AD_data$Sum.hippo)
   sd1 <- sd(AD_data$Sum.hippo)
   m2 <- mean(HC_data$Sum.hippo)

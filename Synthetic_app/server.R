@@ -551,7 +551,7 @@ server <- function(input, output){
     
     
     gg <- ggplot(new.dat, aes_string(x = d(), y=q()))+
-      geom_point(data = new.dat, aes(color = Burnham_class, group = ID))+
+      geom_point(data = new.dat, aes(color = Burnham_class))+
       theme_bw()+
       geom_smooth(method = "loess")+
       scale_color_manual(values = c("firebrick", "darkorange", "gold", "forestgreen"))+
@@ -1296,9 +1296,9 @@ server <- function(input, output){
                                                       "Normal AD Biomarker meeting 2 cut-offs"))
 
 
-      df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42.INNO),    min(df7$CSF.AB42.INNO),    656,   656,   min(df7$CSF.AB42.INNO),   min(df7$CSF.AB42.INNO)),
-                              Y_VAL = c(59.23  ,max(df7$CSF.pTau.INNO),    59.23  ,  max(df7$CSF.pTau.INNO),    59.23 , max(df7$CSF.pTau.INNO),   59.23 , max(df7$CSF.pTau.INNO)),
-                              Z_VAL = c(303.54  , 303.54  , 303.54  , 303.54  , max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO)),
+      df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42.INNO,na.rm = T),    min(df7$CSF.AB42.INNO,na.rm = T),    656,   656,   min(df7$CSF.AB42.INNO,na.rm = T),   min(df7$CSF.AB42.INNO,na.rm = T)),
+                              Y_VAL = c(59.23  ,max(df7$CSF.pTau.INNO,na.rm = T),    59.23  ,  max(df7$CSF.pTau.INNO,na.rm = T),    59.23 , max(df7$CSF.pTau.INNO,na.rm = T),   59.23 , max(df7$CSF.pTau.INNO,na.rm = T)),
+                              Z_VAL = c(303.54  , 303.54  , 303.54  , 303.54  , max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T)),
                               MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
 
       cube <- plot_ly()%>%
@@ -1374,9 +1374,9 @@ server <- function(input, output){
                                                       "Normal AD Biomarkers meeting 2 cut-offs"))
 
 
-      df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42.INNO),    min(df7$CSF.AB42.INNO),    656,   656,   min(df7$CSF.AB42.INNO),   min(df7$CSF.AB42.INNO)),
-                              Y_VAL = c(73.83 ,max(df7$CSF.pTau.INNO),    73.83 ,  max(df7$CSF.pTau.INNO),    73.83, max(df7$CSF.pTau.INNO),   73.83, max(df7$CSF.pTau.INNO)),
-                              Z_VAL = c(378.65 , 378.65 , 378.65 , 378.65 , max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO)),
+      df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42.INNO,na.rm = T),    min(df7$CSF.AB42.INNO,na.rm = T),    656,   656,   min(df7$CSF.AB42.INNO,na.rm = T),   min(df7$CSF.AB42.INNO,na.rm = T)),
+                              Y_VAL = c(73.83 ,max(df7$CSF.pTau.INNO,na.rm = T),    73.83 ,  max(df7$CSF.pTau.INNO,na.rm = T),    73.83, max(df7$CSF.pTau.INNO,na.rm = T),   73.83, max(df7$CSF.pTau.INNO,na.rm = T)),
+                              Z_VAL = c(378.65 , 378.65 , 378.65 , 378.65 , max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T)),
                               MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
 
       # Make apoe4 a factor
@@ -1476,9 +1476,9 @@ server <- function(input, output){
                                                     "Normal AD Biomarker meeting 2 cut-offs"))
     
     
-    df_mesh_1 <- data.frame(X_VAL = c(AB_threshold,  AB_threshold,  min(df7$CSF.AB42.INNO),    min(df7$CSF.AB42.INNO),    AB_threshold,   AB_threshold,   min(df7$CSF.AB42.INNO),   min(df7$CSF.AB42.INNO)),
-                            Y_VAL = c(ptau_threshold  ,max(df7$CSF.pTau.INNO),    ptau_threshold  ,  max(df7$CSF.pTau.INNO),    ptau_threshold , max(df7$CSF.pTau.INNO),   ptau_threshold , max(df7$CSF.pTau.INNO)),
-                            Z_VAL = c(ttau_treshold  , ttau_treshold  , ttau_treshold  , ttau_treshold  , max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO),  max(df7$CSF.tTau.INNO)),
+    df_mesh_1 <- data.frame(X_VAL = c(AB_threshold,  AB_threshold,  min(df7$CSF.AB42.INNO,na.rm = T),    min(df7$CSF.AB42.INNO,na.rm = T),    AB_threshold,   AB_threshold,   min(df7$CSF.AB42.INNO,na.rm = T),   min(df7$CSF.AB42.INNO,na.rm = T)),
+                            Y_VAL = c(ptau_threshold  ,max(df7$CSF.pTau.INNO,na.rm = T),    ptau_threshold  ,  max(df7$CSF.pTau.INNO,na.rm = T),    ptau_threshold , max(df7$CSF.pTau.INNO,na.rm = T),   ptau_threshold , max(df7$CSF.pTau.INNO,na.rm = T)),
+                            Z_VAL = c(ttau_treshold  , ttau_treshold  , ttau_treshold  , ttau_treshold  , max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T)),
                             MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
     
     cube <- plot_ly()%>%
@@ -1522,7 +1522,7 @@ server <- function(input, output){
     new.dat <- req(data_internal$raw)
     # new.dat <- req(my_data)
     new.dat$Diagnosis <- factor(new.dat$Diagnosis, levels = c("AD", "MCI", "HC"))
-    p <- ggplot(new.dat, aes(x = Sum.hippo, color = Diagnosis, fill = Diagnosis))+
+    p <- ggplot(new.dat, aes(x = Sum.hippo, color = Diagnosis, fill = Diagnosis, na.rm = T))+
       geom_density(alpha = 0.5)+
       theme_bw()+
       scale_color_manual(values = c("red", "orange", "green"))+
@@ -1539,7 +1539,7 @@ server <- function(input, output){
     hippo_cutoff <- x$hippocampus_threshold
     hippoframe <- x$hippoframe
     
-    ggplot(hippoframe, aes(x=x))+
+    ggplot(hippoframe, aes(x=x, na.rm = T))+
       theme_bw()+
       geom_line(aes(y = y, colour = "AD"), lwd = 2)+
       geom_line(aes(y=y2, colour = "HC"), lwd = 2)+
@@ -1639,7 +1639,7 @@ server <- function(input, output){
 
 
     r <- ggplot(new.dat, aes_string(x = o(), y=z()))+
-      geom_point(data = new.dat, aes(color = Clifford_class, group = ID))+
+      geom_point(data = new.dat, aes(color = Clifford_class, na.rm = T))+
       theme_bw()+
       geom_smooth(method = "loess")+
       scale_color_manual(values = c("firebrick", "darkorange", "gold", "forestgreen"))+
@@ -2602,7 +2602,7 @@ server <- function(input, output){
                                                       "MCI unlikely due to AD meeting 2 cut-offs"))
 
 
-      df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO), max(df7$CSF.pTau.INNO), 73.83 ,73.83 ,   max(df7$CSF.pTau.INNO),  max(df7$CSF.pTau.INNO), 73.83 ,73.83 ),
+      df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO,na.rm = T), max(df7$CSF.pTau.INNO,na.rm = T), 73.83 ,73.83 ,   max(df7$CSF.pTau.INNO,na.rm = T),  max(df7$CSF.pTau.INNO,na.rm = T), 73.83 ,73.83 ),
                               Y_VAL = c(min(df7$Sum.hippo, na.rm = T),  5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554, min(df7$Sum.hippo, na.rm = T),   5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554),
                               Z_VAL = c(20,      20,    20,      20,  max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T)),
                               MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
@@ -2685,7 +2685,7 @@ server <- function(input, output){
                                                       "MCI unlikely due to AD meeting 2 cut-offs"))
 
 
-      df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO), max(df7$CSF.pTau.INNO), 59.23,59.23,   max(df7$CSF.pTau.INNO),  max(df7$CSF.pTau.INNO), 59.23,59.23),
+      df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO,na.rm = T), max(df7$CSF.pTau.INNO,na.rm = T), 59.23,59.23,   max(df7$CSF.pTau.INNO,na.rm = T),  max(df7$CSF.pTau.INNO,na.rm = T), 59.23,59.23),
                               Y_VAL = c(min(df7$Sum.hippo, na.rm = T),  5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554, min(df7$Sum.hippo, na.rm = T),   5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554),
                               Z_VAL = c(20,      20,    20,      20,  max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T)),
                               MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
@@ -2774,7 +2774,7 @@ server <- function(input, output){
                                                     "MCI unlikely due to AD meeting 2 cut-offs"))
     
     
-    df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO), max(df7$CSF.pTau.INNO), ptau_threshold,ptau_threshold,   max(df7$CSF.pTau.INNO),  max(df7$CSF.pTau.INNO), ptau_threshold,ptau_threshold),
+    df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO,na.rm = T), max(df7$CSF.pTau.INNO,na.rm = T), ptau_threshold,ptau_threshold,   max(df7$CSF.pTau.INNO,na.rm = T),  max(df7$CSF.pTau.INNO,na.rm = T), ptau_threshold,ptau_threshold),
                             Y_VAL = c(min(df7$Sum.hippo, na.rm = T),  hippo_threshold, min(df7$Sum.hippo, na.rm = T), hippo_threshold, min(df7$Sum.hippo, na.rm = T),   hippo_threshold, min(df7$Sum.hippo, na.rm = T), hippo_threshold),
                             Z_VAL = c(centiloid_threshold,      centiloid_threshold,    centiloid_threshold,      centiloid_threshold,  max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T)),
                             MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))

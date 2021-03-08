@@ -36,8 +36,8 @@ PlanesFunction <- function(dat,xinput,yinput,zinput,cols,leg,xax,yax,zax,XCUT,YC
                 color = ~cols, colors = c("firebrick", "darkorange", "gold", "forestgreen")) %>%
     add_trace(type = 'mesh3d',
               x = c(XCUT, XCUT, XCUT, XCUT),
-              y = c(max(yinput), max(yinput), min(yinput), min(yinput)),
-              z = c(max(zinput), min(zinput), max(zinput), min(zinput)),
+              y = c(max(yinput, na.rm = T), max(yinput, na.rm = T), min(yinput, na.rm = T), min(yinput, na.rm = T)),
+              z = c(max(zinput, na.rm = T), min(zinput, na.rm = T), max(zinput, na.rm = T), min(zinput, na.rm = T)),
               # Next define all triples (i,j,k) of vertices that form a 2-cell face.
               # 1 face
               i = c(0,1),
@@ -50,9 +50,9 @@ PlanesFunction <- function(dat,xinput,yinput,zinput,cols,leg,xax,yax,zax,XCUT,YC
               opacity = 0.2) %>%
     add_trace(type = "mesh3d",
               # this is the cut off for ptau - changing it to 59.23
-              x = c(min(xinput),min(xinput),max(xinput),max(xinput)),
+              x = c(min(xinput, na.rm = T),min(xinput, na.rm = T),max(xinput, na.rm = T),max(xinput, na.rm = T)),
               y = c(YCUT,  YCUT,  YCUT , YCUT),
-              z = c(max(zinput), min(zinput), max(zinput), min(zinput)),
+              z = c(max(zinput, na.rm = T), min(zinput, na.rm = T), max(zinput, na.rm = T), min(zinput, na.rm = T)),
               i = c(0,3),
               j = c(1,2),
               k = c(3,0),
@@ -60,8 +60,8 @@ PlanesFunction <- function(dat,xinput,yinput,zinput,cols,leg,xax,yax,zax,XCUT,YC
               name = YNAME,
               showlegend = T) %>%
     add_trace(type = 'mesh3d',
-              x = c(min(xinput),min(xinput),max(xinput),max(xinput)),
-              y = c(max(yinput),min(yinput),max(yinput),min(yinput)),
+              x = c(min(xinput, na.rm = T),min(xinput, na.rm = T),max(xinput, na.rm = T),max(xinput, na.rm = T)),
+              y = c(max(yinput, na.rm = T),min(yinput, na.rm = T),max(yinput, na.rm = T),min(yinput, na.rm = T)),
               z = c(ZCUT, ZCUT, ZCUT, ZCUT),
               i = c(0,3),
               j = c(1,2),
