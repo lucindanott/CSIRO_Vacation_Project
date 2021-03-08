@@ -110,8 +110,35 @@ server <- function(input, output){
     
   })
   
+  output$contents_3_3 <- renderTable({
+    # Input INPUTfile will be NULL initiailly after the user selects 
+    # and uploads a file, head of that data file will be shown 
+    
+    req(input$file_new_2)
+    
+    new_data_in2 <- read.csv(input$file_new_2$datapath, 
+                             header = T)
+    head(new_data_in2)
+    
+    
+  })
+  
+  output$final_contents <- renderTable({
+    # Input INPUTfile will be NULL initiailly after the user selects 
+    # and uploads a file, head of that data file will be shown 
+    
+    req(input$file_new_2_brackets)
+    
+    new_data_in2 <- read.csv(input$file_new_2_brackets$datapath, 
+                             header = T)
+    head(new_data_in2)
+    
+    
+  })
   
   data_internal <- reactiveValues(raw = NULL)
+  
+  # SUBMITTING FOR SAME THRESHOLDS
   observeEvent(input$newDataSUBMIT, {
     file1_input<- read.csv(
       file = input$file1$datapath, 
@@ -126,6 +153,7 @@ server <- function(input, output){
     shinyjs::runjs("window.scrollTo(0, 100)")
 
   })
+  # SUBMITTING FOR ONE THRESHOLD (NO AGE)
   observeEvent(input$SUMBITNEW, {
     file1_input<- read.csv(
       file = input$INPUTfile$datapath, 
@@ -141,6 +169,42 @@ server <- function(input, output){
     
     
   })
+  
+  # SUBMTTING FOR 2 THRESHOLDS IN AGE DEPENDENCE 
+  observeEvent(input$final_data_SUBMIT, {
+    file1_input<- read.csv(
+      file = input$file_new_2_brackets$datapath, 
+      header = T, 
+      stringsAsFactors = F
+    )
+    
+    x <- ProcessingData(file1_input = file1_input)
+    file1_input <- x$file1_input
+    
+    data_internal$raw <- file1_input
+    shinyjs::runjs("window.scrollTo(0, 100)")
+  })
+  
+  
+  # SUBMITTING FOR 3 THRESHOLDS IN AGE DEPENDENCE
+  observeEvent(input$final_data_SUBMIT_FINALL, {
+    file1_input<- read.csv(
+      file = input$file_new_2$datapath, 
+      header = T, 
+      stringsAsFactors = F
+    )
+    
+    x <- ProcessingData(file1_input = file1_input)
+    file1_input <- x$file1_input
+    
+    data_internal$raw <- file1_input
+    shinyjs::runjs("window.scrollTo(0, 100)")
+  })
+  
+  
+  
+  
+  
   observeEvent(input$sample_or_real, {
     if(input$sample_or_real == "sample"){
       data_internal$raw <- simulated.data
@@ -159,6 +223,21 @@ server <- function(input, output){
   ptau_cutoff_singular <- reactiveValues(raw = NULL)
   ttau_cutoff_singular <- reactiveValues(raw = NULL)
   centiloid_cutoff <- reactiveValues(raw = NULL)
+  AB_age_dependent_2_1 <- reactiveValues(raw = NULL)
+  AB_age_dependent_2_2 <- reactiveValues(raw = NULL)
+  AB_age_dependent_3_1 <- reactiveValues(raw = NULL)
+  AB_age_dependent_3_2 <- reactiveValues(raw = NULL)
+  AB_age_dependent_3_3 <- reactiveValues(raw = NULL)
+  ptau_age_dependet_2_1 <- reactiveValues(raw = NULL)
+  ptau_age_dependent_2_2 <- reactiveValues(raw = NULL)
+  ptau_age_dependent_3_1 <- reactiveValues(raw = NULL)
+  ptau_age_dependent_3_2 <- reactiveValues(raw = NULL)
+  ptau_age_dependent_3_3 <- reactiveValues(raw = NULL)
+  ttau_age_dependent_2_1 <- reactiveValues(raw = NULL)
+  ttau_age_dependent_2_2 <- reactiveValues(raw = NULL)
+  ttau_age_dependent_3_1 <- reactiveValues(raw = NULL)
+  ttau_age_dependent_3_2 <- reactiveValues(raw = NULL)
+  ttau_age_dependent_3_3 <- reactiveValues(raw = NULL)
   
   # For sample Data 
   observeEvent(input$sample_or_real, {
@@ -189,6 +268,29 @@ server <- function(input, output){
     AB_cutoff_singular$raw <- input$ABthreshold
     ptau_cutoff_singular$raw <- input$pTauThreshold
     ttau_cutoff_singular$raw <- input$tTautheshold
+  })
+  
+  # FOR AGE DEPENDENCE 2 INPUTS 
+  observeEvent(input$Age_dependent_threshold_2, {
+    AB_age_dependent_2_1 <- reactiveValues(raw = NULL)
+    AB_age_dependent_2_2 <- reactiveValues(raw = NULL)
+    ptau_age_dependet_2_1 <- reactiveValues(raw = NULL)
+    ptau_age_dependent_2_2 <- reactiveValues(raw = NULL)
+    ttau_age_dependent_2_1 <- reactiveValues(raw = NULL)
+    ttau_age_dependent_2_2 <- reactiveValues(raw = NULL)
+  })
+  
+  # FOR AGE DEPENDENCE 3 INPUTS 
+  observeEvent(input$Age_dependent_threshold_3, {
+    AB_age_dependent_3_1 <- reactiveValues(raw = NULL)
+    AB_age_dependent_3_2 <- reactiveValues(raw = NULL)
+    AB_age_dependent_3_3 <- reactiveValues(raw = NULL)
+    ptau_age_dependent_3_1 <- reactiveValues(raw = NULL)
+    ptau_age_dependent_3_2 <- reactiveValues(raw = NULL)
+    ptau_age_dependent_3_3 <- reactiveValues(raw = NULL)
+    ttau_age_dependent_3_1 <- reactiveValues(raw = NULL)
+    ttau_age_dependent_3_2 <- reactiveValues(raw = NULL)
+    ttau_age_dependent_3_3 <- reactiveValues(raw = NULL)
   })
   
   ################# CHANGE THE DATA FILE USED IF SERVE IS CLICKED ##############
@@ -1463,54 +1565,7 @@ server <- function(input, output){
     paste0("The cut-off is ",round(hippo_cutoff,3),".")
   })
   
-  # Regular ggplot for HIPPOCAMPUS
-  
-  output$plot_gg1 <- renderPlot({
-    new.dat <- req(data_internal$raw)
-    # new.dat <- req(my_data)
-    new.dat$Diagnosis <- factor(new.dat$Diagnosis, levels = c("AD", "MCI", "HC"))
-    p <- ggplot(new.dat, aes(x = Sum.hippo, color = Diagnosis, fill = Diagnosis))+
-      geom_density(alpha = 0.5)+
-      theme_bw()+
-      scale_color_manual(values = c("red", "orange", "green"))+
-      scale_fill_manual(values=c("red", "orange", "green"))+
-      xlab(bquote('Hippocampus'~(mL^3)))+
-      ylab("Density")+
-      ggtitle("Density of Hippocampus by Diagnosis")
-    p
-  })
-  
-  output$intersect_plot1 <- renderPlot({
-    new.dat <- req(data_internal$raw)
-    x <- HippoFunction(dat = new.dat)
-    hippo_cutoff <- x$hippocampus_threshold
-    hippoframe <- x$hippoframe
-    
-    ggplot(hippoframe, aes(x=x))+
-      theme_bw()+
-      geom_line(aes(y = y, colour = "AD"), lwd = 2)+
-      geom_line(aes(y=y2, colour = "HC"), lwd = 2)+
-      geom_vline(xintercept =  hippo_cutoff, colour = "black", lwd = 1.5)+
-      scale_colour_manual("", values = c("AD"="red", 
-                                         "HC" = "green"))+
-      labs(title = "Legend")+
-      xlab(bquote('Hippocampus'~(mL^3)))+
-      ylab("Density")+
-      ggtitle("Density Curve of AD and HC with Intersecting Lines")
-  })
-  
-  
-  
-  ############### RENDER TEXT FOR HIPPOCAMPUS OUTPUT 
-  
-  output$texthippo1 <- renderText({
-    new.dat <- req(data_internal$raw)
-    x <- HippoFunction(dat = new.dat)
-    hippo_cutoff <- x$hippocampus_threshold
-    hippoframe <- x$hippoframe
-    
-    paste0("The cut-off is ",round(hippo_cutoff,3),".")
-  })
+
 
   #
   ##

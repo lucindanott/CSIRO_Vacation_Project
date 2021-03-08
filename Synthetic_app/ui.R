@@ -269,13 +269,26 @@ ui<-
               ## Panel 2 -------------------------------------
               tabPanel(title ="Group 1: CSF ATN Biomarkers",
                        br(), 
-                       conditionalPanel(
-                         condition = "input.sample_or_real == 'sample' || input.newDataSUBMIT",
                        box(solidHeader = F, 
                            collapsible = F, 
                            width = 12, 
                            fluidRow(
-                             column(width = 9, 
+                             column(width = 9,
+                                    conditionalPanel(
+                                      condition = "input.SUMBITNEW",
+                                      textOutput("NewCUTOFFLabels"),
+                                      tags$head(tags$style("#NewCUTOFFLabels{
+                                 font-size: 18px;color:#6C3483;font-weight:bold                             }"
+                                      )
+                                      ),
+                                      br(),
+                                    ),
+                                    conditionalPanel(
+                                      condition = "input.newDataSUBMIT", 
+                                      p("You have selected to use INNOTEST assay cut-off values for the CSF data. These points are the same as 
+                                        used in the supplied data set and have been updated across the app. To return to supplied data or make a new selection, please
+                                        refresh the website to clear all previous inputs.", style = 'text-align: justify;width:100%;font-size:18px;color:#6C3483;font-weight:bold ')
+                                    ),
                                     p("The National Institute on Aging and Alzheimer's Association (NIA-AA) proposed a new 
                                       research framework: Towards a Biological definition of Alzheimer's disease which uses the 
                                       three-biomarker previously mentioned: AB-amyloid, Tau and Neurodegeneration, AT(N), to 
@@ -332,7 +345,9 @@ ui<-
                                                                                                           </table>'),
                                     p("Table 1: Group 1 Classifications adapted from Burham et al. [2]"),
                                     br(),
-                                    p("Several imaging
+                                    conditionalPanel(
+                                      condition = "input.sample_or_real == 'sample' || input.newDataSUBMIT", 
+                                      p("Several imaging
                                       and CSF techniques can be used to detect these biomarkers. Imaging 
                                       techniques include MRI and PET
                                       scans. Lumbar punctures are used to collect CSF data. In this panel, we apply the AT(N) classification 
@@ -340,103 +355,16 @@ ui<-
                                       assay for the 
                                       CSF data is used. This means that the threshold cut-offs for positive and negative individuals are dependent on being under or over the age of 70. 
                                         Group 1 is described by the following biomarkers and cut-off thresholds:",style ="text-align: justify;width:100%;font-size:18px"), 
-                                    tags$div(
-                                      tags$ul(
-                                        tags$li("A: is quantified by CSF AB1-42, positive participants have values less than 656 and are over 60 years old. ",style ="width:100%;font-size:18px"), 
-                                        tags$li("T: is quantified by phosphor-Tau CSF p-181, positive participants aged 60-70 have values greater than 59.23 and individuals aged 70+ have values greater than 73.83",style ="width:100%;font-size:18px"), 
-                                        tags$li("N: is CSF t-Tau or total-Tau, positive participants aged 60-70 have values greater than 303.54 and individuals aged 70+ have values greater than 378.65",style ="width:100%;font-size:18px")
-                                      )
-                                    ), 
-                                    p("These biomarker cut-offs are cited in Doecke et al. [6] and Li et al. [9]. For more information on INNO assay and the biomarker cut-offs please see ",
-                                      a(href = "https://www.fujirebio.com/sites/default/files/2019-09/INNOTEST_Alzheimer_brochure.pdf",'here', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end"),style ="text-align: justify;width:100%;font-size:18px"),
-                                    p("This tab is broken down into eight components; data selection, a demographic summary, a reactive 2D plot, 
-                                      interactive 3D plots (with the options of adding in the positive thresholds for the 
-                                      biomarkers), an A+/T+/N+ positive area visual, Add in your own data point option and statistical modelling.",style ="text-align: justify;width:100%;font-size:18px"),
-                                    # p("For more information on INNO assay and the biomarker cut-offs please see ",a(href = "https://www.fujirebio.com/sites/default/files/2019-09/INNOTEST_Alzheimer_brochure.pdf",
-                                    #                                                                                'here', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end")
-                                    #   )
-                             ),
-                             
-                             column(width = 3,
-                                    align = "left",
-                                    tags$a(href = "http://www.medical-animations.com/contact.html",
-                                           img(src = "CSF.gif", height = "230px", width = "265px", title = "Adaption from Medical Animation Australia")),
-                                    # textOutput("TEXT1")
-                                    p("Figure 4: a visual representation of the cerebrospinal fluid that surrounds the brain and travels down the
-                                      spinal cord. A lumbar puncture would be performed at the lower back, in the lumbar region. Source: Medical Animation [11].", style = "text-align: justify;width:265px")
-                             )
-                           )
-                       )
-                       ),
-                       conditionalPanel(
-                         condition = "input.SUMBITNEW",
-                         box(solidHeader = F, 
-                             collapsible = F, 
-                             width = 12, 
-                             fluidRow(
-                               column(width = 9, 
-                                      textOutput("NewCUTOFFLabels"),
-                                      tags$head(tags$style("#NewCUTOFFLabels{
-                                 font-size: 18px;color:#6C3483;font-weight:bold                             }"
-                                      )
-                                      ),
-                                      br(),
-                                      p("The National Institute on Aging and Alzheimer's Association (NIA-AA) proposed a new 
-                                      research framework: Towards a Biological definition of Alzheimer's disease which uses the 
-                                      three-biomarker previously mentioned: AB-amyloid, Tau and Neurodegeneration, AT(N), to 
-                                      generate an eight group biomarker based definition of Alzheimer's disease [2]. These eight groups
-                                      were then collapsed into four main groups corresponding to the classifications of Burnham et al. [2]. The table below 
-                                      illustrates the groups.",style ="text-align: justify;width:100%;font-size:18px"),
-                                      HTML('<style type="text/css">
-                  .tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
-                          .tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
-                                  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
-                      .tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
-                              font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-                      .tg .tg-mcqj{border-color:#000000;font-weight:bold;text-align:left;vertical-align:top}
-                              .tg .tg-73oq{border-color:#000000;text-align:left;vertical-align:top}
-                                      .tg .tg-xwyw{border-color:#000000;text-align:center;vertical-align:middle}
-                                              </style>
-                                              <table class="tg">
-                                                  <thead>
-                                                  <tr>
-                                                  <th class="tg-mcqj">NIA-AA Research Framework</th>
-                                                      <th class="tg-mcqj">Burnham Classification</th>
-                                                          </tr>
-                                                          </thead>
-                                                          <tbody>
-                                                          <tr>
-                                                          <td class="tg-73oq">A+/T+/N+</td>
-                                                              <td class="tg-xwyw" rowspan="2">AD</td>
-                                                                  </tr>
-                                                                  <tr>
-                                                                  <td class="tg-73oq">A+/T+/N-</td>
-                                                                      </tr>
-                                                                      <tr>
-                                                                      <td class="tg-73oq">A+/T-/N+</td>
-                                                                          <td class="tg-xwyw" rowspan="2">Pathological Change</td>
-                                                                              </tr>
-                                                                              <tr>
-                                                                              <td class="tg-73oq">A+/T-/N-</td>
-                                                                                  </tr>
-                                                                                  <tr>
-                                                                                  <td class="tg-73oq">A-/T+/N+</td>
-                                                                                      <td class="tg-xwyw" rowspan="3">Non-AD Pathological Change</td>
-                                                                                          </tr>
-                                                                                          <tr>
-                                                                                          <td class="tg-73oq">A-/T-/N+</td>
-                                                                                              </tr>
-                                                                                              <tr>
-                                                                                              <td class="tg-73oq">A-/T+/N-</td>
-                                                                                                  </tr>
-                                                                                                  <tr>
-                                                                                                  <td class="tg-73oq">A-/T-/N-</td>
-                                                                                                      <td class="tg-xwyw">Normal AD Biomarkers</td>
-                                                                                                          </tr>
-                                                                                                          </tbody>
-                                                                                                          </table>'),
-                                      p("Table 1: Group 1 Classifications adapted from Burham et al. [2]"),
-                                      br(),
+                                      tags$div(
+                                        tags$ul(
+                                          tags$li("A: is quantified by CSF AB1-42, positive participants have values less than 656 and are over 60 years old. ",style ="width:100%;font-size:18px"), 
+                                          tags$li("T: is quantified by phosphor-Tau CSF p-181, positive participants aged 60-70 have values greater than 59.23 and individuals aged 70+ have values greater than 73.83",style ="width:100%;font-size:18px"), 
+                                          tags$li("N: is CSF t-Tau or total-Tau, positive participants aged 60-70 have values greater than 303.54 and individuals aged 70+ have values greater than 378.65",style ="width:100%;font-size:18px")
+                                        )
+                                      ), 
+                                    ),
+                                    conditionalPanel(
+                                      condition = "input.SUMBITNEW", 
                                       p("Several imaging
                                       and CSF techniques can be used to detect these biomarkers. Imaging 
                                       techniques include MRI and PET
@@ -461,28 +389,29 @@ ui<-
                                           )
                                           ),  
                                         )
-                                      ), 
-                                      p("This tab is broken down into eight components; data selection, a demographic summary, a reactive 2D plot, 
+                                      ),
+                                    ),
+                                    p("These biomarker cut-offs are cited in Doecke et al. [6] and Li et al. [9]. For more information on INNO assay and the biomarker cut-offs please see ",
+                                      a(href = "https://www.fujirebio.com/sites/default/files/2019-09/INNOTEST_Alzheimer_brochure.pdf",'here', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end"),style ="text-align: justify;width:100%;font-size:18px"),
+                                    p("This tab is broken down into eight components; data selection, a demographic summary, a reactive 2D plot, 
                                       interactive 3D plots (with the options of adding in the positive thresholds for the 
                                       biomarkers), an A+/T+/N+ positive area visual, Add in your own data point option and statistical modelling.",style ="text-align: justify;width:100%;font-size:18px"),
-                                      # p("For more information on INNO assay and the biomarker cut-offs please see ",a(href = "https://www.fujirebio.com/sites/default/files/2019-09/INNOTEST_Alzheimer_brochure.pdf",
-                                      #                                                                                'here', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end")
-                                      #   )
-                               ),
-                               
-                               column(width = 3,
-                                      align = "left",
-                                      tags$a(href = "http://www.medical-animations.com/contact.html",
-                                             img(src = "CSF.gif", height = "230px", width = "265px", title = "Adaption from Medical Animation Australia")),
-                                      # textOutput("TEXT1")
-                                      p("Figure 4: a visual representation of the cerebrospinal fluid that surrounds the brain and travels down the
+                                    # p("For more information on INNO assay and the biomarker cut-offs please see ",a(href = "https://www.fujirebio.com/sites/default/files/2019-09/INNOTEST_Alzheimer_brochure.pdf",
+                                    #                                                                                'here', .noWS = "outside"), '.', .noWS = c("after-begin", "before-end")
+                                    #   )
+                             ),
+                             
+                             column(width = 3,
+                                    align = "left",
+                                    tags$a(href = "http://www.medical-animations.com/contact.html",
+                                           img(src = "CSF.gif", height = "230px", width = "265px", title = "Adaption from Medical Animation Australia")),
+                                    # textOutput("TEXT1")
+                                    p("Figure 4: a visual representation of the cerebrospinal fluid that surrounds the brain and travels down the
                                       spinal cord. A lumbar puncture would be performed at the lower back, in the lumbar region. Source: Medical Animation [11].", style = "text-align: justify;width:265px")
-                               )
                              )
-                         ),
+                           )
                        ),
                        br(),
-                       
                        br(),
                        
                        tabsetPanel(type = "tabs", 
@@ -631,42 +560,18 @@ ui<-
                                                     #              selected = character(0))
                                                     fluidRow(
                                                       column(4, radioButtons("AB_bins", "How many bins for CSF AB1-42 pg/mL",
-                                                                             choices = c("1","2","3"),
+                                                                             choices = c("2","3"),
                                                                              selected = character(0))
                                                       ), 
                                                       column(4, radioButtons("pTau_bins", "How many bins for CSF pTau pg/mL",
-                                                                             choices = c("1","2","3"),
+                                                                             choices = c("2","3"),
                                                                              selected = character(0))
                                                       ), 
                                                       column(4, radioButtons("tTau_bins", "How many bins for CSF tTau pg/mL",
-                                                                             choices = c("1","2","3"),
+                                                                             choices = c("2","3"),
                                                                              selected = character(0))
                                                       ),
                                                     ), 
-                                                    conditionalPanel(
-                                                      condition = "input.AB_bins == '1'", 
-                                                      p(strong("For CSF AB 1-42 pg/mL, please enter the following", 
-                                                               style ="width:100%;font-size:17px;color:#7FB3D5")),
-                                                      fluidRow(
-                                                        column(4, 
-                                                               numericInput(
-                                                                 "input_1_AB", "Please input the  cut-off point", 
-                                                                 value = 1, min = 1, max = NA
-                                                               )
-                                                        ), 
-                                                        column(4, 
-                                                               numericInput(
-                                                                 "AB_text_1", "Please specify the lower age in the bracket", value = "", 
-                                                                 min = 1, max = NA
-                                                               )
-                                                        ), 
-                                                        column(4, 
-                                                               numericInput(
-                                                                 "AB_numeric_2", "Please specify the higher age in the bracket", value = "",
-                                                                 min = 1, max = NA
-                                                               ))
-                                                      ), 
-                                                    ),
                                                     conditionalPanel(
                                                       condition = "input.AB_bins == '2'", 
                                                       p(strong("For CSF AB 1-42 pg/mL, please enter the following", 
@@ -772,30 +677,7 @@ ui<-
                                                       
                                                     ),
                                                     
-                                                    conditionalPanel(
-                                                      condition = "input.pTau_bins == '1'", 
-                                                      p(strong("For CSF pTau pg/mL, please enter the following", 
-                                                               style ="width:100%;font-size:17px;color:#1ABC9C")),
-                                                      fluidRow(
-                                                        column(4, 
-                                                               numericInput(
-                                                                 "ptau_1_age", "Please input the cut-off point", 
-                                                                 value = 1, min = 1, max = NA
-                                                               )
-                                                        ), 
-                                                        column(4, 
-                                                               numericInput(
-                                                                 "ptau_1_text", "Please specify the lower age in the bracket", value = "", 
-                                                                 min = 1, max = NA
-                                                               )
-                                                        ), 
-                                                        column(4, 
-                                                               numericInput(
-                                                                 "ptau_input_upper_age_1", "Please specify the upper age in the bracket", value = "", 
-                                                                 min = 1, max = NA
-                                                               ))
-                                                      ), 
-                                                    ),
+                                                    
                                                     conditionalPanel(
                                                       condition = "input.pTau_bins == '2'", 
                                                       p(strong("For CSF pTau pg/mL, please enter the following", 
@@ -904,86 +786,6 @@ ui<-
                                                       
                                                     ),
                                                     conditionalPanel(
-                                                      condition = "input.tTau_bins == '1'", 
-                                                      p(strong("For CSF tTau pg/mL, please enter the following", 
-                                                               style ="width:100%;font-size:17px;color:#6C3483")),
-                                                      fluidRow(
-                                                        column(4, 
-                                                               numericInput(
-                                                                 "age_ttau_1_1", "Please input the 1st cut-off point", 
-                                                                 value = 1, min = 1, max = NA
-                                                               )
-                                                        ), 
-                                                        column(4, 
-                                                               numericInput(
-                                                                 "text_ttau_1_1", "Please specify the lower age in the bracket", value = "", 
-                                                                 min = 1, max = NA
-                                                               )
-                                                        ), 
-                                                        column(4, 
-                                                               numericInput(
-                                                                 "ttau_age_upper_1", "Please specify the uppwer age in the bracket", value = "", 
-                                                                 min = 1, max = NA
-                                                               ))
-                                                      ), 
-                                                      p("Please double check the cut-offs are correct and submit when ready.", 
-                                                        style = "width:100%;font-size:16px"),
-                                                      actionGroupButtons("Age_dependent_threshold_1_of_1", "Submit Cut-offs", 
-                                                                         status = "info", size = "lg"),
-                                                      br(),
-                                                      br(),
-                                                      p("Once you have submitted the cut-offs, please follow the instructions for 
-                                                      uploading the data file.", style = "width:100%;font-size:16px"),
-                                                      p("The CSV file must include the following headers in the first row. 
-                                                      Order is not important, however, please ensure the spelling is the same.",
-                                                        style = "width:100%;font-size:16px"), 
-                                                      tags$div(
-                                                        tags$ul(
-                                                          tags$li("Age - numerical input", style = "width:100%;font-size:16px"), 
-                                                          tags$li("apoe4 - categorical input where 1 is a carrier, 0 is non-carrier", style = "width:100%;font-size:16px"), 
-                                                          tags$li("Sex - categorial input including Male or Female.", style = "width:100%;font-size:16px"), 
-                                                          tags$li("Education_binary - binary input where 1 is over 12 years education and 0 under 12 years.", style = "width:100%;font-size:16px"),
-                                                          tags$li("Diagnosis - categorial input for clinical diagnosis consisting of AD, MCI and HC", style = "width:100%;font-size:16px"),
-                                                          tags$li("CSF.AB42 - numerical input", style = "width:100%;font-size:16px"),
-                                                          tags$li("CSF.pTau - numerical input", style = "width:100%;font-size:16px"), 
-                                                          tags$li("CSF.tTau - numerical input", style = "width:100%;font-size:16px"), 
-                                                          tags$li("Sum.hippo - numerical input", style = "width:100%;font-size:16px"), 
-                                                          tags$li("Centiloid - numerical input", style = "width:100%;font-size:16px"), 
-                                                          tags$li("AB.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px"), 
-                                                          tags$li("pTau.status - categorial input consisting of negative or positive ", style = "width:100%;font-size:16px"), 
-                                                          tags$li("tTau.status - categorial input consisting of negative or positive", style = "width:100%;font-size:16px")
-                                                        )
-                                                      ),
-                                                      p("The following data points must be numerical unless specificed above for categorical inputs. \n
-                                                  No additional characters, such as $,#,&,*,(,!, are permitted. \n 
-                                                  Please ensure that capitalising of inputs and row headers are followed as above.", style = "width:100%;font-size:16px"), 
-                                                      p("You can also downloand (through the button below) an example CSV file to check the inputs required.", 
-                                                        style = "width:100%;font-size:16px"),
-                                                      downloadButton("final_download_example_2", "Download Example CSV File",
-                                                                     class = "LN"),
-                                                      tags$head(tags$style(".LN{background-color:#5bc0de;} .LN{color: white;} .LN{width:250px}")), # background color and font color
-                                                      br(),
-                                                      br(),
-                                                      p("Once uploaded, the first 5 rows of data will be displayed. Double check the inputs and press the submit button when ready.", 
-                                                        style = "width:100%;font-size:16px"),
-                                                      p(strong("If the file does not adhere to the instructions above, the website will disconnect due to an error in the file", 
-                                                               style = "width:100%;font-size:16px;color:red")),
-                                                      fileInput("file_1_bracket_ttau", "Choose CSV File",
-                                                                multiple = F,
-                                                                accept = c("text/csv",
-                                                                           "text/comma-separated-values, text/plain",
-                                                                           ".csv"
-                                                                )
-                                                                
-                                                      ), 
-                                                      # tableOutput("contents"), 
-                                                      
-                                                      actionGroupButtons("ttau_1_submit_DATA", "SUBMIT", status = "info", size = "lg")
-                                                      
-                                                      
-                                                      
-                                                    ),
-                                                    conditionalPanel(
                                                       condition = "input.tTau_bins == '2'", 
                                                       p(strong("For CSF tTau pg/mL, please enter the following", 
                                                                style ="width:100%;font-size:17px;color:#6C3483")),
@@ -1075,7 +877,7 @@ ui<-
                                                                 )
                                                                 
                                                       ), 
-                                                      # tableOutput("contents"), 
+                                                      tableOutput("final_contents"),
 
                                                       actionGroupButtons("final_data_SUBMIT", "SUBMIT", status = "info", size = "lg")
                                                       
@@ -1193,11 +995,11 @@ ui<-
                                                               )
                                                               
                                                     ), 
-                                                    # tableOutput("contents"), 
+                                                    tableOutput("contents_3_3"),
                                                     
                                                     # useShinyjs(), 
                                                     # extendShinyjs(text = "shinyjs.button = function() {window.scrollTo(0, 0)}"),
-                                                    actionGroupButtons("final_data_SUBMIT", "SUBMIT", status = "info", size = "lg")
+                                                    actionGroupButtons("final_data_SUBMIT_FINALL", "SUBMIT", status = "info", size = "lg")
                                                     
                                                     
                                                   ),
@@ -1712,13 +1514,26 @@ ui<-
               # Panel 3 -------------------------------------
               tabPanel(title ="Group 2: Combined Modality Data",
                        br(), 
-                       conditionalPanel(
-                         condition = "input.sample_or_real == 'sample' || input.newDataSUBMIT",
                          box(solidHeader = F, 
                              collapsible = F, 
                              width = 12, 
                              fluidRow(
                                column(width = 9, 
+                                      conditionalPanel(
+                                        condition = "input.SUMBITNEW", 
+                                        textOutput("NewCUTOFFLabels2"),
+                                        tags$head(tags$style("#NewCUTOFFLabels2{
+                                 font-size: 18px;color:#6C3483;font-weight:bold                             }"
+                                        )
+                                        ),
+                                        br(),
+                                      ),
+                                      conditionalPanel(
+                                        condition = "input.newDataSUBMIT", 
+                                        p("You have selected to use INNOTEST assay cut-off values for the CSF data. These points are the same as 
+                                        used in the supplied data set and have been updated across the app. To return to supplied data or make a new selection, please
+                                        refresh the website to clear all previous inputs.", style = 'text-align: justify;width:100%;font-size:18px;color:#6C3483;font-weight:bold ')
+                                      ),
                                       p("Similarly to Group 1, the NIA-AA Framework can be collapsed according to the groups established in Clifford et al. [3]. The groups
                                     are shown in the table below.",style ="text-align: justify;width:100%;font-size:18px"), 
                                       # HTML('<center><img src="Capture.JPG"></center>'), 
@@ -1780,14 +1595,38 @@ ui<-
                                     hippocampus, please click the View Derivation button below.",style ="text-align: justify;width:100%;font-size:18px"), 
                                       p("Group 2 is therefore described below with the 
                                     corresponding cut-off thresholds:",style ="text-align: justify;width:100%;font-size:18px"),
-                                      tags$div(
-                                        tags$ul(
-                                          tags$li("A: is quantified by Centiloid, positive participants have values greater than 20",style ="text-align: justify;width:100%;font-size:18px"),
-                                          tags$li("T: is quantified by phosphor-Tau CSF p-181, positive participants aged 60-70 have values greater than 59.23 and individuals aged 70+ have values greater than 73.83",style ="text-align: justify;width:100%;font-size:18px"), 
-                                          tags$li("N: is quantified by hippocampus volume, positive participants have values less than 5.4.",style ="text-align: justify;width:100%;font-size:18px")
-                                        )
+                                      conditionalPanel(
+                                        condition = "input.sample_or_real == 'sample' || input.newDataSUBMIT", 
+                                        tags$div(
+                                          tags$ul(
+                                            tags$li("A: is quantified by Centiloid, positive participants have values greater than 20",style ="text-align: justify;width:100%;font-size:18px"),
+                                            tags$li("T: is quantified by phosphor-Tau CSF p-181, positive participants aged 60-70 have values greater than 59.23 and individuals aged 70+ have values greater than 73.83",style ="text-align: justify;width:100%;font-size:18px"), 
+                                            tags$li("N: is quantified by hippocampus volume, positive participants have values less than 5.4.",style ="text-align: justify;width:100%;font-size:18px")
+                                          )
+                                        ),
+                                      ), 
+                                      conditionalPanel(
+                                        condition = "input.SUMBITNEW", 
+                                        tags$div(
+                                          tags$ul(
+                                            tags$li(textOutput("CENTILOIDTEXT"), tags$head(tags$style("#CENTILOIDTEXT{
+                                 font-size: 18px;                             }"
+                                            )
+                                            )
+                                            ), 
+                                            tags$li(textOutput("PTAU2TEXT"), tags$head(tags$style("#PTAU2TEXT{
+                                 font-size: 18px;                             }"
+                                            )
+                                            )
+                                            ), 
+                                            tags$li(textOutput("HIPPOCAMPUSTEXT"), tags$head(tags$style("#HIPPOCAMPUSTEXT{
+                                 font-size: 18px;                             }"
+                                            )
+                                            )
+                                            ),
+                                          )
+                                        ),
                                       ),
-                                      
                                       p("This tab is broken down into seven components; a demographic summary, a reactive 2D plot, 
                                       interactive 3D plots (with the options of adding in the positive thresholds for the 
                                       biomarkers), an A+/T+/N+ positive area visual, Add in your own data point option and statistical modelling.",style ="text-align: justify;width:100%;font-size:18px"),
@@ -1819,138 +1658,7 @@ ui<-
                                       radiotracers are used to visualise and measure changes in metabolic process. This animation shows a PET scan
                                       of a patient with Alzheimer's Disease measuring Tau (indicated by red sections). Source: the Swedish BioFINDER study [12].", style = "text-align: justify;width:260px"))
                              )
-                         ) 
                        ), 
-                       conditionalPanel(
-                         condition = "input.SUMBITNEW", 
-                         box(solidHeader = F, 
-                             collapsible = F, 
-                             width = 12, 
-                             fluidRow(
-                               column(width = 9,
-                                      textOutput("NewCUTOFFLabels2"),
-                                      tags$head(tags$style("#NewCUTOFFLabels2{
-                                 font-size: 18px;color:#6C3483;font-weight:bold                             }"
-                                      )
-                                      ),
-                                      br(), 
-                                      
-                                      p("Similarly to Group 1, the NIA-AA Framework can be collapsed according to the groups established in Clifford et al. [3]. The groups
-                                    are shown in the table below.",style ="text-align: justify;width:100%;font-size:18px"), 
-                                      # HTML('<center><img src="Capture.JPG"></center>'), 
-                                      HTML('<style type="text/css">
-.tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
-.tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
-  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
-  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-mcqj{border-color:#000000;font-weight:bold;text-align:left;vertical-align:top}
-.tg .tg-73oq{border-color:#000000;text-align:left;vertical-align:top}
-.tg .tg-xwyw{border-color:#000000;text-align:center;vertical-align:middle}
-</style>
-<table class="tg">
-<thead>
-  <tr>
-    <th class="tg-mcqj">NIA-AA Research Framework</th>
-    <th class="tg-mcqj">Clifford Classification</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td class="tg-73oq">A+/T+/N+</td>
-    <td class="tg-xwyw" rowspan="2">Stage 2, Clinically Asymptomatic</td>
-  </tr>
-  <tr>
-    <td class="tg-73oq">A+/T+/N-</td>
-  </tr>
-  <tr>
-    <td class="tg-73oq">A+/T-/N+</td>
-    <td class="tg-xwyw" rowspan="2">Stage 1, Preclinical AD Stage</td>
-  </tr>
-  <tr>
-    <td class="tg-73oq">A+/T-/N-</td>
-  </tr>
-  <tr>
-    <td class="tg-73oq">A-/T+/N+</td>
-    <td class="tg-xwyw" rowspan="3">SNAP (Suspected Non-Alzheimers <br>Disease Person)</td>
-                                      </tr>
-                                      <tr>
-                                      <td class="tg-73oq">A-/T-/N+</td>
-                                      </tr>
-                                      <tr>
-                                      <td class="tg-73oq">A-/T+/N-</td>
-                                      </tr>
-                                      <tr>
-                                      <td class="tg-73oq">A-/T-/N-</td>
-                                      <td class="tg-xwyw">MCI unlikely due to AD</td>
-                                      </tr>
-                                      </tbody>
-                                      </table>'),
-                                      p("Table 4: Group 2 Classifications adapted from Clifford et al. [3]"),
-                                      br(),
-                                      p("In this group, AB-Amyloid plaques (A) are quantified by the Centiloid value measured through PET imaging. Tau (T) was measured through phosphor-Tau CSF p-181 and Neurodegeneration (N)
-                                      was quantified via the hippocampus volume, measured  by MRI imaging.",style ="text-align: justify;width:100%;font-size:18px"),
-                                      p("The thresholds for Amyloid, Tau and Neurodegeneration were derived from literature. The Centiloid cut-off was cited in Villemagne et al. [13],Dore et al. [6] and
-                                    Bourgeat et al. [1]. The CSF pTau 
-                                    cut-off is specified in Doecke et al.[6] and Li et al.[9]. The cut-off for hippocampus is established in Clifford et al. [4]. For more imformation on the derivation of the 
-                                    hippocampus, please click the View Derivation button below.",style ="text-align: justify;width:100%;font-size:18px"), 
-                                      p("Group 2 is therefore described below with the 
-                                    corresponding cut-off thresholds:",style ="text-align: justify;width:100%;font-size:18px"),
-                                      tags$div(
-                                        tags$ul(
-                                          tags$li(textOutput("CENTILOIDTEXT"), tags$head(tags$style("#CENTILOIDTEXT{
-                                 font-size: 18px;                             }"
-                                          )
-                                          )
-                                          ), 
-                                          tags$li(textOutput("PTAU2TEXT"), tags$head(tags$style("#PTAU2TEXT{
-                                 font-size: 18px;                             }"
-                                          )
-                                          )
-                                          ), 
-                                          tags$li(textOutput("HIPPOCAMPUSTEXT"), tags$head(tags$style("#HIPPOCAMPUSTEXT{
-                                 font-size: 18px;                             }"
-                                          )
-                                          )
-                                          ),
-                                        )
-                                      ),
-                                      
-                                      p("This tab is broken down into seven components; a demographic summary, a reactive 2D plot, 
-                                      interactive 3D plots (with the options of adding in the positive thresholds for the 
-                                      biomarkers), an A+/T+/N+ positive area visual, Add in your own data point option and statistical modelling.",style ="text-align: justify;width:100%;font-size:18px"),
-                                      actionButton("hippodippo", "View Derivation", icon=icon("bar-chart")),
-                                      br(),
-                                      # Shiny BS Modal to display the Dataset inside a MOdal with spinner added 
-                                      bsModal(id = "NEW_DERIVATION", 
-                                              title = "Derivation of hippocampus Cut-off", 
-                                              trigger = "hippodippo", 
-                                              size = "large", 
-                                              p("The hippocampus volume cut-off was derived from mixture methods. This method was established in Clifford et al. [4].
-                                            The cut-off is the intersection (in black) of the normal curves of the hippocampus volume for Alzheimer's Disease (AD) and Healthy Cognitive (HC), as shown below.",style ="text-align: justify;width:100%;font-size:18px"),
-                                              textOutput("texthippo1"),
-                                              tags$head(tags$style("#texthippo1{
-                                 font-size: 18px;                                 }"
-                                              )
-                                              ),
-                                              plotOutput("plot_gg1"), plotOutput('intersect_plot1')
-                                      ),
-                                      br(),
-                               ), 
-                               column(width = 3,
-                                      align = "left",
-                                      tags$a(href = "https://biofinder.se/data-biomarkers/tau-pet-imaging/",
-                                             img(src = "TauPET.gif", height = "230px", width = "260px",
-                                                 title = "Adaption from Sweish Biofinder Study")
-                                      ),
-                                      p("Figure 5: This image gives a visual representation of a PET scan. In a PET scan, radioactive substances, known as
-                                      radiotracers are used to visualise and measure changes in metabolic process. This animation shows a PET scan
-                                      of a patient with Alzheimer's Disease measuring Tau (indicated by red sections). Source: the Swedish BioFINDER study [12].", style = "text-align: justify;width:260px"))
-                             )
-                         ) 
-                       ),
-                       
-                        
                        
                        # Sidebar layout with input and output definitions
                        tabsetPanel(type = "tabs",
