@@ -30,6 +30,18 @@ server <- function(input, output){
   # LOAD ALL FUNCTIONS AND SOURCES 
   load("simulated_data.RData")
   load("ExampleCSV.RData")
+  
+  #colnames(Example_csv)[7]<- "CSF.AB42"
+  #colnames(Example_csv)[8]<- "CSF.pTau"
+  #colnames(Example_csv)[9]<- "CSF.tTau"
+  #colnames(simulated.data)[9]<- "CSF.tTau"
+  #colnames(simulated.data)[7]<- "CSF.AB42"
+  #colnames(simulated.data)[8]<- "CSF.pTau"
+  #colnames(simulated.data)[9]<- "CSF.tTau"
+  
+  #save(Example_csv, file = "ExampleCSV.RData")
+  #save(simulated.data, file = "simulated_data.Rdata")
+  
   source("ScatterPlotFunction.R")
   source("CubeVisualisationG1.R")
   source("AnimatedScatterPlotFunction.R")
@@ -510,17 +522,17 @@ server <- function(input, output){
   d <- reactive({
     new.dat <- req(data_internal$raw)
     X_input <- switch(input$X_input,
-                      AB = new.dat$CSF.AB42.INNO,
-                      pTau = new.dat$CSF.pTau.INNO,
-                      tTau = new.dat$CSF.tTau.INNO)
+                      AB = new.dat$CSF.AB42,
+                      pTau = new.dat$CSF.pTau,
+                      tTau = new.dat$CSF.tTau)
     
   })
   q <- reactive({
     new.dat <- req(data_internal$raw)
     Y_input <- switch(input$Y_input,
-                      AB = new.dat$CSF.AB42.INNO,
-                      pTau = new.dat$CSF.pTau.INNO,
-                      tTau = new.dat$CSF.tTau.INNO)
+                      AB = new.dat$CSF.AB42,
+                      pTau = new.dat$CSF.pTau,
+                      tTau = new.dat$CSF.tTau)
   })
   output$plot <- renderPlotly({
     new.dat <- req(data_internal$raw)
@@ -579,9 +591,9 @@ server <- function(input, output){
     new.dat <- req(data_internal$raw)
     v$plot <- ScatterPlotFunction(
       d = new.dat, 
-      xdat = new.dat$CSF.AB42.INNO, 
-      ydat = new.dat$CSF.pTau.INNO, 
-      zdat = new.dat$CSF.tTau.INNO, 
+      xdat = new.dat$CSF.AB42, 
+      ydat = new.dat$CSF.pTau, 
+      zdat = new.dat$CSF.tTau, 
       cols = new.dat$Burnham_class, 
       leg = LEGEND_1, 
       xax = axx, 
@@ -598,9 +610,9 @@ server <- function(input, output){
     new.dat <- req(data_internal$raw)
     v$plot <-  AnimatedScatterPlotFunction(
       d = new.dat, 
-      xdat = new.dat$CSF.AB42.INNO, 
-      ydat = new.dat$CSF.pTau.INNO, 
-      zdat = new.dat$CSF.tTau.INNO, 
+      xdat = new.dat$CSF.AB42, 
+      ydat = new.dat$CSF.pTau, 
+      zdat = new.dat$CSF.tTau, 
       cols = new.dat$Burnham_class, 
       leg = LEGEND_1, 
       xax = axx, 
@@ -625,9 +637,9 @@ server <- function(input, output){
    df_young <- filter(new.dat, Age < 70)
    v$plot <- PlanesFunction(
      dat = df_young, 
-     xinput = df_young$CSF.AB42.INNO, 
-     yinput = df_young$CSF.pTau.INNO, 
-     zinput = df_young$CSF.tTau.INNO, 
+     xinput = df_young$CSF.AB42, 
+     yinput = df_young$CSF.pTau, 
+     zinput = df_young$CSF.tTau, 
      cols = df_young$Burnham_class, 
      leg = LEGEND_1,
      xax = axx,
@@ -651,9 +663,9 @@ server <- function(input, output){
    df_young <- filter(new.dat, Age < 70)
    v$plot <- AnimatedPlanesFunction(
      dat = df_young, 
-     xinput = df_young$CSF.AB42.INNO, 
-     yinput = df_young$CSF.pTau.INNO, 
-     zinput = df_young$CSF.tTau.INNO, 
+     xinput = df_young$CSF.AB42, 
+     yinput = df_young$CSF.pTau, 
+     zinput = df_young$CSF.tTau, 
      cols = df_young$Burnham_class, 
      leg = LEGEND_1,
      xax = axx,
@@ -676,9 +688,9 @@ server <- function(input, output){
    df_old <- filter(new.dat, Age > 70)
    v$plot <- PlanesFunction(
      dat = df_old, 
-     xinput = df_old$CSF.AB42.INNO, 
-     yinput = df_old$CSF.pTau.INNO, 
-     zinput = df_old$CSF.tTau.INNO, 
+     xinput = df_old$CSF.AB42, 
+     yinput = df_old$CSF.pTau, 
+     zinput = df_old$CSF.tTau, 
      cols = df_old$Burnham_class, 
      leg = LEGEND_1,
      xax = axx,
@@ -702,9 +714,9 @@ server <- function(input, output){
    df_old <- filter(new.dat, Age > 70)
    v$plot <- AnimatedPlanesFunction(
      dat = df_old, 
-     xinput = df_old$CSF.AB42.INNO, 
-     yinput = df_old$CSF.pTau.INNO, 
-     zinput = df_old$CSF.tTau.INNO, 
+     xinput = df_old$CSF.AB42, 
+     yinput = df_old$CSF.pTau, 
+     zinput = df_old$CSF.tTau, 
      cols = df_old$Burnham_class, 
      leg = LEGEND_1,
      xax = axx,
@@ -745,9 +757,9 @@ server <- function(input, output){
      ttau_treshold <- req(ttau_cutoff_singular$raw)
      v$plot <- PlanesFunction(
        dat = new.dat, 
-       xinput = new.dat$CSF.AB42.INNO, 
-       yinput = new.dat$CSF.pTau.INNO, 
-       zinput = new.dat$CSF.tTau.INNO, 
+       xinput = new.dat$CSF.AB42, 
+       yinput = new.dat$CSF.pTau, 
+       zinput = new.dat$CSF.tTau, 
        cols = new.dat$Burnham_class, 
        leg = LEGEND_1,
        xax = axx,
@@ -770,9 +782,9 @@ server <- function(input, output){
    ttau_treshold <- req(ttau_cutoff_singular$raw)
    v$plot <- AnimatedPlanesFunction(
      dat = new.dat, 
-     xinput = new.dat$CSF.AB42.INNO, 
-     yinput = new.dat$CSF.pTau.INNO, 
-     zinput = new.dat$CSF.tTau.INNO, 
+     xinput = new.dat$CSF.AB42, 
+     yinput = new.dat$CSF.pTau, 
+     zinput = new.dat$CSF.tTau, 
      cols = new.dat$Burnham_class, 
      leg = LEGEND_1,
      xax = axx,
@@ -809,9 +821,9 @@ server <- function(input, output){
     ttau_treshold <- req(ttau_cutoff_lower$raw)
     df_young <- filter(new.dat, Age < 70)
     cube_animate$plot <- CubeVisualisationG1(dat = df_young, 
-                                             xinput = df_young$CSF.AB42.INNO,
-                                             yinput = df_young$CSF.pTau.INNO, 
-                                             zinput = df_young$CSF.tTau.INNO, 
+                                             xinput = df_young$CSF.AB42,
+                                             yinput = df_young$CSF.pTau, 
+                                             zinput = df_young$CSF.tTau, 
                                              leg = LEGEND_1,
                                              xax=axx,
                                              yax = axy,
@@ -828,9 +840,9 @@ server <- function(input, output){
     ttau_treshold <- req(ttau_cutoff_lower$raw)
     df_young <- filter(new.dat, Age < 70)
     cube_animate$plot <- AnimatedG1CubeVisualisation(dat = df_young, 
-                                             xinput = df_young$CSF.AB42.INNO,
-                                             yinput = df_young$CSF.pTau.INNO, 
-                                             zinput = df_young$CSF.tTau.INNO, 
+                                             xinput = df_young$CSF.AB42,
+                                             yinput = df_young$CSF.pTau, 
+                                             zinput = df_young$CSF.tTau, 
                                              leg = LEGEND_1,
                                              xax=axx,
                                              yax = axy,
@@ -847,9 +859,9 @@ server <- function(input, output){
     ttau_treshold <- req(ttau_cutoff_upper$raw)
     df_old <- filter(new.dat, Age > 70)
     cube_animate$plot <- CubeVisualisationG1(dat = df_old, 
-                                             xinput = df_old$CSF.AB42.INNO,
-                                             yinput = df_old$CSF.pTau.INNO, 
-                                             zinput = df_old$CSF.tTau.INNO, 
+                                             xinput = df_old$CSF.AB42,
+                                             yinput = df_old$CSF.pTau, 
+                                             zinput = df_old$CSF.tTau, 
                                              leg = LEGEND_1,
                                              xax=axx,
                                              yax = axy,
@@ -867,9 +879,9 @@ server <- function(input, output){
     ttau_treshold <- req(ttau_cutoff_upper$raw)
     df_old <- filter(new.dat, Age > 70)
     cube_animate$plot <- AnimatedG1CubeVisualisation(dat = df_old, 
-                                             xinput = df_old$CSF.AB42.INNO,
-                                             yinput = df_old$CSF.pTau.INNO, 
-                                             zinput = df_old$CSF.tTau.INNO, 
+                                             xinput = df_old$CSF.AB42,
+                                             yinput = df_old$CSF.pTau, 
+                                             zinput = df_old$CSF.tTau, 
                                              leg = LEGEND_1,
                                              xax=axx,
                                              yax = axy,
@@ -900,9 +912,9 @@ server <- function(input, output){
     ptau_threshold <- req(ptau_cutoff_singular$raw)
     ttau_treshold <- req(ttau_cutoff_singular$raw)
     cube_animate$plot <- CubeVisualisationG1(dat = new.dat, 
-                                             xinput = new.dat$CSF.AB42.INNO,
-                                             yinput = new.dat$CSF.pTau.INNO, 
-                                             zinput = new.dat$CSF.tTau.INNO, 
+                                             xinput = new.dat$CSF.AB42,
+                                             yinput = new.dat$CSF.pTau, 
+                                             zinput = new.dat$CSF.tTau, 
                                              leg = LEGEND_1,
                                              xax=axx,
                                              yax = axy,
@@ -919,9 +931,9 @@ server <- function(input, output){
     ptau_threshold <- req(ptau_cutoff_singular$raw)
     ttau_treshold <- req(ttau_cutoff_singular$raw)
     cube_animate$plot <- AnimatedG1CubeVisualisation(dat = new.dat, 
-                                             xinput = new.dat$CSF.AB42.INNO,
-                                             yinput = new.dat$CSF.pTau.INNO, 
-                                             zinput = new.dat$CSF.tTau.INNO, 
+                                             xinput = new.dat$CSF.AB42,
+                                             yinput = new.dat$CSF.pTau, 
+                                             zinput = new.dat$CSF.tTau, 
                                              leg = LEGEND_1,
                                              xax=axx,
                                              yax = axy,
@@ -947,9 +959,9 @@ server <- function(input, output){
     
     new.dat <- req(data_internal$raw)
 
-    df6 <- new.dat[,c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")]
+    df6 <- new.dat[,c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Burnham_class")]
     New.Person <- data.frame(input$obs, input$ptau, input$ttau, "My own markers")
-    names(New.Person) <- c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")
+    names(New.Person) <- c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Burnham_class")
     newDF <- rbind(df6, New.Person)
     newDF$Burnham_class <- factor(newDF$Burnham_class, levels = c("AD", "Pathological Change", "Non-AD pathological Change",
                                                       "Normal AD Biomarkers", "My own markers"))
@@ -960,9 +972,9 @@ server <- function(input, output){
     if (input$DATAVIS =="3D Plot"){
 
       AddinDataG1(dat = ADD_DATA, 
-                  xinput = ADD_DATA$CSF.AB42.INNO,
-                  yinput = ADD_DATA$CSF.pTau.INNO, 
-                  zinput = ADD_DATA$CSF.tTau.INNO, 
+                  xinput = ADD_DATA$CSF.AB42,
+                  yinput = ADD_DATA$CSF.pTau, 
+                  zinput = ADD_DATA$CSF.tTau, 
                   cols = ADD_DATA$Burnham_class, 
                   leg = LEGEND_1, 
                   xax = axx,
@@ -977,9 +989,9 @@ server <- function(input, output){
 
       if (Ageinput > 70){
         old_df <- filter(new.dat, Age >70)
-        df6 <- old_df[,c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")]
+        df6 <- old_df[,c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Burnham_class")]
         New.Person <- data.frame(input$obs, input$ptau, input$ttau, "My own markers")
-        names(New.Person) <- c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")
+        names(New.Person) <- c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Burnham_class")
         newDF <- rbind(df6, New.Person)
         newDF$Burnham_class <- factor(newDF$Burnham_class, levels = c("AD", "Pathological Change", "Non-AD pathological Change",
                                                                       "Normal AD Biomarkers", "My own markers"))
@@ -990,8 +1002,8 @@ server <- function(input, output){
         ptau_threshold <- req(ptau_cutoff_upper$raw)
         ttau_treshold <- req(ttau_cutoff_upper$raw)
         
-        ATNVisualisation(dat = ADD_DATA, xinput = ADD_DATA$CSF.AB42.INNO, yinput = ADD_DATA$CSF.pTau.INNO, 
-                         zinput = ADD_DATA$CSF.tTau.INNO,
+        ATNVisualisation(dat = ADD_DATA, xinput = ADD_DATA$CSF.AB42, yinput = ADD_DATA$CSF.pTau, 
+                         zinput = ADD_DATA$CSF.tTau,
                          XCUT = AB_threshold, 
                          YCUT = ptau_threshold, 
                          ZCUT = ttau_treshold, 
@@ -1003,9 +1015,9 @@ server <- function(input, output){
         
       }else{
         df_young <- filter(new.dat, Age <70)
-        df6 <- df_young[,c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")]
+        df6 <- df_young[,c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Burnham_class")]
         New.Person <- data.frame(input$obs, input$ptau, input$ttau, "My own markers")
-        names(New.Person) <- c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")
+        names(New.Person) <- c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Burnham_class")
         newDF <- rbind(df6, New.Person)
         newDF$Burnham_class <- factor(newDF$Burnham_class, levels = c("AD", "Pathological Change", "Non-AD pathological Change",
                                                                       "Normal AD Biomarkers", "My own markers"))
@@ -1016,8 +1028,8 @@ server <- function(input, output){
         ptau_threshold <- req(ptau_cutoff_lower$raw)
         ttau_treshold <- req(ttau_cutoff_lower$raw)
         
-        ATNVisualisation(dat = ADD_DATA, xinput = ADD_DATA$CSF.AB42.INNO, yinput = ADD_DATA$CSF.pTau.INNO, 
-                         zinput = ADD_DATA$CSF.tTau.INNO,
+        ATNVisualisation(dat = ADD_DATA, xinput = ADD_DATA$CSF.AB42, yinput = ADD_DATA$CSF.pTau, 
+                         zinput = ADD_DATA$CSF.tTau,
                          XCUT = AB_threshold, 
                          YCUT = ptau_threshold, 
                          ZCUT = ttau_treshold, 
@@ -1039,9 +1051,9 @@ server <- function(input, output){
     ttau_treshold <- req(ttau_cutoff_singular$raw)
     
     if(input$no_age_dependence == "no_age_atn_AYOB"){
-      df6 <- new.dat[,c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")]
+      df6 <- new.dat[,c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Burnham_class")]
       New.Person <- data.frame(input$AB_no_age_input, input$ptau_no_age_input, input$ttau_no_age_input, "My own markers")
-      names(New.Person) <- c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")
+      names(New.Person) <- c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Burnham_class")
       newDF <- rbind(df6, New.Person)
       newDF$Burnham_class <- factor(newDF$Burnham_class, levels = c("AD", "Pathological Change", "Non-AD pathological Change",
                                                                     "Normal AD Biomarkers", "My own markers"))
@@ -1050,8 +1062,8 @@ server <- function(input, output){
       
       
       
-      ATNVisualisation(dat = ADD_DATA, xinput = ADD_DATA$CSF.AB42.INNO, yinput = ADD_DATA$CSF.pTau.INNO, 
-                       zinput = ADD_DATA$CSF.tTau.INNO,
+      ATNVisualisation(dat = ADD_DATA, xinput = ADD_DATA$CSF.AB42, yinput = ADD_DATA$CSF.pTau, 
+                       zinput = ADD_DATA$CSF.tTau,
                        XCUT = AB_threshold, 
                        YCUT = ptau_threshold, 
                        ZCUT = ttau_treshold, 
@@ -1063,9 +1075,9 @@ server <- function(input, output){
     }  else if(input$no_age_dependence == "no_age_3D"){
       new.dat <- req(data_internal$raw)
       
-      df6 <- new.dat[,c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")]
+      df6 <- new.dat[,c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Burnham_class")]
       New.Person <- data.frame(input$AB_no_age_input, input$ptau_no_age_input, input$ttau_no_age_input, "My own markers")
-      names(New.Person) <- c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Burnham_class")
+      names(New.Person) <- c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Burnham_class")
       newDF <- rbind(df6, New.Person)
       newDF$Burnham_class <- factor(newDF$Burnham_class, levels = c("AD", "Pathological Change", "Non-AD pathological Change",
                                                                     "Normal AD Biomarkers", "My own markers"))
@@ -1073,9 +1085,9 @@ server <- function(input, output){
       ADD_DATA <- mutate(newDF, size_guide = ifelse(Burnham_class == "My own markers",18,12))
       ADD_DATA$size_guide <- as.numeric(ADD_DATA$size_guide)
       AddinDataG1(dat = ADD_DATA, 
-                  xinput = ADD_DATA$CSF.AB42.INNO,
-                  yinput = ADD_DATA$CSF.pTau.INNO, 
-                  zinput = ADD_DATA$CSF.tTau.INNO, 
+                  xinput = ADD_DATA$CSF.AB42,
+                  yinput = ADD_DATA$CSF.pTau, 
+                  zinput = ADD_DATA$CSF.tTau, 
                   cols = ADD_DATA$Burnham_class, 
                   leg = LEGEND_1, 
                   xax = axx,
@@ -1098,14 +1110,14 @@ server <- function(input, output){
     new.dat$Age_binary <- factor(new.dat$Age_binary, levels = c("0","1"))
     if (input$BIOMARKER == "CSF AB1-42 pg/mL"){
       
-      BoxplotFunction(new.dat, new.dat$CSF.AB42.INNO, input_title = axx)
+      BoxplotFunction(new.dat, new.dat$CSF.AB42, input_title = axx)
       
     }else if (input$BIOMARKER == "CSF pTau pg/mL"){
-      BoxplotFunction(new.dat, new.dat$CSF.pTau.INNO, input_title = axy)
+      BoxplotFunction(new.dat, new.dat$CSF.pTau, input_title = axy)
 
     }else if (input$BIOMARKER == "CSF tTau pg/mL"){
       
-      BoxplotFunction(new.dat, new.dat$CSF.pTau.INNO, input_title = axz)
+      BoxplotFunction(new.dat, new.dat$CSF.pTau, input_title = axz)
     }
   })
 
@@ -1114,7 +1126,7 @@ server <- function(input, output){
   output$SCATTERPLOT <- renderPlotly({
     new.dat <- req(data_internal$raw)
     if (input$BIOMARKER2 == "CSF AB1-42 pg/mL"){
-      plot1 <- ggplot(new.dat, aes(x= Age, y = CSF.AB42.INNO, na.rm = TRUE, color = AB.status))+
+      plot1 <- ggplot(new.dat, aes(x= Age, y = CSF.AB42, na.rm = TRUE, color = AB.status))+
         geom_point()+
         theme_bw()+
         xlab("Age")+
@@ -1124,7 +1136,7 @@ server <- function(input, output){
         geom_smooth(method = "loess", se = T)
       ggplotly(plot1)
     }else if (input$BIOMARKER2 == "CSF pTau pg/mL"){
-      plot1 <- ggplot(new.dat, aes(x= Age, y = CSF.pTau.INNO, na.rm = TRUE, color = pTau.status))+
+      plot1 <- ggplot(new.dat, aes(x= Age, y = CSF.pTau, na.rm = TRUE, color = pTau.status))+
         geom_point()+
         theme_bw()+
         xlab("Age")+
@@ -1134,7 +1146,7 @@ server <- function(input, output){
         geom_smooth(method = "loess", se = T)
       ggplotly(plot1)
     }else if (input$BIOMARKER2 == "CSF tTau pg/mL"){
-      plot1 <- ggplot(new.dat, aes(x= Age, y = CSF.tTau.INNO, na.rm = TRUE, color = tTau.status))+
+      plot1 <- ggplot(new.dat, aes(x= Age, y = CSF.tTau, na.rm = TRUE, color = tTau.status))+
         geom_point()+
         theme_bw()+
         xlab("Age")+
@@ -1155,13 +1167,13 @@ server <- function(input, output){
   output$LinearREG <- renderUI({
     new.dat <- req(data_internal$raw)
     if (input$LINEAR1 == "CSF AB1-42 pg/mL"){
-      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.AB42.INNO, 
+      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.AB42, 
                              title_biomarker = "Linear summary for CSF AB1-42 ~ Age+Sex+Education_binary+apoe4")
     }else if (input$LINEAR1 == "CSF pTau pg/mL"){
-      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.pTau.INNO, 
+      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.pTau, 
                              title_biomarker = "Linear summary for CSF ptau ~ Age+Sex+Education_binary+apoe4")
     }else if (input$LINEAR1 == "CSF tTau pg/mL"){
-      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.tTau.INNO, 
+      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.tTau, 
                              title_biomarker = "Linear summary for CSF tTau ~ Age+Sex+Education_binary+apoe4")
     }
   })
@@ -1207,9 +1219,9 @@ server <- function(input, output){
     if (input$interplay == "CSF AB1-42 pg/mL"){
       
       BiomarkerInterplay(dat = new.dat,
-                         biomarker1 = new.dat$CSF.AB42.INNO,
-                         biomarker2 = new.dat$CSF.pTau.INNO, 
-                         biomarker3 = new.dat$CSF.tTau.INNO, 
+                         biomarker1 = new.dat$CSF.AB42,
+                         biomarker2 = new.dat$CSF.pTau, 
+                         biomarker3 = new.dat$CSF.tTau, 
                          title_biomarker1 = "CSF AB1-42 pg/mL",
                          title_biomarker2 = "CSF pTau pg/mL", 
                          title_biomarker3 = "CSF tTau pg/mL", 
@@ -1221,9 +1233,9 @@ server <- function(input, output){
       # Biomarker2 - AB
       # Biomarker3 - tTau
       BiomarkerInterplay(dat = new.dat,
-                         biomarker1 = new.dat$CSF.pTau.INNO,
-                         biomarker2 = new.dat$CSF.AB42.INNO, 
-                         biomarker3 = new.dat$CSF.tTau.INNO, 
+                         biomarker1 = new.dat$CSF.pTau,
+                         biomarker2 = new.dat$CSF.AB42, 
+                         biomarker3 = new.dat$CSF.tTau, 
                          title_biomarker1 = "CSF ptau pg/mL",
                          title_biomarker2 = "CSF AB1-42 pg/mL", 
                          title_biomarker3 = "CSF tTau pg/mL", 
@@ -1232,9 +1244,9 @@ server <- function(input, output){
     }else if(input$interplay == "CSF tTau pg/mL"){
       BiomarkerInterplay(dat = new.dat,
                          
-                         biomarker1 = new.dat$CSF.pTau.INNO,
-                         biomarker2 = new.dat$CSF.AB42.INNO, 
-                         biomarker3 = new.dat$CSF.tTau.INNO, 
+                         biomarker1 = new.dat$CSF.pTau,
+                         biomarker2 = new.dat$CSF.AB42, 
+                         biomarker3 = new.dat$CSF.tTau, 
                          title_biomarker1 = "CSF ttau pg/mL",
                          title_biomarker2 = "CSF AB1-42 pg/mL", 
                          title_biomarker3 = "CSF pTau pg/mL", 
@@ -1250,37 +1262,37 @@ server <- function(input, output){
     new.dat <- req(data_internal$raw)
     if (input$cubeg1input == "60-70"){
       df_young <- filter(new.dat, Age < 70)
-      df7 <- mutate(df_young, scat_col = ifelse(CSF.pTau.INNO >59.23    & CSF.AB42.INNO < 656 & CSF.tTau.INNO >303.54  & Burnham_class == "AD",
+      df7 <- mutate(df_young, scat_col = ifelse(CSF.pTau >59.23    & CSF.AB42 < 656 & CSF.tTau >303.54  & Burnham_class == "AD",
                                                 "AD meeting all cut-offs",
-                                                ifelse(CSF.pTau.INNO >59.23    & CSF.AB42.INNO <656 & CSF.tTau.INNO > 303.54  & Burnham_class == "Pathological Change",
+                                                ifelse(CSF.pTau >59.23    & CSF.AB42 <656 & CSF.tTau > 303.54  & Burnham_class == "Pathological Change",
                                                        "Pathological Change meeting all cut-offs",
-                                                       ifelse(CSF.pTau.INNO >59.23    & CSF.AB42.INNO < 656 & CSF.tTau.INNO > 303.54  & Burnham_class == "Non-AD pathological Change",
+                                                       ifelse(CSF.pTau >59.23    & CSF.AB42 < 656 & CSF.tTau > 303.54  & Burnham_class == "Non-AD pathological Change",
                                                               "Non-AD Pathological Change meeting all cut-offs",
-                                                              ifelse(CSF.pTau.INNO >59.23    & CSF.AB42.INNO < 656 & CSF.tTau.INNO > 303.54  & Burnham_class == "Normal AD Biomarkers",
+                                                              ifelse(CSF.pTau >59.23    & CSF.AB42 < 656 & CSF.tTau > 303.54  & Burnham_class == "Normal AD Biomarkers",
                                                                      "Normal AD Biomarkers meeting all cut-offs",
-                                                                     ifelse(CSF.pTau.INNO >59.23    & CSF.AB42.INNO < 656 & Burnham_class == "AD",
+                                                                     ifelse(CSF.pTau >59.23    & CSF.AB42 < 656 & Burnham_class == "AD",
                                                                             "AD meeting 2 cut offs",
-                                                                            ifelse(CSF.AB42.INNO < 656 & CSF.tTau.INNO >303.54  & Burnham_class == "AD",
+                                                                            ifelse(CSF.AB42 < 656 & CSF.tTau >303.54  & Burnham_class == "AD",
                                                                                    "AD meeting 2 cut offs",
-                                                                                   ifelse(CSF.pTau.INNO >59.23   & CSF.tTau.INNO >303.54  & Burnham_class == "AD",
+                                                                                   ifelse(CSF.pTau >59.23   & CSF.tTau >303.54  & Burnham_class == "AD",
                                                                                           "AD meeting 2 cut offs",
-                                                                                          ifelse(CSF.pTau.INNO >59.23    & CSF.AB42.INNO < 656 & Burnham_class == "Pathological Change",
+                                                                                          ifelse(CSF.pTau >59.23    & CSF.AB42 < 656 & Burnham_class == "Pathological Change",
                                                                                                  "Pathological Change meeting 2 cut-offs",
-                                                                                                 ifelse(CSF.AB42.INNO < 656 & CSF.tTau.INNO >303.54  & Burnham_class == "Pathological Change",
+                                                                                                 ifelse(CSF.AB42 < 656 & CSF.tTau >303.54  & Burnham_class == "Pathological Change",
                                                                                                         "Pathological Change meeting 2 cut-offs",
-                                                                                                        ifelse(CSF.pTau.INNO >59.23   & CSF.tTau.INNO >303.54  & Burnham_class == "Pathological Change",
+                                                                                                        ifelse(CSF.pTau >59.23   & CSF.tTau >303.54  & Burnham_class == "Pathological Change",
                                                                                                                "Pathological Change meeting 2 cut-offs",
-                                                                                                               ifelse(CSF.pTau.INNO >59.23    & CSF.AB42.INNO < 656 & Burnham_class == "Non-AD pathological Change",
+                                                                                                               ifelse(CSF.pTau >59.23    & CSF.AB42 < 656 & Burnham_class == "Non-AD pathological Change",
                                                                                                                       "Non-AD Pathological Change meeting 2 cut-offs",
-                                                                                                                      ifelse(CSF.AB42.INNO < 656 & CSF.tTau.INNO >303.54  & Burnham_class == "Non-AD pathological Change",
+                                                                                                                      ifelse(CSF.AB42 < 656 & CSF.tTau >303.54  & Burnham_class == "Non-AD pathological Change",
                                                                                                                              "Non-AD Pathological Change meeting 2 cut-offs",
-                                                                                                                             ifelse(CSF.pTau.INNO >59.23   & CSF.tTau.INNO >303.54  & Burnham_class == "Non-AD pathological Change",
+                                                                                                                             ifelse(CSF.pTau >59.23   & CSF.tTau >303.54  & Burnham_class == "Non-AD pathological Change",
                                                                                                                                     "Non-AD Pathological Change meeting 2 cut-offs",
-                                                                                                                                    ifelse(CSF.pTau.INNO >59.23    & CSF.AB42.INNO < 656 & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                    ifelse(CSF.pTau >59.23    & CSF.AB42 < 656 & Burnham_class == "Normal AD Biomarkers",
                                                                                                                                            "Normal AD Biomarker meeting 2 cut-offs",
-                                                                                                                                           ifelse(CSF.AB42.INNO < 656 & CSF.tTau.INNO >303.54  & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                           ifelse(CSF.AB42 < 656 & CSF.tTau >303.54  & Burnham_class == "Normal AD Biomarkers",
                                                                                                                                                   "Normal AD Biomarker meeting 2 cut-offs",
-                                                                                                                                                  ifelse(CSF.pTau.INNO >59.23   & CSF.tTau.INNO >303.54  & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                                  ifelse(CSF.pTau >59.23   & CSF.tTau >303.54  & Burnham_class == "Normal AD Biomarkers",
                                                                                                                                                          "Normal AD Biomarker meeting 2 cut-offs","unselected")))))))))))))))))
 
 
@@ -1296,18 +1308,18 @@ server <- function(input, output){
                                                       "Normal AD Biomarker meeting 2 cut-offs"))
 
 
-      df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42.INNO,na.rm = T),    min(df7$CSF.AB42.INNO,na.rm = T),    656,   656,   min(df7$CSF.AB42.INNO,na.rm = T),   min(df7$CSF.AB42.INNO,na.rm = T)),
-                              Y_VAL = c(59.23  ,max(df7$CSF.pTau.INNO,na.rm = T),    59.23  ,  max(df7$CSF.pTau.INNO,na.rm = T),    59.23 , max(df7$CSF.pTau.INNO,na.rm = T),   59.23 , max(df7$CSF.pTau.INNO,na.rm = T)),
-                              Z_VAL = c(303.54  , 303.54  , 303.54  , 303.54  , max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T)),
+      df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42,na.rm = T),    min(df7$CSF.AB42,na.rm = T),    656,   656,   min(df7$CSF.AB42,na.rm = T),   min(df7$CSF.AB42,na.rm = T)),
+                              Y_VAL = c(59.23  ,max(df7$CSF.pTau,na.rm = T),    59.23  ,  max(df7$CSF.pTau,na.rm = T),    59.23 , max(df7$CSF.pTau,na.rm = T),   59.23 , max(df7$CSF.pTau,na.rm = T)),
+                              Z_VAL = c(303.54  , 303.54  , 303.54  , 303.54  , max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T)),
                               MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
 
       cube <- plot_ly()%>%
         add_markers(type = "scatter3d",
                     mode = "markers",
                     data = df7,
-                    x = ~CSF.AB42.INNO,
-                    y = ~CSF.pTau.INNO,
-                    z = ~CSF.tTau.INNO,
+                    x = ~CSF.AB42,
+                    y = ~CSF.pTau,
+                    z = ~CSF.tTau,
                     color = ~scat_col,
                     colors = c('gray', "firebrick", "darkorange", "gold", "forestgreen","hotpink", "aquamarine", "blueviolet", "darkorchid")) %>%
         add_trace(type = 'mesh3d',
@@ -1328,37 +1340,37 @@ server <- function(input, output){
       cube
     }else {
       df_old <- filter(new.dat, Age > 70)
-      df7 <- mutate(df_old, scat_col = ifelse(CSF.pTau.INNO >73.83   & CSF.AB42.INNO < 656 & CSF.tTau.INNO >378.65 & Burnham_class == "AD",
+      df7 <- mutate(df_old, scat_col = ifelse(CSF.pTau >73.83   & CSF.AB42 < 656 & CSF.tTau >378.65 & Burnham_class == "AD",
                                               "AD meeting all cut-offs",
-                                              ifelse(CSF.pTau.INNO >73.83   & CSF.AB42.INNO <656 & CSF.tTau.INNO > 378.65 & Burnham_class == "Pathological Change",
+                                              ifelse(CSF.pTau >73.83   & CSF.AB42 <656 & CSF.tTau > 378.65 & Burnham_class == "Pathological Change",
                                                      "Pathological Change meeting all cut-offs",
-                                                     ifelse(CSF.pTau.INNO >73.83   & CSF.AB42.INNO < 656 & CSF.tTau.INNO > 378.65 & Burnham_class == "Non-AD pathological Change",
+                                                     ifelse(CSF.pTau >73.83   & CSF.AB42 < 656 & CSF.tTau > 378.65 & Burnham_class == "Non-AD pathological Change",
                                                             "Non-AD Change meeting all cut-offs",
-                                                            ifelse(CSF.pTau.INNO >73.83   & CSF.AB42.INNO < 656 & CSF.tTau.INNO > 378.65 & Burnham_class == "Normal AD Biomarkers",
+                                                            ifelse(CSF.pTau >73.83   & CSF.AB42 < 656 & CSF.tTau > 378.65 & Burnham_class == "Normal AD Biomarkers",
                                                                    "Normal AD Biomarkers meeting all cut-offs",
-                                                                   ifelse(CSF.pTau.INNO >73.83   & CSF.AB42.INNO < 656 & Burnham_class == "AD",
+                                                                   ifelse(CSF.pTau >73.83   & CSF.AB42 < 656 & Burnham_class == "AD",
                                                                           "AD meeting 2 cut offs",
-                                                                          ifelse(CSF.AB42.INNO < 656 & CSF.tTau.INNO >378.65 & Burnham_class == "AD",
+                                                                          ifelse(CSF.AB42 < 656 & CSF.tTau >378.65 & Burnham_class == "AD",
                                                                                  "AD meeting 2 cut offs",
-                                                                                 ifelse(CSF.pTau.INNO >73.83  & CSF.tTau.INNO >378.65 & Burnham_class == "AD",
+                                                                                 ifelse(CSF.pTau >73.83  & CSF.tTau >378.65 & Burnham_class == "AD",
                                                                                         "AD meeting 2 cut offs",
-                                                                                        ifelse(CSF.pTau.INNO >73.83   & CSF.AB42.INNO < 656 & Burnham_class == "Pathological Change",
+                                                                                        ifelse(CSF.pTau >73.83   & CSF.AB42 < 656 & Burnham_class == "Pathological Change",
                                                                                                "Pathological Change meeting 2 cut-offs",
-                                                                                               ifelse(CSF.AB42.INNO < 656 & CSF.tTau.INNO >378.65 & Burnham_class == "Pathological Change",
+                                                                                               ifelse(CSF.AB42 < 656 & CSF.tTau >378.65 & Burnham_class == "Pathological Change",
                                                                                                       "Pathological Change meeting 2 cut-offs",
-                                                                                                      ifelse(CSF.pTau.INNO >73.83  & CSF.tTau.INNO >378.65 & Burnham_class == "Pathological Change",
+                                                                                                      ifelse(CSF.pTau >73.83  & CSF.tTau >378.65 & Burnham_class == "Pathological Change",
                                                                                                              "Pathological Change meeting 2 cut-offs",
-                                                                                                             ifelse(CSF.pTau.INNO >73.83   & CSF.AB42.INNO < 656 & Burnham_class == "Non-AD pathological Change",
+                                                                                                             ifelse(CSF.pTau >73.83   & CSF.AB42 < 656 & Burnham_class == "Non-AD pathological Change",
                                                                                                                     "Non-AD Pathological Change meeting 2 cut-offs",
-                                                                                                                    ifelse(CSF.AB42.INNO < 656 & CSF.tTau.INNO >378.65 & Burnham_class == "Non-AD pathological Change",
+                                                                                                                    ifelse(CSF.AB42 < 656 & CSF.tTau >378.65 & Burnham_class == "Non-AD pathological Change",
                                                                                                                            "Non-AD Pathological Change meeting 2 cut-offs",
-                                                                                                                           ifelse(CSF.pTau.INNO >73.83  & CSF.tTau.INNO >378.65 & Burnham_class == "Non-AD pathological Change",
+                                                                                                                           ifelse(CSF.pTau >73.83  & CSF.tTau >378.65 & Burnham_class == "Non-AD pathological Change",
                                                                                                                                   "Non-AD Pathological Change meeting 2 cut-offs",
-                                                                                                                                  ifelse(CSF.pTau.INNO >73.83   & CSF.AB42.INNO < 656 & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                  ifelse(CSF.pTau >73.83   & CSF.AB42 < 656 & Burnham_class == "Normal AD Biomarkers",
                                                                                                                                          "Normal AD Biomarkers meeting 2 cut-offs",
-                                                                                                                                         ifelse(CSF.AB42.INNO < 656 & CSF.tTau.INNO >378.65 & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                         ifelse(CSF.AB42 < 656 & CSF.tTau >378.65 & Burnham_class == "Normal AD Biomarkers",
                                                                                                                                                 "Normal AD Biomarkers meeting 2 cut-offs",
-                                                                                                                                                ifelse(CSF.pTau.INNO >73.83  & CSF.tTau.INNO >378.65 & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                                ifelse(CSF.pTau >73.83  & CSF.tTau >378.65 & Burnham_class == "Normal AD Biomarkers",
                                                                                                                                                        "Normal AD Biomarkers meeting 2 cut-offs","unselected")))))))))))))))))
 
 
@@ -1374,9 +1386,9 @@ server <- function(input, output){
                                                       "Normal AD Biomarkers meeting 2 cut-offs"))
 
 
-      df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42.INNO,na.rm = T),    min(df7$CSF.AB42.INNO,na.rm = T),    656,   656,   min(df7$CSF.AB42.INNO,na.rm = T),   min(df7$CSF.AB42.INNO,na.rm = T)),
-                              Y_VAL = c(73.83 ,max(df7$CSF.pTau.INNO,na.rm = T),    73.83 ,  max(df7$CSF.pTau.INNO,na.rm = T),    73.83, max(df7$CSF.pTau.INNO,na.rm = T),   73.83, max(df7$CSF.pTau.INNO,na.rm = T)),
-                              Z_VAL = c(378.65 , 378.65 , 378.65 , 378.65 , max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T)),
+      df_mesh_1 <- data.frame(X_VAL = c(656,  656,  min(df7$CSF.AB42,na.rm = T),    min(df7$CSF.AB42,na.rm = T),    656,   656,   min(df7$CSF.AB42,na.rm = T),   min(df7$CSF.AB42,na.rm = T)),
+                              Y_VAL = c(73.83 ,max(df7$CSF.pTau,na.rm = T),    73.83 ,  max(df7$CSF.pTau,na.rm = T),    73.83, max(df7$CSF.pTau,na.rm = T),   73.83, max(df7$CSF.pTau,na.rm = T)),
+                              Z_VAL = c(378.65 , 378.65 , 378.65 , 378.65 , max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T)),
                               MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
 
       # Make apoe4 a factor
@@ -1386,9 +1398,9 @@ server <- function(input, output){
         add_markers(type = "scatter3d",
                     mode = "markers",
                     data = df7,
-                    x = ~CSF.AB42.INNO,
-                    y = ~CSF.pTau.INNO,
-                    z = ~CSF.tTau.INNO,
+                    x = ~CSF.AB42,
+                    y = ~CSF.pTau,
+                    z = ~CSF.tTau,
                     color = ~scat_col,
                     colors = c('gray', "firebrick", "darkorange", "gold", "forestgreen","hotpink", "aquamarine", "chocolate1", "darkorchid")) %>%
         add_trace(type = 'mesh3d',
@@ -1430,37 +1442,37 @@ server <- function(input, output){
     ptau_threshold <- req(ptau_cutoff_singular$raw)
     ttau_treshold <- req(ttau_cutoff_singular$raw)
     df_young <- filter(new.dat, Age < 70)
-    df7 <- mutate(new.dat, scat_col = ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "AD",
+    df7 <- mutate(new.dat, scat_col = ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & CSF.tTau >ttau_treshold  & Burnham_class == "AD",
                                               "AD meeting all cut-offs",
-                                              ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO <AB_threshold & CSF.tTau.INNO > ttau_treshold  & Burnham_class == "Pathological Change",
+                                              ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 <AB_threshold & CSF.tTau > ttau_treshold  & Burnham_class == "Pathological Change",
                                                      "Pathological Change meeting all cut-offs",
-                                                     ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO > ttau_treshold  & Burnham_class == "Non-AD pathological Change",
+                                                     ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & CSF.tTau > ttau_treshold  & Burnham_class == "Non-AD pathological Change",
                                                             "Non-AD Pathological Change meeting all cut-offs",
-                                                            ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO > ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
+                                                            ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & CSF.tTau > ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
                                                                    "Normal AD Biomarkers meeting all cut-offs",
-                                                                   ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & Burnham_class == "AD",
+                                                                   ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & Burnham_class == "AD",
                                                                           "AD meeting 2 cut offs",
-                                                                          ifelse(CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "AD",
+                                                                          ifelse(CSF.AB42 < AB_threshold & CSF.tTau >ttau_treshold  & Burnham_class == "AD",
                                                                                  "AD meeting 2 cut offs",
-                                                                                 ifelse(CSF.pTau.INNO >ptau_threshold   & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "AD",
+                                                                                 ifelse(CSF.pTau >ptau_threshold   & CSF.tTau >ttau_treshold  & Burnham_class == "AD",
                                                                                         "AD meeting 2 cut offs",
-                                                                                        ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & Burnham_class == "Pathological Change",
+                                                                                        ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & Burnham_class == "Pathological Change",
                                                                                                "Pathological Change meeting 2 cut-offs",
-                                                                                               ifelse(CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Pathological Change",
+                                                                                               ifelse(CSF.AB42 < AB_threshold & CSF.tTau >ttau_treshold  & Burnham_class == "Pathological Change",
                                                                                                       "Pathological Change meeting 2 cut-offs",
-                                                                                                      ifelse(CSF.pTau.INNO >59.23   & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Pathological Change",
+                                                                                                      ifelse(CSF.pTau >59.23   & CSF.tTau >ttau_treshold  & Burnham_class == "Pathological Change",
                                                                                                              "Pathological Change meeting 2 cut-offs",
-                                                                                                             ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & Burnham_class == "Non-AD pathological Change",
+                                                                                                             ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & Burnham_class == "Non-AD pathological Change",
                                                                                                                     "Non-AD Pathological Change meeting 2 cut-offs",
-                                                                                                                    ifelse(CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Non-AD pathological Change",
+                                                                                                                    ifelse(CSF.AB42 < AB_threshold & CSF.tTau >ttau_treshold  & Burnham_class == "Non-AD pathological Change",
                                                                                                                            "Non-AD Pathological Change meeting 2 cut-offs",
-                                                                                                                           ifelse(CSF.pTau.INNO >ptau_threshold   & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Non-AD pathological Change",
+                                                                                                                           ifelse(CSF.pTau >ptau_threshold   & CSF.tTau >ttau_treshold  & Burnham_class == "Non-AD pathological Change",
                                                                                                                                   "Non-AD Pathological Change meeting 2 cut-offs",
-                                                                                                                                  ifelse(CSF.pTau.INNO >ptau_threshold    & CSF.AB42.INNO < AB_threshold & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                  ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & Burnham_class == "Normal AD Biomarkers",
                                                                                                                                          "Normal AD Biomarker meeting 2 cut-offs",
-                                                                                                                                         ifelse(CSF.AB42.INNO < AB_threshold & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                         ifelse(CSF.AB42 < AB_threshold & CSF.tTau >ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
                                                                                                                                                 "Normal AD Biomarker meeting 2 cut-offs",
-                                                                                                                                                ifelse(CSF.pTau.INNO >ptau_threshold   & CSF.tTau.INNO >ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
+                                                                                                                                                ifelse(CSF.pTau >ptau_threshold   & CSF.tTau >ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
                                                                                                                                                        "Normal AD Biomarker meeting 2 cut-offs","unselected")))))))))))))))))
     
     
@@ -1476,18 +1488,18 @@ server <- function(input, output){
                                                     "Normal AD Biomarker meeting 2 cut-offs"))
     
     
-    df_mesh_1 <- data.frame(X_VAL = c(AB_threshold,  AB_threshold,  min(df7$CSF.AB42.INNO,na.rm = T),    min(df7$CSF.AB42.INNO,na.rm = T),    AB_threshold,   AB_threshold,   min(df7$CSF.AB42.INNO,na.rm = T),   min(df7$CSF.AB42.INNO,na.rm = T)),
-                            Y_VAL = c(ptau_threshold  ,max(df7$CSF.pTau.INNO,na.rm = T),    ptau_threshold  ,  max(df7$CSF.pTau.INNO,na.rm = T),    ptau_threshold , max(df7$CSF.pTau.INNO,na.rm = T),   ptau_threshold , max(df7$CSF.pTau.INNO,na.rm = T)),
-                            Z_VAL = c(ttau_treshold  , ttau_treshold  , ttau_treshold  , ttau_treshold  , max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T),  max(df7$CSF.tTau.INNO,na.rm = T)),
+    df_mesh_1 <- data.frame(X_VAL = c(AB_threshold,  AB_threshold,  min(df7$CSF.AB42,na.rm = T),    min(df7$CSF.AB42,na.rm = T),    AB_threshold,   AB_threshold,   min(df7$CSF.AB42,na.rm = T),   min(df7$CSF.AB42,na.rm = T)),
+                            Y_VAL = c(ptau_threshold  ,max(df7$CSF.pTau,na.rm = T),    ptau_threshold  ,  max(df7$CSF.pTau,na.rm = T),    ptau_threshold , max(df7$CSF.pTau,na.rm = T),   ptau_threshold , max(df7$CSF.pTau,na.rm = T)),
+                            Z_VAL = c(ttau_treshold  , ttau_treshold  , ttau_treshold  , ttau_treshold  , max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T)),
                             MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
     
     cube <- plot_ly()%>%
       add_markers(type = "scatter3d",
                   mode = "markers",
                   data = df7,
-                  x = ~CSF.AB42.INNO,
-                  y = ~CSF.pTau.INNO,
-                  z = ~CSF.tTau.INNO,
+                  x = ~CSF.AB42,
+                  y = ~CSF.pTau,
+                  z = ~CSF.tTau,
                   color = ~scat_col,
                   colors = c('gray', "firebrick", "darkorange", "gold", "forestgreen","hotpink", "aquamarine", "blueviolet", "darkorchid")) %>%
       add_trace(type = 'mesh3d',
@@ -1596,7 +1608,7 @@ server <- function(input, output){
     new.dat <- req(data_internal$raw)
     X_2_Input <- switch(input$X_2_Input,
                         Centiloid = new.dat$Centiloid,
-                        ptau = new.dat$CSF.pTau.INNO,
+                        ptau = new.dat$CSF.pTau,
                         Hippogroup2X1 = new.dat$Sum.hippo)
 
   })
@@ -1605,7 +1617,7 @@ server <- function(input, output){
     new.dat <- req(data_internal$raw)
     Y_2_input <- switch(input$Y_2_input,
                         Centiloid = new.dat$Centiloid,
-                        ptau = new.dat$CSF.pTau.INNO,
+                        ptau = new.dat$CSF.pTau,
                         hipGroup2 = new.dat$Sum.hippo)
   })
 
@@ -1663,7 +1675,7 @@ server <- function(input, output){
     group2_animation$plot <- ScatterPlotFunction(
       d = new.dat, 
       xdat = new.dat$Sum.hippo, 
-      ydat = new.dat$CSF.pTau.INNO, 
+      ydat = new.dat$CSF.pTau, 
       zdat = new.dat$Centiloid, 
       cols = new.dat$Clifford_class, 
       leg = LEGEND_2, 
@@ -1678,7 +1690,7 @@ server <- function(input, output){
     group2_animation$plot <- AnimatedScatterPlotFunction(
       d = new.dat, 
       xdat = new.dat$Sum.hippo, 
-      ydat = new.dat$CSF.pTau.INNO, 
+      ydat = new.dat$CSF.pTau, 
       zdat = new.dat$Centiloid, 
       cols = new.dat$Clifford_class, 
       leg = LEGEND_2, 
@@ -1700,7 +1712,7 @@ server <- function(input, output){
     group2_animation$plot <- PlanesFunction(
       dat = new_data, 
       xinput = new_data$Sum.hippo, 
-      yinput = new_data$CSF.pTau.INNO, 
+      yinput = new_data$CSF.pTau, 
       zinput = new_data$Centiloid, 
       cols = new_data$Clifford_class, 
       leg = LEGEND_2,
@@ -1727,7 +1739,7 @@ server <- function(input, output){
     group2_animation$plot <- AnimatedPlanesFunction(
       dat = new_data_young, 
       xinput = new_data_young$Sum.hippo, 
-      yinput = new_data_young$CSF.pTau.INNO, 
+      yinput = new_data_young$CSF.pTau, 
       zinput = new_data_young$Centiloid, 
       cols = new_data_young$Clifford_class, 
       leg = LEGEND_2,
@@ -1756,7 +1768,7 @@ server <- function(input, output){
     group2_animation$plot <- PlanesFunction(
       dat = data_old, 
       xinput = data_old$Sum.hippo, 
-      yinput = data_old$CSF.pTau.INNO, 
+      yinput = data_old$CSF.pTau, 
       zinput = data_old$Centiloid, 
       cols = data_old$Clifford_class, 
       leg = LEGEND_2,
@@ -1786,7 +1798,7 @@ server <- function(input, output){
     group2_animation$plot <- AnimatedPlanesFunction(
       dat = data_old, 
       xinput = data_old$Sum.hippo, 
-      yinput = data_old$CSF.pTau.INNO, 
+      yinput = data_old$CSF.pTau, 
       zinput = data_old$Centiloid, 
       cols = data_old$Clifford_class, 
       leg = LEGEND_2,
@@ -1827,7 +1839,7 @@ server <- function(input, output){
     group2_animation$plot <- PlanesFunction(
       dat = new.dat, 
       xinput = new.dat$Sum.hippo, 
-      yinput = new.dat$CSF.pTau.INNO, 
+      yinput = new.dat$CSF.pTau, 
       zinput = new.dat$Centiloid, 
       cols = new.dat$Clifford_class, 
       leg = LEGEND_2,
@@ -1856,7 +1868,7 @@ server <- function(input, output){
     group2_animation$plot <- AnimatedPlanesFunction(
       dat = new.dat, 
       xinput = new.dat$Sum.hippo, 
-      yinput = new.dat$CSF.pTau.INNO, 
+      yinput = new.dat$CSF.pTau, 
       zinput = new.dat$Centiloid, 
       cols = new.dat$Clifford_class, 
       leg = LEGEND_2,
@@ -1896,7 +1908,7 @@ server <- function(input, output){
     hippo_threshold <- hippo_cutoff
     cube_g2_animate$plot <- G2CubeVisualisation(dat = df_young, 
                                              xinput = df_young$Sum.hippo,
-                                             yinput = df_young$CSF.pTau.INNO, 
+                                             yinput = df_young$CSF.pTau, 
                                              zinput = df_young$Centiloid, 
                                              leg = LEGEND_2,
                                              xax=axx2,
@@ -1920,7 +1932,7 @@ server <- function(input, output){
     hippo_threshold <- hippo_cutoff
     cube_g2_animate$plot <- AnimatedG2CubeVisualisation(dat = df_young, 
                                                 xinput = df_young$Sum.hippo,
-                                                yinput = df_young$CSF.pTau.INNO, 
+                                                yinput = df_young$CSF.pTau, 
                                                 zinput = df_young$Centiloid, 
                                                 leg = LEGEND_2,
                                                 xax=axx2,
@@ -1942,7 +1954,7 @@ server <- function(input, output){
     hippo_threshold <- hippo_cutoff
     cube_g2_animate$plot <- G2CubeVisualisation(dat = df_old, 
                                                 xinput = df_old$Sum.hippo,
-                                                yinput = df_old$CSF.pTau.INNO, 
+                                                yinput = df_old$CSF.pTau, 
                                                 zinput = df_old$Centiloid, 
                                                 leg = LEGEND_2,
                                                 xax=axx2,
@@ -1966,7 +1978,7 @@ server <- function(input, output){
     hippo_threshold <- hippo_cutoff
     cube_g2_animate$plot <- AnimatedG2CubeVisualisation(dat = df_old, 
                                                 xinput = df_old$Sum.hippo,
-                                                yinput = df_old$CSF.pTau.INNO, 
+                                                yinput = df_old$CSF.pTau, 
                                                 zinput = df_old$Centiloid, 
                                                 leg = LEGEND_2,
                                                 xax=axx2,
@@ -1997,7 +2009,7 @@ server <- function(input, output){
     hippo_threshold <- hippo_cutoff
     cube_g2_animate$plot <- G2CubeVisualisation(dat = new.dat, 
                                                 xinput = new.dat$Sum.hippo,
-                                                yinput = new.dat$CSF.pTau.INNO, 
+                                                yinput = new.dat$CSF.pTau, 
                                                 zinput = new.dat$Centiloid, 
                                                 leg = LEGEND_2,
                                                 xax=axx2,
@@ -2017,7 +2029,7 @@ server <- function(input, output){
     hippo_threshold <- hippo_cutoff
     cube_g2_animate$plot <- AnimatedG2CubeVisualisation(dat = new.dat, 
                                                 xinput = new.dat$Sum.hippo,
-                                                yinput = new.dat$CSF.pTau.INNO, 
+                                                yinput = new.dat$CSF.pTau, 
                                                 zinput = new.dat$Centiloid, 
                                                 leg = LEGEND_2,
                                                 xax=axx2,
@@ -2039,10 +2051,10 @@ server <- function(input, output){
 
   output$Group2AddIN <- renderPlotly({
     new.dat <- req(data_internal$raw)
-    df8 <- new.dat[,c("Sum.hippo", "CSF.pTau.INNO", "Centiloid", "Clifford_class")]
+    df8 <- new.dat[,c("Sum.hippo", "CSF.pTau", "Centiloid", "Clifford_class")]
     df9 <- na.omit(df8)
     New.Group2 <- data.frame(input$sums, input$ps, input$cents, "My own markers")
-    names(New.Group2) <- c("Sum.hippo", "CSF.pTau.INNO", "Centiloid", "Clifford_class")
+    names(New.Group2) <- c("Sum.hippo", "CSF.pTau", "Centiloid", "Clifford_class")
     newdf3 <- rbind(df9, New.Group2)
     newdf3$Clifford_class <- factor(newdf3$Clifford_class, levels = c("Stage 2, clinically asymptomatic",
                                                                       "Stage 1, preclinical AD stage",
@@ -2055,7 +2067,7 @@ server <- function(input, output){
       
       AddinDataG1(dat = newdf4, 
                   xinput = newdf4$Sum.hippo,
-                  yinput = newdf4$CSF.pTau.INNO, 
+                  yinput = newdf4$CSF.pTau, 
                   zinput = newdf4$Centiloid, 
                   cols = newdf4$Clifford_class, 
                   leg = LEGEND_2, 
@@ -2071,10 +2083,10 @@ server <- function(input, output){
 
       if (AgeInput2 > 70){
         df_old <- filter(new.dat, Age > 70)
-        df8 <- df_old[,c("Sum.hippo", "CSF.pTau.INNO", "Centiloid", "Clifford_class")]
+        df8 <- df_old[,c("Sum.hippo", "CSF.pTau", "Centiloid", "Clifford_class")]
         df9 <- na.omit(df8)
         New.Group2 <- data.frame(input$sums, input$ps, input$cents, "My own markers")
-        names(New.Group2) <- c("Sum.hippo", "CSF.pTau.INNO", "Centiloid", "Clifford_class")
+        names(New.Group2) <- c("Sum.hippo", "CSF.pTau", "Centiloid", "Clifford_class")
         newdf3 <- rbind(df9, New.Group2)
         newdf3$Clifford_class <- factor(newdf3$Clifford_class, levels = c("Stage 2, clinically asymptomatic",
                                                                           "Stage 1, preclinical AD stage",
@@ -2090,7 +2102,7 @@ server <- function(input, output){
         hippo_cutoff <- x$hippocampus_threshold
         hippo_threshold <- hippo_cutoff
         
-        G2ATNVisualisation(dat = newdf4, xinput = newdf4$Sum.hippo, yinput = newdf4$CSF.pTau.INNO, 
+        G2ATNVisualisation(dat = newdf4, xinput = newdf4$Sum.hippo, yinput = newdf4$CSF.pTau, 
                          zinput = newdf4$Centiloid,
                          XCUT = hippo_threshold, 
                          YCUT = ptau_threshold, 
@@ -2104,10 +2116,10 @@ server <- function(input, output){
         
       }else {
         df_young <- filter(new.dat, Age <70)
-        df8 <- df_young[,c("Sum.hippo", "CSF.pTau.INNO", "Centiloid", "Clifford_class")]
+        df8 <- df_young[,c("Sum.hippo", "CSF.pTau", "Centiloid", "Clifford_class")]
         df9 <- na.omit(df8)
         New.Group2 <- data.frame(input$sums, input$ps, input$cents, "My own markers")
-        names(New.Group2) <- c("Sum.hippo", "CSF.pTau.INNO", "Centiloid", "Clifford_class")
+        names(New.Group2) <- c("Sum.hippo", "CSF.pTau", "Centiloid", "Clifford_class")
         newdf3 <- rbind(df9, New.Group2)
         newdf3$Clifford_class <- factor(newdf3$Clifford_class, levels = c("Stage 2, clinically asymptomatic",
                                                                           "Stage 1, preclinical AD stage",
@@ -2123,7 +2135,7 @@ server <- function(input, output){
         hippo_cutoff <- x$hippocampus_threshold
         hippo_threshold <- hippo_cutoff
         
-        G2ATNVisualisation(dat = newdf4, xinput = newdf4$Sum.hippo, yinput = newdf4$CSF.pTau.INNO, 
+        G2ATNVisualisation(dat = newdf4, xinput = newdf4$Sum.hippo, yinput = newdf4$CSF.pTau, 
                            zinput = newdf4$Centiloid,
                            XCUT = hippo_threshold, 
                            YCUT = ptau_threshold, 
@@ -2152,7 +2164,7 @@ server <- function(input, output){
 
     } else if (input$BIOMARKERG2 == "CSF pTau pg/mL"){
 
-      BoxplotFunction(new.dat, new.dat$CSF.pTau.INNO, input_title = axy)
+      BoxplotFunction(new.dat, new.dat$CSF.pTau, input_title = axy)
 
     }else if (input$BIOMARKERG2 == "BOXHIP1"){
 
@@ -2176,7 +2188,7 @@ server <- function(input, output){
         geom_smooth(method = "loess", se = T)
       ggplotly(m)
     }else if (input$SCATTERBIOMARKER == "CSF pTau pg/mL"){
-      plot1 <- ggplot(new.dat, aes(x= Age, y = CSF.pTau.INNO, na.rm = TRUE, color = pTau.status))+
+      plot1 <- ggplot(new.dat, aes(x= Age, y = CSF.pTau, na.rm = TRUE, color = pTau.status))+
         geom_point()+
         theme_bw()+
         xlab("Age")+
@@ -2212,7 +2224,7 @@ server <- function(input, output){
       apoe_4 <- add_markers(
         p = apoe_4,
         data = new.dat,
-        x = ~CSF.pTau.INNO,
+        x = ~CSF.pTau,
         y = ~ Sum.hippo,
         z = ~Centiloid,
         text = ~Diagnosis,
@@ -2223,17 +2235,17 @@ server <- function(input, output){
       )
 
 
-      my_lm <- lm(Centiloid ~ Sum.hippo+CSF.pTau.INNO, new_data_frame)
+      my_lm <- lm(Centiloid ~ Sum.hippo+CSF.pTau, new_data_frame)
       # Set up Axis
 
-      axis_x1 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      axis_x1 <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       axis_z1 <- seq(min(new.dat$Sum.hippo, na.rm = T), max(new.dat$Sum.hippo, na.rm = T))
 
       ## PLOT THE POINTS
 
-      my_lm_surface <- expand.grid(CSF.pTau.INNO = axis_x1,Sum.hippo = axis_z1,KEEP.OUT.ATTRS = F)
+      my_lm_surface <- expand.grid(CSF.pTau = axis_x1,Sum.hippo = axis_z1,KEEP.OUT.ATTRS = F)
       my_lm_surface$Centiloid <- predict.lm(my_lm, newdata = my_lm_surface)
-      my_lm_surface <- acast(my_lm_surface, Sum.hippo ~ CSF.pTau.INNO, value.var = "Centiloid")
+      my_lm_surface <- acast(my_lm_surface, Sum.hippo ~ CSF.pTau, value.var = "Centiloid")
 
       apoe_4 <- add_trace(p = apoe_4,
                           z = my_lm_surface,
@@ -2249,17 +2261,17 @@ server <- function(input, output){
       # second regression for APOE4 non-carriers
       non_carriers <- filter(new.dat, apoe4 == 0)
 
-      new_lm <- lm(Centiloid ~ Sum.hippo+CSF.pTau.INNO, non_carriers)
+      new_lm <- lm(Centiloid ~ Sum.hippo+CSF.pTau, non_carriers)
       # Set up Axis
 
-      axis_x1 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      axis_x1 <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       axis_z1 <- seq(min(new.dat$Sum.hippo, na.rm = T), max(new.dat$Sum.hippo, na.rm = T))
 
       ## PLOT THE POINTS
 
-      new_lm_surface <- expand.grid(CSF.pTau.INNO = axis_x1,Sum.hippo = axis_z1,KEEP.OUT.ATTRS = F)
+      new_lm_surface <- expand.grid(CSF.pTau = axis_x1,Sum.hippo = axis_z1,KEEP.OUT.ATTRS = F)
       new_lm_surface$Centiloid <- predict.lm(new_lm, newdata = new_lm_surface)
-      new_lm_surface <- acast(new_lm_surface, Sum.hippo ~ CSF.pTau.INNO, value.var = "Centiloid")
+      new_lm_surface <- acast(new_lm_surface, Sum.hippo ~ CSF.pTau, value.var = "Centiloid")
 
       apoe_4 <- add_trace(p = apoe_4,
                           z = new_lm_surface,
@@ -2282,7 +2294,7 @@ server <- function(input, output){
       sex_plot <- add_markers(
         p = sex_plot,
         data = new.dat,
-        x = ~CSF.pTau.INNO,
+        x = ~CSF.pTau,
         y = ~ Sum.hippo,
         z = ~Centiloid,
         text = ~Diagnosis,
@@ -2291,17 +2303,17 @@ server <- function(input, output){
         colors = c("firebrick", "darkorange", "gold", "forestgreen"),
         mode = "markers")
 
-      sex_lm_f <- lm(Centiloid ~ Sum.hippo+CSF.pTau.INNO, sex)
+      sex_lm_f <- lm(Centiloid ~ Sum.hippo+CSF.pTau, sex)
       # Set up Axis
 
-      x1 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      x1 <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       z1 <- seq(min(new.dat$Sum.hippo, na.rm = T), max(new.dat$Sum.hippo, na.rm = T))
 
       ## PLOT THE POINTS
 
-      sex_surface_1 <- expand.grid(CSF.pTau.INNO = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
+      sex_surface_1 <- expand.grid(CSF.pTau = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
       sex_surface_1$Centiloid <- predict.lm(sex_lm_f, newdata = sex_surface_1)
-      sex_surface_1 <- acast(sex_surface_1, Sum.hippo ~ CSF.pTau.INNO, value.var = "Centiloid")
+      sex_surface_1 <- acast(sex_surface_1, Sum.hippo ~ CSF.pTau, value.var = "Centiloid")
 
       sex_plot <- add_trace(p = sex_plot,
                             z = sex_surface_1,
@@ -2317,14 +2329,14 @@ server <- function(input, output){
       # second regression for APOE4 non-carriers
       sex_2 <- filter(new.dat, Sex == "Male")
 
-      lm_for_males <- lm(Centiloid ~ Sum.hippo+CSF.pTau.INNO, sex_2)
+      lm_for_males <- lm(Centiloid ~ Sum.hippo+CSF.pTau, sex_2)
       # Set up Axis
 
       ## PLOT THE POINTS
 
-      surface_males <- expand.grid(CSF.pTau.INNO = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
+      surface_males <- expand.grid(CSF.pTau = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
       surface_males$Centiloid <- predict.lm(lm_for_males, newdata = surface_males)
-      surface_males <- acast(surface_males, Sum.hippo ~ CSF.pTau.INNO, value.var = "Centiloid")
+      surface_males <- acast(surface_males, Sum.hippo ~ CSF.pTau, value.var = "Centiloid")
 
       sex_plot <- add_trace(p = sex_plot,
                             z = surface_males,
@@ -2350,7 +2362,7 @@ server <- function(input, output){
       age_plot <- add_markers(
         p = age_plot,
         data = new.dat,
-        x = ~CSF.pTau.INNO,
+        x = ~CSF.pTau,
         y = ~ Sum.hippo,
         z = ~Centiloid,
         text = ~Diagnosis,
@@ -2360,17 +2372,17 @@ server <- function(input, output){
         mode = "markers"
       )
 
-      age_1_lm <- lm(Centiloid ~ Sum.hippo+CSF.pTau.INNO, age)
+      age_1_lm <- lm(Centiloid ~ Sum.hippo+CSF.pTau, age)
       # Set up Axis
 
-      x1 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      x1 <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       z1 <- seq(min(new.dat$Sum.hippo, na.rm = T), max(new.dat$Sum.hippo, na.rm = T))
 
       ## PLOT THE POINTS
 
-      age_surface_1 <- expand.grid(CSF.pTau.INNO = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
+      age_surface_1 <- expand.grid(CSF.pTau = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
       age_surface_1$Centiloid <- predict.lm(age_1_lm, newdata = age_surface_1)
-      age_surface_1 <- acast(age_surface_1, Sum.hippo ~ CSF.pTau.INNO, value.var = "Centiloid")
+      age_surface_1 <- acast(age_surface_1, Sum.hippo ~ CSF.pTau, value.var = "Centiloid")
 
       age_plot <- add_trace(p = age_plot,
                             z = age_surface_1,
@@ -2386,14 +2398,14 @@ server <- function(input, output){
       # second regression for APOE4 non-carriers
       age_2 <- filter(new.dat, Age_binary == 0)
 
-      age_0_lm <- lm(Centiloid ~ Sum.hippo+CSF.pTau.INNO, age_2)
+      age_0_lm <- lm(Centiloid ~ Sum.hippo+CSF.pTau, age_2)
       # Set up Axis
 
       ## PLOT THE POINTS
 
-      age_surface_0 <- expand.grid(CSF.pTau.INNO = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
+      age_surface_0 <- expand.grid(CSF.pTau = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
       age_surface_0$Centiloid <- predict.lm(age_0_lm, newdata = age_surface_0)
-      age_surface_0 <- acast(age_surface_0, Sum.hippo ~ CSF.pTau.INNO, value.var = "Centiloid")
+      age_surface_0 <- acast(age_surface_0, Sum.hippo ~ CSF.pTau, value.var = "Centiloid")
 
       age_plot <- add_trace(p = age_plot,
                             z = age_surface_0,
@@ -2416,7 +2428,7 @@ server <- function(input, output){
       education_plot <- add_markers(
         p = education_plot,
         data = new.dat,
-        x = ~CSF.pTau.INNO,
+        x = ~CSF.pTau,
         y = ~ Sum.hippo,
         z = ~Centiloid,
         text = ~Diagnosis,
@@ -2427,17 +2439,17 @@ server <- function(input, output){
       )
 
 
-      education_1_lm <- lm(Centiloid ~ Sum.hippo+CSF.pTau.INNO, education)
+      education_1_lm <- lm(Centiloid ~ Sum.hippo+CSF.pTau, education)
       # Set up Axis
 
-      x1 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      x1 <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       z1 <- seq(min(new.dat$Sum.hippo, na.rm = T), max(new.dat$Sum.hippo, na.rm = T))
 
       ## PLOT THE POINTS
 
-      education_surface_1 <- expand.grid(CSF.pTau.INNO = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
+      education_surface_1 <- expand.grid(CSF.pTau = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
       education_surface_1$Centiloid <- predict.lm(education_1_lm, newdata = education_surface_1)
-      education_surface_1 <- acast(education_surface_1, Sum.hippo ~ CSF.pTau.INNO, value.var = "Centiloid")
+      education_surface_1 <- acast(education_surface_1, Sum.hippo ~ CSF.pTau, value.var = "Centiloid")
 
       education_plot <- add_trace(p = education_plot,
                                   z = education_surface_1,
@@ -2453,14 +2465,14 @@ server <- function(input, output){
       # second regression for APOE4 non-carriers
       education_2 <- filter(new.dat, Education_binary == 0)
 
-      lm_0 <- lm(Centiloid ~ Sum.hippo+CSF.pTau.INNO, education_2)
+      lm_0 <- lm(Centiloid ~ Sum.hippo+CSF.pTau, education_2)
       # Set up Axis
 
       ## PLOT THE POINTS
 
-      surface_education_0 <- expand.grid(CSF.pTau.INNO = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
+      surface_education_0 <- expand.grid(CSF.pTau = x1,Sum.hippo = z1,KEEP.OUT.ATTRS = F)
       surface_education_0$Centiloid <- predict.lm(lm_0, newdata = surface_education_0)
-      surface_education_0 <- acast(surface_education_0, Sum.hippo ~ CSF.pTau.INNO, value.var = "Centiloid")
+      surface_education_0 <- acast(surface_education_0, Sum.hippo ~ CSF.pTau, value.var = "Centiloid")
 
       education_plot <- add_trace(p = education_plot,
                                   z = surface_education_0,
@@ -2490,7 +2502,7 @@ server <- function(input, output){
       
     }else if (input$LING2 == "CSF pTau pg/mL"){
       
-      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.pTau.INNO, 
+      LinearRegressionTables(dat = new.dat, biomarker = new.dat$CSF.pTau, 
                              title_biomarker = "Linear summary for CSF pTau ~ Age+Sex+Education_binary+apoe4")
       
     }else if (input$LING2 == "LINHIP1"){
@@ -2509,7 +2521,7 @@ server <- function(input, output){
       # 3 - Sumhippo
       BiomarkerInterplay(dat = new.dat,
                          biomarker1 = new.dat$Centiloid,
-                         biomarker2 = new.dat$CSF.pTau.INNO, 
+                         biomarker2 = new.dat$CSF.pTau, 
                          biomarker3 = new.dat$Sum.hippo, 
                          title_biomarker1 = "Centiloid",
                          title_biomarker2 = "CSF ptau pg/mL", 
@@ -2522,7 +2534,7 @@ server <- function(input, output){
       # 2 - centiloid
       # 3 - hippocampus
       BiomarkerInterplay(dat = new.dat,
-                         biomarker1 = new.dat$CSF.pTau.INNO,
+                         biomarker1 = new.dat$CSF.pTau,
                          biomarker2 = new.dat$Centiloid, 
                          biomarker3 = new.dat$Sum.hippo, 
                          title_biomarker1 = "CSF ptau pg/mL",
@@ -2539,7 +2551,7 @@ server <- function(input, output){
       BiomarkerInterplay(dat = new.dat,
                          biomarker1 = new.dat$Sum.hippo,
                          biomarker2 = new.dat$Centiloid, 
-                         biomarker3 = new.dat$CSF.pTau.INNO, 
+                         biomarker3 = new.dat$CSF.pTau, 
                          title_biomarker1 = "Hippocampus",
                          title_biomarker2 = "Centiloid", 
                          title_biomarker3 = "CSF ptau pg/mL", 
@@ -2557,37 +2569,37 @@ server <- function(input, output){
     if (input$PopCube == "70+"){
 
       df_old <- filter(new.dat, Age > 70)
-      df7 <- mutate(df_old, scat_col = ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
+      df7 <- mutate(df_old, scat_col = ifelse(CSF.pTau >73.83   & Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
                                               "Stage 2 Clinically Asymptomatic meeting all cut-offs",
-                                              ifelse(CSF.pTau.INNO >73.83   & Sum.hippo <5.402554 & Centiloid > 20 & Clifford_class == "Stage 1, preclinical AD stage",
+                                              ifelse(CSF.pTau >73.83   & Sum.hippo <5.402554 & Centiloid > 20 & Clifford_class == "Stage 1, preclinical AD stage",
                                                      "Stage 1 Preclinical AD meeting all cut-offs",
-                                                     ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "SNAP",
+                                                     ifelse(CSF.pTau >73.83   & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "SNAP",
                                                             "SNAP meeting all cut-offs",
-                                                            ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "MCI unlikely due to AD",
+                                                            ifelse(CSF.pTau >73.83   & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "MCI unlikely due to AD",
                                                                    "MCI unlikely due to AD meeting all cut-offs",
-                                                                   ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Clifford_class == "Stage 2, clinically asymptomatic",
+                                                                   ifelse(CSF.pTau >73.83   & Sum.hippo < 5.402554 & Clifford_class == "Stage 2, clinically asymptomatic",
                                                                           "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
                                                                           ifelse(Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
                                                                                  "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
-                                                                                 ifelse(CSF.pTau.INNO >73.83  & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
+                                                                                 ifelse(CSF.pTau >73.83  & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
                                                                                         "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
-                                                                                        ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Clifford_class == "Stage 1, preclinical AD stage",
+                                                                                        ifelse(CSF.pTau >73.83   & Sum.hippo < 5.402554 & Clifford_class == "Stage 1, preclinical AD stage",
                                                                                                "Stage 1 Preclinical AD meeting 2 cut-offs",
                                                                                                ifelse(Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 1, preclinical AD stage",
                                                                                                       "Stage 1 Preclinical AD meeting 2 cut-offs",
-                                                                                                      ifelse(CSF.pTau.INNO >73.83  & Centiloid >20 & Clifford_class == "Stage 1, preclinical AD stage",
+                                                                                                      ifelse(CSF.pTau >73.83  & Centiloid >20 & Clifford_class == "Stage 1, preclinical AD stage",
                                                                                                              "Stage 1 Preclinical AD meeting 2 cut-offs",
-                                                                                                             ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Clifford_class == "SNAP",
+                                                                                                             ifelse(CSF.pTau >73.83   & Sum.hippo < 5.402554 & Clifford_class == "SNAP",
                                                                                                                     "SNAP meeting 2 cut-offs",
                                                                                                                     ifelse(Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "SNAP",
                                                                                                                            "SNAP meeting 2 cut-offs",
-                                                                                                                           ifelse(CSF.pTau.INNO >73.83  & Centiloid >20 & Clifford_class == "SNAP",
+                                                                                                                           ifelse(CSF.pTau >73.83  & Centiloid >20 & Clifford_class == "SNAP",
                                                                                                                                   "SNAP meeting 2 cut-offs",
-                                                                                                                                  ifelse(CSF.pTau.INNO >73.83   & Sum.hippo < 5.402554 & Clifford_class == "MCI unlikely due to AD",
+                                                                                                                                  ifelse(CSF.pTau >73.83   & Sum.hippo < 5.402554 & Clifford_class == "MCI unlikely due to AD",
                                                                                                                                          "MCI unlikely due to AD meeting 2 cut-offs",
                                                                                                                                          ifelse(Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "MCI unlikely due to AD",
                                                                                                                                                 "MCI unlikely due to AD meeting 2 cut-offs",
-                                                                                                                                                ifelse(CSF.pTau.INNO >73.83  & Centiloid >20 & Clifford_class == "MCI unlikely due to AD",
+                                                                                                                                                ifelse(CSF.pTau >73.83  & Centiloid >20 & Clifford_class == "MCI unlikely due to AD",
                                                                                                                                                        "MCI unlikely due to AD meeting 2 cut-offs","unselected")))))))))))))))))
 
 
@@ -2602,7 +2614,7 @@ server <- function(input, output){
                                                       "MCI unlikely due to AD meeting 2 cut-offs"))
 
 
-      df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO,na.rm = T), max(df7$CSF.pTau.INNO,na.rm = T), 73.83 ,73.83 ,   max(df7$CSF.pTau.INNO,na.rm = T),  max(df7$CSF.pTau.INNO,na.rm = T), 73.83 ,73.83 ),
+      df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau,na.rm = T), max(df7$CSF.pTau,na.rm = T), 73.83 ,73.83 ,   max(df7$CSF.pTau,na.rm = T),  max(df7$CSF.pTau,na.rm = T), 73.83 ,73.83 ),
                               Y_VAL = c(min(df7$Sum.hippo, na.rm = T),  5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554, min(df7$Sum.hippo, na.rm = T),   5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554),
                               Z_VAL = c(20,      20,    20,      20,  max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T)),
                               MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
@@ -2614,7 +2626,7 @@ server <- function(input, output){
         add_markers(type = "scatter3d",
                     mode = "markers",
                     data = df7,
-                    x = ~CSF.pTau.INNO,
+                    x = ~CSF.pTau,
                     y = ~Sum.hippo,
                     z = ~Centiloid,
                     color = ~scat_col,
@@ -2640,37 +2652,37 @@ server <- function(input, output){
     }else{
 
       df_young <- filter(new.dat, Age < 70)
-      df7 <- mutate(df_young, scat_col = ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
+      df7 <- mutate(df_young, scat_col = ifelse(CSF.pTau >59.23  & Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
                                                 "Stage 2 Clinically Asymptomatic meeting all cut-offs",
-                                                ifelse(CSF.pTau.INNO >59.23  & Sum.hippo <5.402554 & Centiloid > 20 & Clifford_class == "Stage 1, preclinical AD stage",
+                                                ifelse(CSF.pTau >59.23  & Sum.hippo <5.402554 & Centiloid > 20 & Clifford_class == "Stage 1, preclinical AD stage",
                                                        "Stage 1 Preclinical AD meeting all cut-offs",
-                                                       ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "SNAP",
+                                                       ifelse(CSF.pTau >59.23  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "SNAP",
                                                               "SNAP meeting all cut-offs",
-                                                              ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "MCI unlikely due to AD",
+                                                              ifelse(CSF.pTau >59.23  & Sum.hippo < 5.402554 & Centiloid > 20 & Clifford_class == "MCI unlikely due to AD",
                                                                      "MCI unlikely due to AD meeting all cut-offs",
-                                                                     ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Clifford_class == "Stage 2, clinically asymptomatic",
+                                                                     ifelse(CSF.pTau >59.23  & Sum.hippo < 5.402554 & Clifford_class == "Stage 2, clinically asymptomatic",
                                                                             "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
                                                                             ifelse(Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
                                                                                    "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
-                                                                                   ifelse(CSF.pTau.INNO >59.23 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
+                                                                                   ifelse(CSF.pTau >59.23 & Centiloid >20 & Clifford_class == "Stage 2, clinically asymptomatic",
                                                                                           "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
-                                                                                          ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Clifford_class == "Stage 1, preclinical AD stage",
+                                                                                          ifelse(CSF.pTau >59.23  & Sum.hippo < 5.402554 & Clifford_class == "Stage 1, preclinical AD stage",
                                                                                                  "Stage 1 Preclinical AD meeting 2 cut-offs",
                                                                                                  ifelse(Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "Stage 1, preclinical AD stage",
                                                                                                         "Stage 1 Preclinical AD meeting 2 cut-offs",
-                                                                                                        ifelse(CSF.pTau.INNO >59.23 & Centiloid >20 & Clifford_class == "Stage 1, preclinical AD stage",
+                                                                                                        ifelse(CSF.pTau >59.23 & Centiloid >20 & Clifford_class == "Stage 1, preclinical AD stage",
                                                                                                                "Stage 1 Preclinical AD meeting 2 cut-offs",
-                                                                                                               ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Clifford_class == "SNAP",
+                                                                                                               ifelse(CSF.pTau >59.23  & Sum.hippo < 5.402554 & Clifford_class == "SNAP",
                                                                                                                       "SNAP meeting 2 cut-offs",
                                                                                                                       ifelse(Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "SNAP",
                                                                                                                              "SNAP meeting 2 cut-offs",
-                                                                                                                             ifelse(CSF.pTau.INNO >59.23 & Centiloid >20 & Clifford_class == "SNAP",
+                                                                                                                             ifelse(CSF.pTau >59.23 & Centiloid >20 & Clifford_class == "SNAP",
                                                                                                                                     "SNAP meeting 2 cut-offs",
-                                                                                                                                    ifelse(CSF.pTau.INNO >59.23  & Sum.hippo < 5.402554 & Clifford_class == "MCI unlikely due to AD",
+                                                                                                                                    ifelse(CSF.pTau >59.23  & Sum.hippo < 5.402554 & Clifford_class == "MCI unlikely due to AD",
                                                                                                                                            "MCI unlikely due to AD meeting 2 cut-offs",
                                                                                                                                            ifelse(Sum.hippo < 5.402554 & Centiloid >20 & Clifford_class == "MCI unlikely due to AD",
                                                                                                                                                   "MCI unlikely due to AD meeting 2 cut-offs",
-                                                                                                                                                  ifelse(CSF.pTau.INNO >59.23 & Centiloid >20 & Clifford_class == "MCI unlikely due to AD",
+                                                                                                                                                  ifelse(CSF.pTau >59.23 & Centiloid >20 & Clifford_class == "MCI unlikely due to AD",
                                                                                                                                                          "MCI unlikely due to AD meeting 2 cut-offs","unselected")))))))))))))))))
 
 
@@ -2685,7 +2697,7 @@ server <- function(input, output){
                                                       "MCI unlikely due to AD meeting 2 cut-offs"))
 
 
-      df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO,na.rm = T), max(df7$CSF.pTau.INNO,na.rm = T), 59.23,59.23,   max(df7$CSF.pTau.INNO,na.rm = T),  max(df7$CSF.pTau.INNO,na.rm = T), 59.23,59.23),
+      df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau,na.rm = T), max(df7$CSF.pTau,na.rm = T), 59.23,59.23,   max(df7$CSF.pTau,na.rm = T),  max(df7$CSF.pTau,na.rm = T), 59.23,59.23),
                               Y_VAL = c(min(df7$Sum.hippo, na.rm = T),  5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554, min(df7$Sum.hippo, na.rm = T),   5.402554, min(df7$Sum.hippo, na.rm = T), 5.402554),
                               Z_VAL = c(20,      20,    20,      20,  max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T)),
                               MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
@@ -2697,7 +2709,7 @@ server <- function(input, output){
         add_markers(type = "scatter3d",
                     mode = "markers",
                     data = df7,
-                    x = ~CSF.pTau.INNO,
+                    x = ~CSF.pTau,
                     y = ~Sum.hippo,
                     z = ~Centiloid,
                     color = ~scat_col,
@@ -2729,37 +2741,37 @@ server <- function(input, output){
     hippo_cutoff <- x$hippocampus_threshold
     hippo_threshold <- hippo_cutoff
     
-    df7 <- mutate(new.dat, scat_col = ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 2, clinically asymptomatic",
+    df7 <- mutate(new.dat, scat_col = ifelse(CSF.pTau >ptau_threshold  & Sum.hippo < hippo_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 2, clinically asymptomatic",
                                               "Stage 2 Clinically Asymptomatic meeting all cut-offs",
-                                              ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo <hippo_threshold & Centiloid > centiloid_threshold & Clifford_class == "Stage 1, preclinical AD stage",
+                                              ifelse(CSF.pTau >ptau_threshold  & Sum.hippo <hippo_threshold & Centiloid > centiloid_threshold & Clifford_class == "Stage 1, preclinical AD stage",
                                                      "Stage 1 Preclinical AD meeting all cut-offs",
-                                                     ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Centiloid > centiloid_threshold & Clifford_class == "SNAP",
+                                                     ifelse(CSF.pTau >ptau_threshold  & Sum.hippo < hippo_threshold & Centiloid > centiloid_threshold & Clifford_class == "SNAP",
                                                             "SNAP meeting all cut-offs",
-                                                            ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Centiloid > centiloid_threshold & Clifford_class == "MCI unlikely due to AD",
+                                                            ifelse(CSF.pTau >ptau_threshold  & Sum.hippo < hippo_threshold & Centiloid > centiloid_threshold & Clifford_class == "MCI unlikely due to AD",
                                                                    "MCI unlikely due to AD meeting all cut-offs",
-                                                                   ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "Stage 2, clinically asymptomatic",
+                                                                   ifelse(CSF.pTau >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "Stage 2, clinically asymptomatic",
                                                                           "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
                                                                           ifelse(Sum.hippo < hippo_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 2, clinically asymptomatic",
                                                                                  "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
-                                                                                 ifelse(CSF.pTau.INNO >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 2, clinically asymptomatic",
+                                                                                 ifelse(CSF.pTau >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 2, clinically asymptomatic",
                                                                                         "Stage 2 Clinically Asymptomatic meeting 2 cut-offs",
-                                                                                        ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "Stage 1, preclinical AD stage",
+                                                                                        ifelse(CSF.pTau >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "Stage 1, preclinical AD stage",
                                                                                                "Stage 1 Preclinical AD meeting 2 cut-offs",
                                                                                                ifelse(Sum.hippo < hippo_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 1, preclinical AD stage",
                                                                                                       "Stage 1 Preclinical AD meeting 2 cut-offs",
-                                                                                                      ifelse(CSF.pTau.INNO >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 1, preclinical AD stage",
+                                                                                                      ifelse(CSF.pTau >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "Stage 1, preclinical AD stage",
                                                                                                              "Stage 1 Preclinical AD meeting 2 cut-offs",
-                                                                                                             ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "SNAP",
+                                                                                                             ifelse(CSF.pTau >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "SNAP",
                                                                                                                     "SNAP meeting 2 cut-offs",
                                                                                                                     ifelse(Sum.hippo < hippo_threshold & Centiloid >centiloid_threshold & Clifford_class == "SNAP",
                                                                                                                            "SNAP meeting 2 cut-offs",
-                                                                                                                           ifelse(CSF.pTau.INNO >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "SNAP",
+                                                                                                                           ifelse(CSF.pTau >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "SNAP",
                                                                                                                                   "SNAP meeting 2 cut-offs",
-                                                                                                                                  ifelse(CSF.pTau.INNO >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "MCI unlikely due to AD",
+                                                                                                                                  ifelse(CSF.pTau >ptau_threshold  & Sum.hippo < hippo_threshold & Clifford_class == "MCI unlikely due to AD",
                                                                                                                                          "MCI unlikely due to AD meeting 2 cut-offs",
                                                                                                                                          ifelse(Sum.hippo < hippo_threshold & Centiloid >centiloid_threshold & Clifford_class == "MCI unlikely due to AD",
                                                                                                                                                 "MCI unlikely due to AD meeting 2 cut-offs",
-                                                                                                                                                ifelse(CSF.pTau.INNO >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "MCI unlikely due to AD",
+                                                                                                                                                ifelse(CSF.pTau >ptau_threshold & Centiloid >centiloid_threshold & Clifford_class == "MCI unlikely due to AD",
                                                                                                                                                        "MCI unlikely due to AD meeting 2 cut-offs","unselected")))))))))))))))))
     
     
@@ -2774,7 +2786,7 @@ server <- function(input, output){
                                                     "MCI unlikely due to AD meeting 2 cut-offs"))
     
     
-    df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau.INNO,na.rm = T), max(df7$CSF.pTau.INNO,na.rm = T), ptau_threshold,ptau_threshold,   max(df7$CSF.pTau.INNO,na.rm = T),  max(df7$CSF.pTau.INNO,na.rm = T), ptau_threshold,ptau_threshold),
+    df_mesh_1 <- data.frame(X_VAL = c(max(df7$CSF.pTau,na.rm = T), max(df7$CSF.pTau,na.rm = T), ptau_threshold,ptau_threshold,   max(df7$CSF.pTau,na.rm = T),  max(df7$CSF.pTau,na.rm = T), ptau_threshold,ptau_threshold),
                             Y_VAL = c(min(df7$Sum.hippo, na.rm = T),  hippo_threshold, min(df7$Sum.hippo, na.rm = T), hippo_threshold, min(df7$Sum.hippo, na.rm = T),   hippo_threshold, min(df7$Sum.hippo, na.rm = T), hippo_threshold),
                             Z_VAL = c(centiloid_threshold,      centiloid_threshold,    centiloid_threshold,      centiloid_threshold,  max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T),max(df7$Centiloid, na.rm = T)),
                             MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
@@ -2786,7 +2798,7 @@ server <- function(input, output){
       add_markers(type = "scatter3d",
                   mode = "markers",
                   data = df7,
-                  x = ~CSF.pTau.INNO,
+                  x = ~CSF.pTau,
                   y = ~Sum.hippo,
                   z = ~Centiloid,
                   color = ~scat_col,
@@ -2821,25 +2833,25 @@ server <- function(input, output){
     if (input$DEMOGRAPHIC == "APOE-e4 allele"){
       new_data_frame <- filter(new.dat, apoe4 == 1)
       
-      my_lm <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, new_data_frame)
+      my_lm <- lm(CSF.tTau ~ CSF.AB42+CSF.pTau, new_data_frame)
       # Set up Axis
       
-      axis_x1 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z1 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      axis_x1 <- seq(min(new.dat$CSF.AB42), max(new.dat$CSF.AB42))
+      axis_z1 <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       
       ## PLOT THE POINTS
       
-      my_lm_surface <- expand.grid(CSF.AB42.INNO = axis_x1,CSF.pTau.INNO = axis_z1,KEEP.OUT.ATTRS = F)
-      my_lm_surface$CSF.tTau.INNO <- predict.lm(my_lm, newdata = my_lm_surface)
-      my_lm_surface <- acast(my_lm_surface, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      my_lm_surface <- expand.grid(CSF.AB42 = axis_x1,CSF.pTau = axis_z1,KEEP.OUT.ATTRS = F)
+      my_lm_surface$CSF.tTau <- predict.lm(my_lm, newdata = my_lm_surface)
+      my_lm_surface <- acast(my_lm_surface, CSF.pTau ~ CSF.AB42, value.var = "CSF.tTau")
       
       my_plot <- plot_ly()
       my_plot <- add_markers(
         p = my_plot,
         data = new.dat,
-        x = ~CSF.AB42.INNO,
-        y = ~ CSF.pTau.INNO,
-        z = ~CSF.tTau.INNO,
+        x = ~CSF.AB42,
+        y = ~ CSF.pTau,
+        z = ~CSF.tTau,
         text = ~Diagnosis,
         type = "scatter3d",
         color = ~Burnham_class,
@@ -2860,17 +2872,17 @@ server <- function(input, output){
       
       new_data_frame_2 <- filter(new.dat, apoe4 == 0)
       
-      my_lm_2 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, new_data_frame_2)
+      my_lm_2 <- lm(CSF.tTau ~ CSF.AB42+CSF.pTau, new_data_frame_2)
       # Set up Axis
       
-      axis_x2 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z2 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      axis_x2 <- seq(min(new.dat$CSF.AB42), max(new.dat$CSF.AB42))
+      axis_z2 <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       
       ## PLOT THE POINTS
       
-      my_lm_surface_2 <- expand.grid(CSF.AB42.INNO = axis_x2,CSF.pTau.INNO = axis_z2,KEEP.OUT.ATTRS = F)
-      my_lm_surface_2$CSF.tTau.INNO <- predict.lm(my_lm_2, newdata = my_lm_surface_2)
-      my_lm_surface_2 <- acast(my_lm_surface_2, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      my_lm_surface_2 <- expand.grid(CSF.AB42 = axis_x2,CSF.pTau = axis_z2,KEEP.OUT.ATTRS = F)
+      my_lm_surface_2$CSF.tTau <- predict.lm(my_lm_2, newdata = my_lm_surface_2)
+      my_lm_surface_2 <- acast(my_lm_surface_2, CSF.pTau ~ CSF.AB42, value.var = "CSF.tTau")
       
       my_plot <- add_trace(p = my_plot,
                            z = my_lm_surface_2,
@@ -2889,25 +2901,25 @@ server <- function(input, output){
     }else if (input$DEMOGRAPHIC == "Sex"){
       female_data <- filter(new.dat, Sex == "Female")
       
-      my_lm_female <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, female_data)
+      my_lm_female <- lm(CSF.tTau ~ CSF.AB42+CSF.pTau, female_data)
       # Set up Axis
       
-      axis_x1_female <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z1_female <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      axis_x1_female <- seq(min(new.dat$CSF.AB42), max(new.dat$CSF.AB42))
+      axis_z1_female <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       
       ## PLOT THE POINTS
       
-      my_lm_surface_female <- expand.grid(CSF.AB42.INNO = axis_x1_female,CSF.pTau.INNO = axis_z1_female,KEEP.OUT.ATTRS = F)
-      my_lm_surface_female$CSF.tTau.INNO <- predict.lm(my_lm_female, newdata = my_lm_surface_female)
-      my_lm_surface_female <- acast(my_lm_surface_female, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      my_lm_surface_female <- expand.grid(CSF.AB42 = axis_x1_female,CSF.pTau = axis_z1_female,KEEP.OUT.ATTRS = F)
+      my_lm_surface_female$CSF.tTau <- predict.lm(my_lm_female, newdata = my_lm_surface_female)
+      my_lm_surface_female <- acast(my_lm_surface_female, CSF.pTau ~ CSF.AB42, value.var = "CSF.tTau")
       
       my_plot <- plot_ly()
       my_plot <- add_markers(
         p = my_plot,
         data = new.dat,
-        x = ~CSF.AB42.INNO,
-        y = ~ CSF.pTau.INNO,
-        z = ~CSF.tTau.INNO,
+        x = ~CSF.AB42,
+        y = ~ CSF.pTau,
+        z = ~CSF.tTau,
         text = ~Diagnosis,
         type = "scatter3d",
         color = ~Burnham_class,
@@ -2928,17 +2940,17 @@ server <- function(input, output){
       
       male_data <- filter(new.dat, Sex == "Male")
       
-      my_lm_male <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, male_data)
+      my_lm_male <- lm(CSF.tTau ~ CSF.AB42+CSF.pTau, male_data)
       # Set up Axis
       
-      axis_x2_male <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z2_male <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      axis_x2_male <- seq(min(new.dat$CSF.AB42), max(new.dat$CSF.AB42))
+      axis_z2_male <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       
       ## PLOT THE POINTS
       
-      my_lm_surface_male <- expand.grid(CSF.AB42.INNO = axis_x2_male,CSF.pTau.INNO = axis_z2_male,KEEP.OUT.ATTRS = F)
-      my_lm_surface_male$CSF.tTau.INNO <- predict.lm(my_lm_male, newdata = my_lm_surface_male)
-      my_lm_surface_male <- acast(my_lm_surface_male, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      my_lm_surface_male <- expand.grid(CSF.AB42 = axis_x2_male,CSF.pTau = axis_z2_male,KEEP.OUT.ATTRS = F)
+      my_lm_surface_male$CSF.tTau <- predict.lm(my_lm_male, newdata = my_lm_surface_male)
+      my_lm_surface_male <- acast(my_lm_surface_male, CSF.pTau ~ CSF.AB42, value.var = "CSF.tTau")
       
       my_plot <- add_trace(p = my_plot,
                            z = my_lm_surface_male,
@@ -2964,25 +2976,25 @@ server <- function(input, output){
       
       Age_binary <- filter(new.dat, Age_binary == 1)
       
-      age_lm_1 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, Age_binary)
+      age_lm_1 <- lm(CSF.tTau ~ CSF.AB42+CSF.pTau, Age_binary)
       # Set up Axis
       
-      x1 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      z1 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      x1 <- seq(min(new.dat$CSF.AB42), max(new.dat$CSF.AB42))
+      z1 <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       
       ## PLOT THE POINTS
       
-      age_surface_1 <- expand.grid(CSF.AB42.INNO = x1,CSF.pTau.INNO = z1,KEEP.OUT.ATTRS = F)
-      age_surface_1$CSF.tTau.INNO <- predict.lm(age_lm_1, newdata = age_surface_1)
-      age_surface_1 <- acast(age_surface_1, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      age_surface_1 <- expand.grid(CSF.AB42 = x1,CSF.pTau = z1,KEEP.OUT.ATTRS = F)
+      age_surface_1$CSF.tTau <- predict.lm(age_lm_1, newdata = age_surface_1)
+      age_surface_1 <- acast(age_surface_1, CSF.pTau ~ CSF.AB42, value.var = "CSF.tTau")
       
       my_plot <- plot_ly()
       my_plot <- add_markers(
         p = my_plot,
         data = new.dat,
-        x = ~CSF.AB42.INNO,
-        y = ~ CSF.pTau.INNO,
-        z = ~CSF.tTau.INNO,
+        x = ~CSF.AB42,
+        y = ~ CSF.pTau,
+        z = ~CSF.tTau,
         text = ~Diagnosis,
         type = "scatter3d",
         color = ~Burnham_class,
@@ -3003,17 +3015,17 @@ server <- function(input, output){
       
       age_0 <- filter(new.dat, Age_binary == 0)
       
-      age_lm_2 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, age_0)
+      age_lm_2 <- lm(CSF.tTau ~ CSF.AB42+CSF.pTau, age_0)
       # Set up Axis
       
-      x2 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      z2 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      x2 <- seq(min(new.dat$CSF.AB42), max(new.dat$CSF.AB42))
+      z2 <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       
       ## PLOT THE POINTS
       
-      age_surface_2 <- expand.grid(CSF.AB42.INNO = x2,CSF.pTau.INNO = z2,KEEP.OUT.ATTRS = F)
-      age_surface_2$CSF.tTau.INNO <- predict.lm(age_lm_2, newdata = age_surface_2)
-      age_surface_2 <- acast(age_surface_2, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      age_surface_2 <- expand.grid(CSF.AB42 = x2,CSF.pTau = z2,KEEP.OUT.ATTRS = F)
+      age_surface_2$CSF.tTau <- predict.lm(age_lm_2, newdata = age_surface_2)
+      age_surface_2 <- acast(age_surface_2, CSF.pTau ~ CSF.AB42, value.var = "CSF.tTau")
       
       my_plot <- add_trace(p = my_plot,
                            z = age_surface_2,
@@ -3040,25 +3052,25 @@ server <- function(input, output){
       
       eduction_data <- filter(new.dat, Education_binary == 1)
       
-      my_education_1 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, eduction_data)
+      my_education_1 <- lm(CSF.tTau ~ CSF.AB42+CSF.pTau, eduction_data)
       # Set up Axis
       
-      axis_x1_education <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z1_education <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      axis_x1_education <- seq(min(new.dat$CSF.AB42), max(new.dat$CSF.AB42))
+      axis_z1_education <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       
       ## PLOT THE POINTS
       
-      my_lm_surface_education <- expand.grid(CSF.AB42.INNO = axis_x1_education,CSF.pTau.INNO = axis_z1_education,KEEP.OUT.ATTRS = F)
-      my_lm_surface_education$CSF.tTau.INNO <- predict.lm(my_education_1, newdata = my_lm_surface_education)
-      my_lm_surface_education <- acast(my_lm_surface_education, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      my_lm_surface_education <- expand.grid(CSF.AB42 = axis_x1_education,CSF.pTau = axis_z1_education,KEEP.OUT.ATTRS = F)
+      my_lm_surface_education$CSF.tTau <- predict.lm(my_education_1, newdata = my_lm_surface_education)
+      my_lm_surface_education <- acast(my_lm_surface_education, CSF.pTau ~ CSF.AB42, value.var = "CSF.tTau")
       
       my_plot <- plot_ly()
       my_plot <- add_markers(
         p = my_plot,
         data = new.dat,
-        x = ~CSF.AB42.INNO,
-        y = ~ CSF.pTau.INNO,
-        z = ~CSF.tTau.INNO,
+        x = ~CSF.AB42,
+        y = ~ CSF.pTau,
+        z = ~CSF.tTau,
         text = ~Diagnosis,
         type = "scatter3d",
         color = ~Burnham_class,
@@ -3077,17 +3089,17 @@ server <- function(input, output){
       
       education_data_0 <- filter(new.dat, Education_binary == 0)
       
-      my_lm_ed_0 <- lm(CSF.tTau.INNO ~ CSF.AB42.INNO+CSF.pTau.INNO, education_data_0)
+      my_lm_ed_0 <- lm(CSF.tTau ~ CSF.AB42+CSF.pTau, education_data_0)
       # Set up Axis
       
-      axis_x2 <- seq(min(new.dat$CSF.AB42.INNO), max(new.dat$CSF.AB42.INNO))
-      axis_z2 <- seq(min(new.dat$CSF.pTau.INNO), max(new.dat$CSF.pTau.INNO))
+      axis_x2 <- seq(min(new.dat$CSF.AB42), max(new.dat$CSF.AB42))
+      axis_z2 <- seq(min(new.dat$CSF.pTau), max(new.dat$CSF.pTau))
       
       ## PLOT THE POINTS
       
-      my_lm_surface_ed_0 <- expand.grid(CSF.AB42.INNO = axis_x2,CSF.pTau.INNO = axis_z2,KEEP.OUT.ATTRS = F)
-      my_lm_surface_ed_0$CSF.tTau.INNO <- predict.lm(my_lm_ed_0, newdata = my_lm_surface_ed_0)
-      my_lm_surface_ed_0 <- acast(my_lm_surface_ed_0, CSF.pTau.INNO ~ CSF.AB42.INNO, value.var = "CSF.tTau.INNO")
+      my_lm_surface_ed_0 <- expand.grid(CSF.AB42 = axis_x2,CSF.pTau = axis_z2,KEEP.OUT.ATTRS = F)
+      my_lm_surface_ed_0$CSF.tTau <- predict.lm(my_lm_ed_0, newdata = my_lm_surface_ed_0)
+      my_lm_surface_ed_0 <- acast(my_lm_surface_ed_0, CSF.pTau ~ CSF.AB42, value.var = "CSF.tTau")
       
       my_plot <- add_trace(p = my_plot,
                            z = my_lm_surface_ed_0,

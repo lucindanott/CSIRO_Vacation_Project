@@ -12,8 +12,8 @@
 
 
 new_table_function <- function(dat){
-  group_1 <- dat[, c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Age", "Burnham_class")]
-  group_1_2 <- dat[, c("CSF.AB42.INNO", "CSF.pTau.INNO", "CSF.tTau.INNO", "Age",  "Diagnosis", "Sex", 
+  group_1 <- dat[, c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Age", "Burnham_class")]
+  group_1_2 <- dat[, c("CSF.AB42", "CSF.pTau", "CSF.tTau", "Age",  "Diagnosis", "Sex", 
                            "apoe4","AB.status", "pTau.status", "tTau.status", "Education_binary", "Burnham_class")]
   
   
@@ -142,11 +142,11 @@ new_table_function <- function(dat){
   
   # Add in mean, sd and Missing for AB, pTau and tTau 
   
-  # ADD in CSF.AB42.INNO
+  # ADD in CSF.AB42
   
   group_1_table[8,1] <- "CSF AB1-42 pg/mL"
   group_1_table[8,2] <- "Mean (SD)"
-  group_1_table[8,3] <- paste(round(mean(group_1$CSF.AB42.INNO),2), "   (",round(sd(group_1$CSF.AB42.INNO), 2),") ", sep = ""  ) 
+  group_1_table[8,3] <- paste(round(mean(group_1$CSF.AB42),2), "   (",round(sd(group_1$CSF.AB42), 2),") ", sep = ""  ) 
   group_1_table[8,4] <- paste(group_1_summary[13,3], "   (",group_1_summary[13,4],") ", sep = ""  )
   group_1_table[8,5] <- paste(group_1_summary[9,3], "   (",group_1_summary[9,4],") ", sep = ""  )
   group_1_table[8,6] <- paste(group_1_summary[5,3], "   (",group_1_summary[5,4],") ", sep = ""  )
@@ -155,7 +155,7 @@ new_table_function <- function(dat){
   
   group_1_table[9,1] <- "CSF pTau pg/mL"
   group_1_table[9,2] <- "Mean (SD)"
-  group_1_table[9,3] <- paste(round(mean(group_1$CSF.pTau.INNO),2), " (",round(sd(group_1$CSF.pTau.INNO),2),") ", sep = ""  ) 
+  group_1_table[9,3] <- paste(round(mean(group_1$CSF.pTau),2), " (",round(sd(group_1$CSF.pTau),2),") ", sep = ""  ) 
   group_1_table[9,4] <- paste(group_1_summary[14,3], "   (",group_1_summary[14,4],")", sep = ""  )
   group_1_table[9,5] <- paste(group_1_summary[10,3], "   (",group_1_summary[10,4],")", sep = ""  )
   group_1_table[9,6] <- paste(group_1_summary[6,3], "   (",group_1_summary[6,4],")", sep = ""  )
@@ -165,17 +165,17 @@ new_table_function <- function(dat){
   
   group_1_table[10,1] <- "CSF tTau pg/mL"
   group_1_table[10,2] <- "Mean (SD)"
-  group_1_table[10,3] <- paste(round(mean(group_1$CSF.tTau.INNO),2), " (",round(sd(group_1$CSF.tTau.INNO),2),") ", sep = ""  ) 
+  group_1_table[10,3] <- paste(round(mean(group_1$CSF.tTau),2), " (",round(sd(group_1$CSF.tTau),2),") ", sep = ""  ) 
   group_1_table[10,4] <- paste(group_1_summary[15,3], "   (",group_1_summary[15,4],")", sep = ""  )
   group_1_table[10,5] <- paste(group_1_summary[11,3], "   (",group_1_summary[11,4],")", sep = ""  )
   group_1_table[10,6] <- paste(group_1_summary[7,3], "   (",group_1_summary[7,4],")", sep = ""  )
   group_1_table[10,7] <- paste(group_1_summary[3,3], "   (",group_1_summary[3,4],")", sep = ""  )
   
   
-  group_2 <- dat[,c("Sum.hippo", "Centiloid", "Age", "CSF.pTau.INNO", 
-                        "CSF.tTau.INNO", "Clifford_class")]
+  group_2 <- dat[,c("Sum.hippo", "Centiloid", "Age", "CSF.pTau", 
+                        "CSF.tTau", "Clifford_class")]
   
-  group_2_2 <- dat[,c("Sum.hippo", "Centiloid", "Age", "Clifford_class", "CSF.pTau.INNO", "CSF.tTau.INNO",  "Sex", 
+  group_2_2 <- dat[,c("Sum.hippo", "Centiloid", "Age", "Clifford_class", "CSF.pTau", "CSF.tTau",  "Sex", 
                           "apoe4")]
   
   group_2_continuous <- melt(group_2, id.vars = "Clifford_class")
@@ -302,7 +302,7 @@ new_table_function <- function(dat){
   # pTAU 
   group_2_table[10,1] <- "CSF pTau pg/mL"
   group_2_table[10,2] <- "Mean (SD)"
-  group_2_table[10,3] <- paste(round(mean(group_2$CSF.pTau.INNO),2), "   (",round(sd(group_2$CSF.pTau.INNO),2),") ", sep = "" )
+  group_2_table[10,3] <- paste(round(mean(group_2$CSF.pTau),2), "   (",round(sd(group_2$CSF.pTau),2),") ", sep = "" )
   group_2_table[10,4] <- paste(group_2_summary[19,3], "   (",group_2_summary[19,4],") ", sep = "" )
   group_2_table[10,5] <- paste(group_2_summary[14,3], "   (",group_2_summary[14,4],") ", sep = "" )
   group_2_table[10,6] <- paste(group_2_summary[9,3], "   (",group_2_summary[9,4],") ", sep = "" )

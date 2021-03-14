@@ -1,4 +1,4 @@
-ID,Age,apoe4,Sex,Education_binary,Diagnosis,CSF.AB42.INNO,CSF.pTau.INNO,CSF.tTau.INNO,Sum.hippo,Centiloid,AB.status,pTau.status,tTau.status
+ID,Age,apoe4,Sex,Education_binary,Diagnosis,CSF.AB42,CSF.pTau,CSF.tTau,Sum.hippo,Centiloid,AB.status,pTau.status,tTau.status
 1,81.28793932,1,Female,1,HC,761.3577632,55.83529441,166.6019438,6.26801432,13.46872568,negative,negative,negative
 2,79.47095357,0,Female,1,HC,1010.199114,35.63781186,226.4320007,5.67193816,19.74942186,negative,negative,negative
 3,69.54515766,0,Female,0,HC,996.6572409,62.77136298,259.4809146,6.300383771,-5.190669132,negative,negative,negative
