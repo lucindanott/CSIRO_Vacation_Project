@@ -539,7 +539,7 @@ ui<-
                      Please follow carefully the instructions below.",
                                                            style = "width:80%;font-size:17px;color:red")), 
                                                   textInput("AssayLabel", 
-                                                            label = "Please Input the name of the assay used:", 
+                                                            label = "Please input the name of the assay used:", 
                                                             value = ""), 
                                                   radioButtons(
                                                     "new_AGE", "Are the cut-offs for this assay age dependent?", 
@@ -1079,7 +1079,14 @@ ui<-
                                             p("Demographic summaries for Group 1 split into ATN Burnham et al. classification groups. Standard
                                               deviation denoted by SD. Biomarker Positive and Negative Status defined by their respective cut-offs above.", style = "text-align: justify;width:100%;font-size:18px"),
                                             br(), tableOutput("table1")),
+                                   
+                                   ###########################
+                                   ########################### subpanel
                                    tabPanel("2D Visualistion", 
+                                            br(),
+                                            htmlOutput("ASSAYreminder1"),
+                                            br(),
+                                            
                                             sidebarLayout(
                                               sidebarPanel(
                                                 p("Select 2 Biomarkers for 2D plot"), 
@@ -1104,7 +1111,13 @@ ui<-
                                             )
                                    ),
                                    
+                                   #####################
+                                   ##################### subpanel
+                                   
                                    tabPanel("3D Visualisation", 
+                                            br(),
+                                            htmlOutput("ASSAYreminder2"),
+                                            br(),
                                             sidebarLayout(
                                               sidebarPanel(
                                                 selectInput(
@@ -1202,7 +1215,14 @@ ui<-
                                             
                                             
                                    ),
+                                   
+                                   ##################
+                                   ################## subpanel
+                                   
                                    tabPanel("A+/T+/N+ Visualisation",
+                                            br(),
+                                            htmlOutput("ASSAYreminder3"),
+                                            br(),
                                             sidebarLayout(
                                               sidebarPanel(
                                                 conditionalPanel(
@@ -1305,8 +1325,13 @@ ui<-
                                             ) # 15 blue, 26 pink ish for 70+
                                    ),
                                    
+                                   ######################
+                                   ###################### subpanel
                                    
                                    tabPanel("Add in your own data point!",
+                                            br(),
+                                            htmlOutput("ASSAYreminder4"),
+                                            br(),
                                             sidebarLayout(
                                               sidebarPanel(
                                                 p('Enter your own ATN biomarker data to see your standing in the cohort',style ="text-align: justify;width:100%;font-size:18px"),
@@ -1377,6 +1402,8 @@ ui<-
                                             )
                                    ), 
                                    tabPanel("Statistical Modelling",
+                                            br(),
+                                            htmlOutput("ASSAYreminder5"),
                                             br(),
                                             p(strong("As the synthetic data is randomly generated, the statisical models that are fitted and corresponding
                                               regression coefficients/p-values are meaningless and do not reflect any features of the AIBL's ATN biomarkers.", style = "width:100%;font-size:18px;color:red")),
@@ -1666,7 +1693,14 @@ ui<-
                                             p("Demographic summaries for Group 2 split into ATN Clifford et al. classification groups. Standard
                                               deviation denoted by SD.",style ="text-align: justify;width:100%;font-size:18px"),
                                             br(), tableOutput("table.2")),
+                                   
+                                   #########################
+                                   ######################### subpanel
+                                   
                                    tabPanel("2D Visualisation", 
+                                            br(),
+                                            htmlOutput("ASSAYreminder6"),
+                                            br(),
                                             sidebarLayout(
                                               sidebarPanel(
                                                 p("Select 2 Biomarkers for 2D plot"), 
@@ -1731,7 +1765,13 @@ ui<-
                                             )
                                    ),
                                    
+                                   #########################
+                                   ######################### subpanel
+                                   
                                    tabPanel("3D Visualisation", 
+                                            br(),
+                                            htmlOutput("ASSAYreminder7"),
+                                            br(),
                                             sidebarLayout(
                                               sidebarPanel(
                                                 selectInput(
@@ -1820,7 +1860,13 @@ ui<-
                                             
                                    ),
                                    
+                                   #########################
+                                   ######################### subpanel
+                                   
                                    tabPanel("A+/T+/N+ Visualisation",
+                                            br(),
+                                            htmlOutput("ASSAYreminder8"),
+                                            br(),
                                             sidebarLayout(
                                               sidebarPanel(
                                                 conditionalPanel(
@@ -1926,7 +1972,14 @@ ui<-
                                               )
                                             )
                                    ),
+                                   
+                                   #########################
+                                   ######################### subpanel
+                                   
                                    tabPanel("Add in your own data point!",
+                                            br(),
+                                            htmlOutput("ASSAYreminder9"),
+                                            br(),
                                             sidebarLayout(
                                               sidebarPanel(
                                                 p('Enter your own ATN  biomarker data to see your standing in the cohort.',style ="text-align: justify;width:100%;font-size:18px"),

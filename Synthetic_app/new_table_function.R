@@ -115,7 +115,8 @@ new_table_function <- function(dat){
   # AGE 
   group_1_table[5,1] <- "Age"
   group_1_table[5,2] <- "Mean  (SD)"
-  group_1_table[5,3] <- paste(round(mean(group_1$Age),2), "    (", round(sd(group_1$Age),2), ")  ", sep = "")
+  group_1_table[5,3] <- paste(round(mean(group_1$Age, na.rm=TRUE),2), 
+                              "    (", round(sd(group_1$Age, na.rm=TRUE),2), ")  ", sep = "")
   group_1_table[5,4] <- paste(group_1_summary[16,3], "   (",group_1_summary[16,4],") ", sep = ""  )
   group_1_table[5,5] <- paste(group_1_summary[12,3], "   (",group_1_summary[12,4],") ", sep = ""  )
   group_1_table[5,6] <- paste(group_1_summary[8,3], "   (",group_1_summary[8,4],") ", sep = ""  )
@@ -146,7 +147,7 @@ new_table_function <- function(dat){
   
   group_1_table[8,1] <- "CSF AB1-42 pg/mL"
   group_1_table[8,2] <- "Mean (SD)"
-  group_1_table[8,3] <- paste(round(mean(group_1$CSF.AB42),2), "   (",round(sd(group_1$CSF.AB42), 2),") ", sep = ""  ) 
+  group_1_table[8,3] <- paste(round(mean(group_1$CSF.AB42, na.rm=TRUE),2), "   (",round(sd(group_1$CSF.AB42, na.rm=TRUE), 2),") ", sep = ""  ) 
   group_1_table[8,4] <- paste(group_1_summary[13,3], "   (",group_1_summary[13,4],") ", sep = ""  )
   group_1_table[8,5] <- paste(group_1_summary[9,3], "   (",group_1_summary[9,4],") ", sep = ""  )
   group_1_table[8,6] <- paste(group_1_summary[5,3], "   (",group_1_summary[5,4],") ", sep = ""  )
@@ -155,7 +156,7 @@ new_table_function <- function(dat){
   
   group_1_table[9,1] <- "CSF pTau pg/mL"
   group_1_table[9,2] <- "Mean (SD)"
-  group_1_table[9,3] <- paste(round(mean(group_1$CSF.pTau),2), " (",round(sd(group_1$CSF.pTau),2),") ", sep = ""  ) 
+  group_1_table[9,3] <- paste(round(mean(group_1$CSF.pTau, na.rm=TRUE),2), " (",round(sd(group_1$CSF.pTau, na.rm=TRUE),2),") ", sep = ""  ) 
   group_1_table[9,4] <- paste(group_1_summary[14,3], "   (",group_1_summary[14,4],")", sep = ""  )
   group_1_table[9,5] <- paste(group_1_summary[10,3], "   (",group_1_summary[10,4],")", sep = ""  )
   group_1_table[9,6] <- paste(group_1_summary[6,3], "   (",group_1_summary[6,4],")", sep = ""  )
@@ -165,7 +166,7 @@ new_table_function <- function(dat){
   
   group_1_table[10,1] <- "CSF tTau pg/mL"
   group_1_table[10,2] <- "Mean (SD)"
-  group_1_table[10,3] <- paste(round(mean(group_1$CSF.tTau),2), " (",round(sd(group_1$CSF.tTau),2),") ", sep = ""  ) 
+  group_1_table[10,3] <- paste(round(mean(group_1$CSF.tTau,na.rm=TRUE),2), " (",round(sd(group_1$CSF.tTau, na.rm=TRUE),2),") ", sep = ""  ) 
   group_1_table[10,4] <- paste(group_1_summary[15,3], "   (",group_1_summary[15,4],")", sep = ""  )
   group_1_table[10,5] <- paste(group_1_summary[11,3], "   (",group_1_summary[11,4],")", sep = ""  )
   group_1_table[10,6] <- paste(group_1_summary[7,3], "   (",group_1_summary[7,4],")", sep = ""  )
