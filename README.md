@@ -10,6 +10,8 @@ This App was created during a CSIRO vacation internship. Supervised by Dr Marcel
 
 Special thanks to Marcela for her guidance, help and supportive attitude for the whole vacation period. My first R shiny app would not be up or running without her (fingers crossed it still runs!). Additional gratitude to CSIRO for funding under the Biostatistics team. 
 
+The web application is available here: https://lucinda-nott.shinyapps.io/simulated_data_app/
+
 ## What this Repository Contains
 
 This repository contains: 
