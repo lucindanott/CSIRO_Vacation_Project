@@ -159,61 +159,14 @@ simulated.data <- mutate(simulated.data, pTau.status = ifelse(CSF.pTau.INNO > 73
                                                             "positive", "negative"))
 simulated.data <- mutate(simulated.data, tTau.status = ifelse(CSF.tTau.INNO > 303,
                                                               "positive", "negative"))
-# # Add in Burnham classification 
-# 
-# # See above for alternative way to use mutate - feed it multiple variables to make in the one go
-# simulated.data <- mutate(simulated.data, A_status = ifelse(AB.status == "positive", "A+", "A-"),
-#                   T_status = ifelse(pTau.status == "positive", "T+", "T-"),
-#                   N_status = ifelse(tTau.status == "positive", "N+", "N-")
-#                                     )
-# simulated.data <- tidyr::unite(simulated.data, Overall_status, A_status:N_status, sep = '/')
-# 
-# simulated.data$Overall_status <- factor(simulated.data$Overall_status, levels = c("A+/T+/N+", "A+/T+/N-", "A+/T-/N+", 
-#                                                             "A-/T+/N+", "A+/T-/N-","A-/T-/N+", 
-#                                                             "A-/T+/N-", "A-/T-/N-"))
-# 
-# 
-# simulated.data <- mutate(
-#   simulated.data, Burnham_class = ifelse(Overall_status == "A-/T-/N-", "Normal AD Biomarkers", 
-#                         ifelse(Overall_status == "A-/T+/N-", "Non-AD pathological Change",
-#                                ifelse(Overall_status == "A-/T+/N+", "Non-AD pathological Change", 
-#                                       ifelse(Overall_status == "A-/T-/N+", "Non-AD pathological Change", 
-#                                              ifelse(Overall_status == "A+/T-/N-", "Pathological Change",
-#                                                     ifelse(Overall_status == "A+/T-/N+", "Pathological Change", 
-#                                                            ifelse(Overall_status == "A+/T+/N+", "AD", 
-#                                                                   ifelse(Overall_status == "A+/T+/N-", "AD", NA)))))))))
-# simulated.data <- mutate(simulated.data, Clifford_class = ifelse(Burnham_class == "Normal AD Biomarkers", "MCI unlikely due to AD", 
-#                                            ifelse(Burnham_class == "AD", "Stage 2, clinically asymptomatic", 
-#                                                   ifelse(Burnham_class == "Pathological Change", "Stage 1, preclinical AD stage", 
-#                                                          ifelse(Burnham_class == "Non-AD pathological Change", "SNAP", NA)))))
-# 
-# 
-# 
-# 
-# # Surface for APOE4 
-# 
-# simulated.data$Apoe4 <- factor(simulated.data$apoe4, levels = c("1","0"))
-# 
-# simulated.data$Clifford_class <- factor(simulated.data$Clifford_class, levels = c("Stage 2, clinically asymptomatic",
-#                                                                                   "Stage 1, preclinical AD stage", 
-#                                                                                   "SNAP", 
-#                                                                                   "MCI unlikely due to AD"))
-# 
-# 
-# 
-# 
-# simulated.data$Burnham_class <- factor(simulated.data$Burnham_class, levels = c("AD", 
-#                                                                                 "Pathological Change", 
-#                                                                                 "Non-AD pathological Change", 
-#                                                                                 "Normal AD Biomarkers"))
-# 
+
 # simulated.data <- mutate(simulated.data, Age_binary = ifelse(Age < 72.5,1,0))
 
 
 
 # Save data into RData Format 
 
-# save(simulated.data, file = "simulated_data.RData")
+save(simulated.data, file = "simulated_data.RData")
 
 
 # write.csv(simulated.data, 'C:/Users/NOT031/Dropbox/VacationWork2020&2021/SIMULATED_DATA_APP\\tester_LN2.csv', row.names = T)
