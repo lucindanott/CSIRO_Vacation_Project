@@ -446,8 +446,7 @@ ui<-
                                               radioButtons(
                                                 "sample_or_real", h4("Which Data to use?"), 
                                                 choices = list("Supplied Synthetic Data" = "sample", 
-                                                               "Upload from .csv format (spreadsheet)" = "user"), 
-                                                selected = "sample"
+                                                               "Upload from .csv format (spreadsheet)" = "user")
                                               )
                                              
                                               
@@ -526,9 +525,7 @@ ui<-
                                                             
                                                   ), 
                                                   tableOutput("contents"), 
-                                                  
-                                                  # useShinyjs(), 
-                                                  # extendShinyjs(text = "shinyjs.button = function() {window.scrollTo(0, 0)}"),
+                                              
                                                   actionGroupButtons("newDataSUBMIT", "SUBMIT", status = "info", size = "lg"), 
                                                
                                                 ), 

@@ -380,31 +380,39 @@ server <- function(input, output){
   )
   
   ############# Read the TExt Input for ASSAY Type inputted ##########
+  label_assay <- reactiveValues(raw = NULL)
   
+  # Observe event so that when no data type is inputted, it will read as INNOTEST 
+
+  observeEvent(input$sample_or_real == "sample", {
+      label_assay$raw <- "INNOTEST"
+  })
+
+  
+  observeEvent(input$INNOTEST, {
+    if (input$INNOTEST == "yes_innotest"){
+      label_assay$raw <- "INNOTEST"
+    }
+  })
+  
+  observeEvent(input$AssayLabel, {
+    label_assay$raw <- input$AssayLabel
+  })
+
   output$ASSAYreminder1<- output$ASSAYreminder2<- output$ASSAYreminder3<- output$ASSAYreminder4<- output$ASSAYreminder5<- output$ASSAYreminder6<- output$ASSAYreminder7<- output$ASSAYreminder8<- output$ASSAYreminder9<- output$ASSAYreminder10<-renderUI({
     #paste0("Assay selected: ", input$AssayLabel)
-    op<- paste("<b><center>Assay selected: ", input$AssayLabel,"</b>")
+    label <- req(label_assay$raw)
+    op<- paste("<b><center>Assay selected: ", label,"</b>")
     HTML(op)
   })
-  #output$text <- renderUI({
-  #  fruits[input$index] <- paste("<b>",fruits[input$index],"</b>")
-  #  HTML(paste(fruits))
-  #})
   
-  output$NewCUTOFFLabels <- renderText({
+  
+  output$NewCUTOFFLabels <- output$NewCUTOFFLabels2 <- renderText({
     new.dat <- req(data_internal$raw)
     x <- HippoFunction(dat = new.dat)
     hippo_cutoff <- x$hippocampus_threshold
     hippoframe <- x$hippoframe
-    paste0("You have inputed new cut-off values for the CSF data. These points have been updated
-           across the app. The new assay type analysed is ", input$AssayLabel, ". The cut-off thresholds
-           have been updated below. To return to the supplied data or make a new selection, please refresh
-           the website to clear all previous inputs.")
-  })
-  
-    output$NewCUTOFFLabels2 <- renderText({
-    new.dat <- req(data_internal$raw)
-    paste0("You have inputed new cut-off values for the CSF data. These points have been updated
+    paste0("You have inputted new cut-off values for the CSF data. These points have been updated
            across the app. The new assay type analysed is ", input$AssayLabel, ". The cut-off thresholds
            have been updated below. To return to the supplied data or make a new selection, please refresh
            the website to clear all previous inputs.")
