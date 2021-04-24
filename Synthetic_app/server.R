@@ -459,7 +459,7 @@ server <- function(input, output){
   
   ############### Warning Message ########################
   shinyalert(title = "Important Note", 
-             text = "This application was developed by CSIRO student intern. \n
+             text = "This application was developed by a CSIRO student intern. \n
              This app is used as an interactive demostration tool for Alzheimer's Disease to enable clear, 
              effective and engaging communication of project results for future researchers. The data included in this app is 
              obtained from the AIBL study and contains sensitive medical, demographic and cognitive assessments participant 
