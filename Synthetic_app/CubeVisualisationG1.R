@@ -26,6 +26,7 @@
 CubeVisualisationG1<- function(dat, xinput,yinput,zinput,leg,xax,yax,zax,
                                XCUT,YCUT,ZCUT){
   
+  
   df7 <- mutate(dat, scat_col = ifelse(yinput >=YCUT & zinput >= ZCUT & xinput <=XCUT & Burnham_class == "AD",
                                        "selected - AD",
                                        ifelse(yinput >=YCUT & zinput >=ZCUT & xinput <= XCUT & Burnham_class == "Pathological Change",

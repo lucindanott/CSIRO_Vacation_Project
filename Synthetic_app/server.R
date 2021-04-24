@@ -1280,56 +1280,58 @@ server <- function(input, output){
   output$G1ExtraCube <- renderPlotly({
     
     # see line ~280
-    c1<- 59.23
-    if(AB_cutoff_singular$raw != 1){
-      c1<- AB_cutoff_singular$raw
-    }
-    
-    c2<- 656
-    if(ptau_cutoff_singular$raw != 1){
-      c2<- ptau_cutoff_singular$raw
-    }
-    
-    c3<- 303.54
-    if(ttau_cutoff_singular$raw != 1){
-      c3<- ttau_cutoff_singular$raw
-    }
-    
+    # c1<- 59.23
+    # if(AB_cutoff_singular$raw){
+    #   c1<- AB_cutoff_singular$raw
+    # }
+    # 
+    # c2<- 656
+    # if(ptau_cutoff_singular$raw){
+    #   c2<- ptau_cutoff_singular$raw
+    # }
+    # 
+    # c3<- 303.54
+    # if(ttau_cutoff_singular$raw){
+    #   c3<- ttau_cutoff_singular$raw
+    # }
+    AB_threshold <- req(AB_cutoff$raw)
+    ptau_threshold <- req(ptau_cutoff_lower$raw)
+    ttau_treshold <- req(ttau_cutoff_lower$raw)
     new.dat <- req(data_internal$raw)
     if (input$cubeg1input == "60-70"){
       df_young <- filter(new.dat, Age < 70)
       df7 <- mutate(df_young, 
-                    scat_col = ifelse(CSF.pTau >c1    & CSF.AB42 < c2 & CSF.tTau >c3  & Burnham_class == "AD",
+                    scat_col = ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & CSF.tTau >ttau_treshold  & Burnham_class == "AD",
                                       "AD meeting all cut-offs",
-                                ifelse(CSF.pTau >c1    & CSF.AB42 <c2 & CSF.tTau > c3  & Burnham_class == "Pathological Change",
+                                ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 <AB_threshold & CSF.tTau > ttau_treshold  & Burnham_class == "Pathological Change",
                                        "Pathological Change meeting all cut-offs",
-                                 ifelse(CSF.pTau >c1    & CSF.AB42 < c2 & CSF.tTau > c3  & Burnham_class == "Non-AD pathological Change",
+                                 ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & CSF.tTau > ttau_treshold  & Burnham_class == "Non-AD pathological Change",
                                         "Non-AD Pathological Change meeting all cut-offs",
-                                  ifelse(CSF.pTau >c1    & CSF.AB42 < c2 & CSF.tTau > c3  & Burnham_class == "Normal AD Biomarkers",
+                                  ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & CSF.tTau > ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
                                          "Normal AD Biomarkers meeting all cut-offs",
-                                   ifelse(CSF.pTau >c1    & CSF.AB42 < c2 & Burnham_class == "AD",
+                                   ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & Burnham_class == "AD",
                                           "AD meeting 2 cut offs",
-                                    ifelse(CSF.AB42 < c2 & CSF.tTau >c3  & Burnham_class == "AD",
+                                    ifelse(CSF.AB42 < AB_threshold & CSF.tTau >ttau_treshold  & Burnham_class == "AD",
                                            "AD meeting 2 cut offs",
-                                     ifelse(CSF.pTau >c1   & CSF.tTau >c3  & Burnham_class == "AD",
+                                     ifelse(CSF.pTau >ptau_threshold   & CSF.tTau >ttau_treshold  & Burnham_class == "AD",
                                             "AD meeting 2 cut offs",
-                                      ifelse(CSF.pTau >c1    & CSF.AB42 < c2 & Burnham_class == "Pathological Change",
+                                      ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & Burnham_class == "Pathological Change",
                                              "Pathological Change meeting 2 cut-offs",
-                                       ifelse(CSF.AB42 < c2 & CSF.tTau >c3  & Burnham_class == "Pathological Change",
+                                       ifelse(CSF.AB42 < AB_threshold & CSF.tTau >ttau_treshold  & Burnham_class == "Pathological Change",
                                               "Pathological Change meeting 2 cut-offs",
-                                        ifelse(CSF.pTau >c1   & CSF.tTau >c3  & Burnham_class == "Pathological Change",
+                                        ifelse(CSF.pTau >ptau_threshold   & CSF.tTau >ttau_treshold  & Burnham_class == "Pathological Change",
                                                "Pathological Change meeting 2 cut-offs",
-                                         ifelse(CSF.pTau >c1    & CSF.AB42 < c2 & Burnham_class == "Non-AD pathological Change",
+                                         ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & Burnham_class == "Non-AD pathological Change",
                                                 "Non-AD Pathological Change meeting 2 cut-offs",
-                                          ifelse(CSF.AB42 < c2 & CSF.tTau >c3  & Burnham_class == "Non-AD pathological Change",
+                                          ifelse(CSF.AB42 < AB_threshold & CSF.tTau >ttau_treshold  & Burnham_class == "Non-AD pathological Change",
                                                  "Non-AD Pathological Change meeting 2 cut-offs",
-                                           ifelse(CSF.pTau >c1   & CSF.tTau >c3  & Burnham_class == "Non-AD pathological Change",
+                                           ifelse(CSF.pTau >ptau_threshold   & CSF.tTau >ttau_treshold  & Burnham_class == "Non-AD pathological Change",
                                                   "Non-AD Pathological Change meeting 2 cut-offs",
-                                            ifelse(CSF.pTau >c1    & CSF.AB42 < c2 & Burnham_class == "Normal AD Biomarkers",
+                                            ifelse(CSF.pTau >ptau_threshold    & CSF.AB42 < AB_threshold & Burnham_class == "Normal AD Biomarkers",
                                                    "Normal AD Biomarker meeting 2 cut-offs",
-                                             ifelse(CSF.AB42 < c2 & CSF.tTau >c3  & Burnham_class == "Normal AD Biomarkers",
+                                             ifelse(CSF.AB42 < AB_threshold & CSF.tTau >ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
                                                     "Normal AD Biomarker meeting 2 cut-offs",
-                                              ifelse(CSF.pTau >c1   & CSF.tTau >c3  & Burnham_class == "Normal AD Biomarkers",
+                                              ifelse(CSF.pTau >ptau_threshold   & CSF.tTau >ttau_treshold  & Burnham_class == "Normal AD Biomarkers",
                                                      "Normal AD Biomarker meeting 2 cut-offs","unselected")))))))))))))))))
 
 
@@ -1345,9 +1347,9 @@ server <- function(input, output){
                                                       "Normal AD Biomarker meeting 2 cut-offs"))
 
 
-      df_mesh_1 <- data.frame(X_VAL = c(c2,  c2,  min(df7$CSF.AB42,na.rm = T),    min(df7$CSF.AB42,na.rm = T),    c2,   c2,   min(df7$CSF.AB42,na.rm = T),   min(df7$CSF.AB42,na.rm = T)),
-                              Y_VAL = c(c1  ,max(df7$CSF.pTau,na.rm = T),    c1  ,  max(df7$CSF.pTau,na.rm = T),    c1 , max(df7$CSF.pTau,na.rm = T),   c1 , max(df7$CSF.pTau,na.rm = T)),
-                              Z_VAL = c(c3  , c3  , c3  , c3  , max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T)),
+      df_mesh_1 <- data.frame(X_VAL = c(AB_threshold,  AB_threshold,  min(df7$CSF.AB42,na.rm = T),    min(df7$CSF.AB42,na.rm = T),    AB_threshold,   AB_threshold,   min(df7$CSF.AB42,na.rm = T),   min(df7$CSF.AB42,na.rm = T)),
+                              Y_VAL = c(ptau_threshold  ,max(df7$CSF.pTau,na.rm = T),    ptau_threshold  ,  max(df7$CSF.pTau,na.rm = T),    ptau_threshold , max(df7$CSF.pTau,na.rm = T),   ptau_threshold , max(df7$CSF.pTau,na.rm = T)),
+                              Z_VAL = c(ttau_treshold  , ttau_treshold  , ttau_treshold  , ttau_treshold  , max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T),  max(df7$CSF.tTau,na.rm = T)),
                               MESH_COL = factor(rep("CUBE", 8), levels = c("CUBE")))
 
       cube <- plot_ly()%>%
@@ -2780,6 +2782,8 @@ server <- function(input, output){
       cube2
     }
   })
+  
+  # THis is for no age Cube
   
   output$NO_AGE_CUBE_NEW_G2 <- renderPlotly({
     new.dat <- req(data_internal$raw)
